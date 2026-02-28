@@ -46,7 +46,7 @@
       high: ASSETS + "/msg3.gif",
       mid: ASSETS + "/msg2.gif",
       low: ASSETS + "/msg1.gif",
-      none: ASSETS + "/msg2.gif",
+      none: ASSETS + "/none.png",
     },
 
     // --- Login (écran de connexion) ---
