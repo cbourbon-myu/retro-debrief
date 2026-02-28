@@ -9,6 +9,9 @@
 (function () {
   window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
 
+  // Base URL des assets de ce template (facilite la maintenance)
+  var ASSETS = "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets";
+
   window.RETRO_TEMPLATES["backstage"] = {
     // --- Identité ---
     id: "backstage",
@@ -33,17 +36,17 @@
 
     // --- Images & fonds ---
     headerGradient: "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
-    headerImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/titre.jpg")',
-    rulesImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/neon.jpg")',
-    summaryImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/concert.jpg")',
+    headerImage: 'url("' + ASSETS + '/titre.jpg")',
+    rulesImage: 'url("' + ASSETS + '/neon.jpg")',
+    summaryImage: 'url("' + ASSETS + '/concert.jpg")',
     summaryOverlay: "linear-gradient(135deg, rgba(28,10,10,0.88) 0%, rgba(50,14,14,0.92) 50%, rgba(28,10,10,0.88) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(255,246,238,0.7) 60%, rgba(255,246,238,0.2) 80%, transparent 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, #FFF6EE 0%, #FFF6EE 50%, rgba(255,246,238,0.7) 70%, rgba(255,246,238,0.3) 100%)",
     outroGifs: {
-      high: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg3.gif",
-      mid: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg2.gif",
-      low: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg1.gif",
-      none: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/none.png",
+      high: ASSETS + "/msg3.gif",
+      mid: ASSETS + "/msg2.gif",
+      low: ASSETS + "/msg1.gif",
+      none: ASSETS + "/msg2.gif",
     },
 
     // --- Login (écran de connexion) ---
@@ -66,6 +69,8 @@
     },
 
     // --- Système de votes (emojis 1-5) ---
+    // image : URL d'une image affichée à côté du titre (null = pas d'image)
+    // imageStyle : style CSS optionnel appliqué à l'image (taille, filtre…)
     ratingLabels: {
       1: { emoji: "💀", label: "Silence de mort" },
       2: { emoji: "🎵", label: "Fausse note" },
@@ -74,10 +79,28 @@
       5: { emoji: "⭐", label: "Épique !" },
     },
     vibeChecks: [
-      { id: "ambiance", label: "Ambiance du Sprint", color: "#9F1239", bg: "#FFF1F2", border: "#E11D48" },
-      { id: "satisfaction", label: "Satisfaction Travail", color: "#92400E", bg: "#FEF9C3", border: "#CA8A04" },
+      {
+        id: "ambiance",
+        label: "Ambiance du Sprint",
+        color: "#9F1239", bg: "#FFF1F2", border: "#E11D48",
+        image: ASSETS + "/ambiance.png",
+        imageStyle: { width: 30, height: 30 },
+      },
+      {
+        id: "satisfaction",
+        label: "Satisfaction Travail",
+        color: "#92400E", bg: "#FEF9C3", border: "#CA8A04",
+        image: ASSETS + "/satisfaction.png",
+        imageStyle: { width: 30, height: 30 },
+      },
     ],
-    roti: { id: "roti", label: "ROTI", color: "#C2410C", bg: "#FFEDD5", border: "#EA580C" },
+    roti: {
+      id: "roti",
+      label: "ROTI",
+      color: "#C2410C", bg: "#FFEDD5", border: "#EA580C",
+      image: ASSETS + "/ROTI.png",
+      imageStyle: { width: 30, height: 30 },
+    },
     ratingCatLabels: { ambiance: "Ambiance du Sprint", satisfaction: "Satisfaction Travail", roti: "ROTI" },
 
     // --- Textes de l'interface ---
