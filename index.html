@@ -657,7 +657,7 @@
             {(() => {
               const a1 = getAvg("ambiance"), a2 = getAvg("satisfaction"), a3 = getAvg("roti");
               const vals = [a1, a2, a3].filter(v => v !== null).map(Number);
-              const globalAvg = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+              const globalAvg = vals.length === 3 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
               const outroKey = globalAvg === null ? "none" : globalAvg > 4 ? "high" : globalAvg >= 3 ? "mid" : "low";
               const msgData = T.outro[outroKey];
               const gifUrl = T.outroGifs ? T.outroGifs[outroKey] : null;
