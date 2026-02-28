@@ -429,6 +429,9 @@
       const voteSize = isMobile ? 42 : 52;
       const voteFontSize = isMobile ? 22 : 26;
       const isDark = T.dark;
+      const IMG_LOGO = T.appLogo || "assets/Batterie.png";
+      const IMG_MEETING = T.iconMeeting || "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/reu.png";
+      const IMG_START = T.iconStart || "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/fusee.gif";
 
       // ╔══════════════════════════════════════════════════════╗
       // ║                      RENDER                          ║
@@ -442,7 +445,7 @@
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.headerGradient }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: isMobile ? 17 : 34, fontWeight: 800, color: T.accent, letterSpacing: isMobile ? 1 : 2.5, display: "flex", alignItems: "center" }}>
-                <img src="assets/Batterie.png" onClick={() => setZoomedImage("assets/Batterie.png")} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: "50%", objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} />
+                <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: "50%", objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} />
                 {T.appTitle}
               </div>
             </div>
@@ -456,7 +459,7 @@
               {/* Présence */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowPresence(!showPresence); setShowUserMenu(false); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.4)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  <img src="https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/reu.png" style={{ width: 32, height: 32, objectFit: "contain" }} />
+                  <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} />
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{connectedUsers.length}</span>
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showPresence ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -469,7 +472,7 @@
               {/* Partager */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowIntegration(!showIntegration); setShowPresence(false); setShowUserMenu(false); }} className="no-print" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.55)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  <img src="https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/fusee.gif" style={{ width: 22, height: 22, objectFit: "contain" }} />
+                  <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} />
                   {!isMobile && <span style={{ fontSize: 12, fontWeight: 500 }}>Partager</span>}
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showIntegration ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -531,7 +534,7 @@
                     {T.rulesName}
                     {showPitTooltip && <div style={{ position: "absolute", bottom: isMobile ? "auto" : "calc(100% + 14px)", top: isMobile ? "calc(100% + 10px)" : "auto", left: isMobile ? "-30px" : "-140px", minWidth: isMobile ? 300 : 480, padding: 0, zIndex: 200, animation: "tooltipFadeIn 0.3s ease", borderRadius: 12, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}>
                       <div style={{ background: "linear-gradient(135deg, #1a0a0a 0%, #2d1010 40%, #1a0505 100%)", padding: isMobile ? "18px 16px" : "24px 30px 44px 30px", position: "relative", overflow: "hidden" }}>
-                        <div style={{ position: "absolute", inset: 0, backgroundImage: "url('https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/GIClub.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
+                        <div style={{ position: "absolute", inset: 0, backgroundImage: T.tooltip.image ? `url('${T.tooltip.image}')` : "url('https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/GIClub.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
                         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "linear-gradient(90deg, transparent, #DC2626, #B91C1C, transparent)" }} />
                         <div style={{ position: "relative", zIndex: 1 }}>
                           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, textTransform: "uppercase", color: "#DC2626", marginBottom: 20, textAlign: "center" }}>{T.tooltip.title}</div>
@@ -653,7 +656,7 @@
                           <div style={{ flex: 1, minWidth: 0 }}>
                             {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
                             : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
-                            {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><img src="https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/reu.png" style={{ width: 13, height: 13, objectFit: "contain" }} /> {action.responsable}</div>}
+                            {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> {action.responsable}</div>}
                           </div>
                           <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
                         </div>))}
@@ -782,7 +785,7 @@
               <button onClick={() => setShowThemePicker(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid #E8C9A8", background: "none", color: "#6B7280", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
             </div>
           </div>}
-          {zoomedImage && <div onClick={() => setZoomedImage(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)" }}><img src={zoomedImage} style={{ maxWidth: isMobile ? "95vw" : "80vw", maxHeight: "80vh", objectFit: zoomedImage.includes("Batterie") ? "cover" : "contain", borderRadius: zoomedImage.includes("Batterie") ? "50%" : 16, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", ...(zoomedImage.includes("Batterie") ? { width: isMobile ? "70vw" : "60vh", height: isMobile ? "70vw" : "60vh" } : {}) }} /></div>}
+          {zoomedImage && <div onClick={() => setZoomedImage(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)" }}><img src={zoomedImage} style={{ maxWidth: isMobile ? "95vw" : "80vw", maxHeight: "80vh", objectFit: zoomedImage === IMG_LOGO ? "cover" : "contain", borderRadius: zoomedImage === IMG_LOGO ? "50%" : 16, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", ...(zoomedImage === IMG_LOGO ? { width: isMobile ? "70vw" : "60vh", height: isMobile ? "70vw" : "60vh" } : {}) }} /></div>}
         </div>
       );
     }
