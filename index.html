@@ -293,6 +293,7 @@
       const [showIntegration, setShowIntegration] = useState(false);
       const [zoomedImage, setZoomedImage] = useState(null);
       const [showPitTooltip, setShowPitTooltip] = useState(false);
+      const [showThemePicker, setShowThemePicker] = useState(false);
       const [confluenceStatus, setConfluenceStatus] = useState(null);
       const [confluenceUrl, setConfluenceUrl] = useState(null);
       const feedbackInputRef = useRef(null);
@@ -368,6 +369,21 @@
         if (db) db.ref(`retro-${sprintDateKey}/confluenceUrl`).remove(); setConfluenceUrl(null);
       };
 
+      const deleteRetro = async () => {
+        if (!confirm("🗑️ Supprimer TOUTE la rétro du " + sprintDateLabel + " ?\n\nFeedbacks, votes, actions, présence — tout sera perdu.\nTu reviendras à l'écran de configuration.")) return;
+        if (db) {
+          await db.ref(`retro-${sprintDateKey}`).remove();
+          await db.ref("config/sprintDate").remove();
+          await db.ref("config/templateId").remove();
+        }
+        setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
+      };
+
+      const changeTemplate = async (newTplId) => {
+        if (db) await db.ref("config/templateId").set(newTplId);
+        setShowThemePicker(false);
+      };
+
       const getFeedbacksByCategory = (catId) => feedbacks.filter(f => f.category === catId);
       const syncColors = { synced: "#10B981", saving: "#F59E0B", connecting: "#60A5FA", error: "#EF4444" };
       const voteSize = isMobile ? 42 : 52;
@@ -441,8 +457,14 @@
                   {!isMobile && <span style={{ fontSize: 12, fontWeight: 500 }}>{userName}</span>}
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showUserMenu ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
-                {showUserMenu && <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 180, maxWidth: isMobile ? "calc(100vw - 24px)" : "none", background: "rgba(28,10,10,0.95)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "6px 0", zIndex: 100, backdropFilter: "blur(12px)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+                {showUserMenu && <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 220, maxWidth: isMobile ? "calc(100vw - 24px)" : "none", background: "rgba(28,10,10,0.95)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "6px 0", zIndex: 100, backdropFilter: "blur(12px)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
                   <div style={{ padding: "6px 14px 8px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}><div style={{ fontSize: 12, color: "#fff", fontWeight: 600 }}>{user.displayName}</div><div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.45)", marginTop: 2, wordBreak: "break-all" }}>{user.email}</div></div>
+                  {isAdmin && <>
+                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontWeight: 700, padding: "8px 14px 4px", textTransform: "uppercase", letterSpacing: 1 }}>Admin</div>
+                    <button onClick={() => { setShowThemePicker(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🎭 Changer le thème</button>
+                    <button onClick={() => { deleteRetro(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🗑️ Supprimer la rétro</button>
+                    <div style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", margin: "4px 0" }} />
+                  </>}
                   <button onClick={signOut} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}><img src="https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/logout.png" style={{ width: 16, height: 16, objectFit: "contain" }} /> Se déconnecter</button>
                 </div>}
               </div>
@@ -683,6 +705,32 @@
             @keyframes voteGlow { 0%, 100% { box-shadow: 0 0 12px 4px rgba(249,115,22,0.35), 0 2px 8px rgba(249,115,22,0.5); } 50% { box-shadow: 0 0 18px 6px rgba(249,115,22,0.5), 0 2px 12px rgba(249,115,22,0.65); } }
             @keyframes tooltipFadeIn { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
           `}</style>
+          {showThemePicker && <div onClick={() => setShowThemePicker(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9998, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)", padding: 16 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: "#FEF5EC", borderRadius: 20, padding: isMobile ? "24px 16px" : "32px 28px", maxWidth: 520, width: "100%", cursor: "default", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#1F2937", marginBottom: 4, textAlign: "center" }}>🎭 Changer le thème</div>
+              <div style={{ fontSize: 12, color: "#6B7280", marginBottom: 20, textAlign: "center" }}>Les feedbacks, votes et actions sont conservés.</div>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 20 }}>
+                {getTemplateList().map(t => (
+                  <button key={t.id} onClick={() => changeTemplate(t.id)} style={{
+                    padding: "12px 14px", borderRadius: 12, cursor: "pointer",
+                    border: templateId === t.id ? "2.5px solid " + t.accent : "1.5px solid #E8C9A8",
+                    background: templateId === t.id ? (t.dark ? t.cardBg : t.accentLight || "#FFF7ED") : "#FFFAF5",
+                    textAlign: "left", transition: "all 0.2s",
+                    transform: templateId === t.id ? "scale(1.02)" : "scale(1)",
+                    boxShadow: templateId === t.id ? "0 4px 16px " + t.accent + "44" : "none",
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: templateId === t.id ? (t.dark ? t.accent : t.accentDark) : "#1F2937" }}>{t.name}</div>
+                      {templateId === t.id && <span style={{ fontSize: 11, color: t.accent, fontWeight: 700 }}>Actif</span>}
+                    </div>
+                    <div style={{ fontSize: 11, color: templateId === t.id ? (t.dark ? t.textSecondary : "#6B7280") : "#9CA3AF", marginTop: 2 }}>{t.desc}</div>
+                    <div style={{ fontSize: 16, marginTop: 4, letterSpacing: 2 }}>{t.preview}</div>
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => setShowThemePicker(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid #E8C9A8", background: "none", color: "#6B7280", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
+            </div>
+          </div>}
           {zoomedImage && <div onClick={() => setZoomedImage(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)" }}><img src={zoomedImage} style={{ maxWidth: isMobile ? "95vw" : "80vw", maxHeight: "80vh", objectFit: zoomedImage.includes("Batterie") ? "cover" : "contain", borderRadius: zoomedImage.includes("Batterie") ? "50%" : 16, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", ...(zoomedImage.includes("Batterie") ? { width: isMobile ? "70vw" : "60vh", height: isMobile ? "70vw" : "60vh" } : {}) }} /></div>}
         </div>
       );
