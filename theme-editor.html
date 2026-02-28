@@ -286,10 +286,16 @@ function ColorPickerPopup({ value, onChange, onClose }) {
 // ============================
 // FORM COMPONENTS
 // ============================
-function CF({label,value,onChange}) {
+function CF({label,value,onChange,tooltip}) {
   const [showPicker, setShowPicker] = useState(false);
+  const [showTip, setShowTip] = useState(false);
   return (
-    <div className="field"><label>{label}</label>
+    <div className="field"><label style={{display:"flex",alignItems:"center",gap:4}}>
+      {label}
+      {tooltip && <span onMouseEnter={()=>setShowTip(true)} onMouseLeave={()=>setShowTip(false)} style={{position:"relative",cursor:"help",fontSize:12,color:"#555",lineHeight:1}}>ⓘ
+        {showTip && <span style={{position:"absolute",bottom:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",background:"#222",color:"#ccc",fontSize:10,padding:"6px 10px",borderRadius:6,whiteSpace:"normal",width:220,lineHeight:1.4,boxShadow:"0 4px 16px rgba(0,0,0,0.4)",border:"1px solid #333",zIndex:100,fontWeight:400,pointerEvents:"none"}}>{tooltip}</span>}
+      </span>}
+    </label>
       <div className="color-field">
         <div onClick={() => setShowPicker(true)} style={{width:32,height:32,borderRadius:6,border:"2px solid #333",background:value||"#000",cursor:"pointer",flexShrink:0}} title="Ouvrir le sélecteur"/>
         <input type="text" value={value||""} onChange={e=>onChange(e.target.value)} placeholder="#RRGGBB ou rgba(...)"/>
@@ -359,30 +365,36 @@ function GradientBuilder({ label, description, value, onChange }) {
       {description && <div className="section-desc">{description}</div>}
 
       <div style={{marginBottom:6}}>
-        <div style={{fontSize:10,color:"#666",marginBottom:3,fontWeight:600}}>Direction</div>
+        <div style={{fontSize:10,color:"#666",marginBottom:3,fontWeight:600}}>Direction du dégradé</div>
         <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:4}}>
-          {["to bottom","to right","to top","to left","135deg","45deg","180deg","90deg"].map(d => (
-            <button key={d} onClick={() => updateDirection(d)} style={{
+          {[{v:"to bottom",l:"↓ Haut→Bas"},{v:"to right",l:"→ Gauche→Droite"},{v:"to top",l:"↑ Bas→Haut"},{v:"to left",l:"← Droite→Gauche"},{v:"135deg",l:"↘ Diag. 135°"},{v:"45deg",l:"↗ Diag. 45°"}].map(d => (
+            <button key={d.v} onClick={() => updateDirection(d.v)} style={{
               padding:"3px 8px",borderRadius:4,fontSize:10,cursor:"pointer",fontFamily:"inherit",fontWeight:600,
-              border: parsed.direction === d ? "1px solid #F97316" : "1px solid #333",
-              background: parsed.direction === d ? "#261A0F" : "#111",
-              color: parsed.direction === d ? "#F97316" : "#888"
-            }}>{d}</button>
+              border: parsed.direction === d.v ? "1px solid #F97316" : "1px solid #333",
+              background: parsed.direction === d.v ? "#261A0F" : "#111",
+              color: parsed.direction === d.v ? "#F97316" : "#888"
+            }}>{d.l}</button>
           ))}
         </div>
-        <input type="text" value={parsed.direction} onChange={e => updateDirection(e.target.value)} style={{padding:"5px 8px",borderRadius:4,border:"1px solid #333",background:"#111",color:"#ccc",fontSize:11,fontFamily:"inherit",width:"100%"}} placeholder="Direction personnalisée"/>
+        <input type="text" value={parsed.direction} onChange={e => updateDirection(e.target.value)} style={{padding:"5px 8px",borderRadius:4,border:"1px solid #333",background:"#111",color:"#ccc",fontSize:11,fontFamily:"inherit",width:"100%"}} placeholder="Direction personnalisée (ex: 135deg, to bottom right...)"/>
       </div>
 
-      <div style={{fontSize:10,color:"#666",marginBottom:3,fontWeight:600}}>Points de couleur ({parsed.stops.length})</div>
+      <div style={{fontSize:10,color:"#666",marginBottom:3,fontWeight:600}}>Étapes du dégradé ({parsed.stops.length})</div>
+      <div style={{fontSize:9,color:"#444",marginBottom:6,fontStyle:"italic"}}>Chaque étape = une couleur positionnée sur l'axe. 0% = début, 100% = fin. Le rgba(r,g,b,opacité) permet la transparence.</div>
+      <div style={{display:"flex",gap:6,marginBottom:4,padding:"0 0 0 22px"}}>
+        <span style={{flex:2,fontSize:9,color:"#555",fontWeight:600}}>Couleur (hex ou rgba)</span>
+        <span style={{width:55,fontSize:9,color:"#555",fontWeight:600,textAlign:"center"}}>Position</span>
+        <span style={{width:26}}/>
+      </div>
       {parsed.stops.map((stop, i) => (
         <div key={i} className="grad-stop">
           <span style={{fontSize:10,color:"#555",fontWeight:700,width:16,textAlign:"center"}}>{i+1}</span>
-          <input type="text" value={stop.color} onChange={e => updateStop(i,"color",e.target.value)} style={{flex:2}} placeholder="rgba(...) ou #hex"/>
-          <input type="text" value={stop.position} onChange={e => updateStop(i,"position",e.target.value)} style={{width:55}} placeholder="50%"/>
+          <input type="text" value={stop.color} onChange={e => updateStop(i,"color",e.target.value)} style={{flex:2}} placeholder="rgba(28,10,10,0.85) ou #1C0A0A"/>
+          <input type="text" value={stop.position} onChange={e => updateStop(i,"position",e.target.value)} style={{width:55,textAlign:"center"}} placeholder="50%"/>
           {parsed.stops.length > 2 && <button className="btn-remove" onClick={() => removeStop(i)} style={{fontSize:12,padding:"0 4px"}}>✕</button>}
         </div>
       ))}
-      <button className="btn-add" onClick={addStop} style={{fontSize:10,padding:"5px 0",marginTop:2}}>+ Ajouter un point</button>
+      <button className="btn-add" onClick={addStop} style={{fontSize:10,padding:"5px 0",marginTop:2}}>+ Ajouter une étape</button>
       <div className="grad-preview" style={{background:value||"#333"}}/>
     </div>
   );
@@ -443,7 +455,7 @@ function SectionReorder({ order, onChange }) {
 // ============================
 function TabIdentite({t,set}){return(<><div className="section-title">Identité</div><TF label="ID unique" value={t.id} onChange={v=>set("id",v.toLowerCase().replace(/[^a-z0-9-]/g,""))}/><TF label="Nom" value={t.name} onChange={v=>set("name",v)}/><TF label="Description" value={t.desc} onChange={v=>set("desc",v)}/><TF label="Emojis aperçu" value={t.preview} onChange={v=>set("preview",v)}/><div className="toggle-row"><span className="toggle-label">Adapter au mode sombre</span><button className={`toggle ${t.dark?"on":"off"}`} onClick={()=>set("dark",!t.dark)}/></div></>);}
 
-function TabCouleurs({t,set}){return(<><div className="section-title">Principales</div><CF label="Accent" value={t.accent} onChange={v=>set("accent",v)}/><CF label="Accent foncé" value={t.accentDark} onChange={v=>set("accentDark",v)}/><CF label="Accent clair" value={t.accentLight} onChange={v=>set("accentLight",v)}/><div className="section-title">Arrière-plans</div><CF label="Body" value={t.bodyBg} onChange={v=>set("bodyBg",v)}/><CF label="Cartes" value={t.cardBg} onChange={v=>set("cardBg",v)}/><CF label="Bordures" value={t.cardBorder} onChange={v=>set("cardBorder",v)}/><CF label="Inputs" value={t.inputBg} onChange={v=>set("inputBg",v)}/><CF label="Inputs bord." value={t.inputBorder} onChange={v=>set("inputBorder",v)}/><CF label="Progress" value={t.progressBg} onChange={v=>set("progressBg",v)}/><div className="section-title">Textes</div><CF label="Primaire" value={t.textPrimary} onChange={v=>set("textPrimary",v)}/><CF label="Secondaire" value={t.textSecondary} onChange={v=>set("textSecondary",v)}/><CF label="Atténué" value={t.textMuted} onChange={v=>set("textMuted",v)}/></>);}
+function TabCouleurs({t,set}){return(<><div className="section-title">Principales</div><CF label="Accent" tooltip="Couleur star : titre header, boutons Ajouter, bordure Actions, compteur /3, titre Résumé, titre Outro, glow des votes" value={t.accent} onChange={v=>set("accent",v)}/><CF label="Accent foncé" tooltip="2e couleur du dégradé des boutons Ajouter, titre Actions en mode clair" value={t.accentDark} onChange={v=>set("accentDark",v)}/><CF label="Accent clair" tooltip="Fond des items d'action, fond des cartes de thème sélectionnées dans le picker" value={t.accentLight} onChange={v=>set("accentLight",v)}/><div className="section-title">Arrière-plans</div><CF label="Body" tooltip="Fond de toute la page, visible derrière les cartes" value={t.bodyBg} onChange={v=>set("bodyBg",v)}/><CF label="Cartes" tooltip="Fond des cartes : Vibe Check, colonnes feedbacks, carte ROTI, carte Actions, cercles de vote non sélectionnés" value={t.cardBg} onChange={v=>set("cardBg",v)}/><CF label="Bordures" tooltip="Bordure neutre du conteneur Vibe Check (bordure de structure)" value={t.cardBorder} onChange={v=>set("cardBorder",v)}/><CF label="Inputs" tooltip="Fond des champs de saisie : input feedback et inputs action/responsable" value={t.inputBg} onChange={v=>set("inputBg",v)}/><CF label="Inputs bord." tooltip="Bordure des inputs au repos (avant focus) et bordure des cercles emoji de vote non sélectionnés" value={t.inputBorder} onChange={v=>set("inputBorder",v)}/><CF label="Progress" tooltip="Fond de la barre de progression des résultats de vote (barre grise derrière la barre colorée)" value={t.progressBg} onChange={v=>set("progressBg",v)}/><div className="section-title">Textes</div><CF label="Primaire" tooltip="Texte principal : titres de section, texte des feedbacks, items de règles, texte des actions, couleur de frappe" value={t.textPrimary} onChange={v=>set("textPrimary",v)}/><CF label="Secondaire" tooltip="Texte d'importance moyenne : label « / 5 — Bien » sous les résultats, texte des règles en mode sombre" value={t.textSecondary} onChange={v=>set("textSecondary",v)}/><CF label="Atténué" tooltip="Texte discret : « Aucun retour », « Choisis ton emoji pour voter », compteur de votes, nombre de votants" value={t.textMuted} onChange={v=>set("textMuted",v)}/></>);}
 
 function TabHeader({t,set}){return(<><div className="section-title">Entrée (Header)</div><div className="section-desc">Le bandeau en haut de la rétro avec titre et image de fond.</div><TF label="Titre" value={t.appTitle} onChange={v=>set("appTitle",v)}/><TF label="Sous-titre" value={t.subtitle} onChange={v=>set("subtitle",v)}/><UF label="Image de fond" value={t.headerImage} onChange={v=>set("headerImage",v)}/><GradientBuilder label="Gradient overlay" description="Dégradé appliqué par-dessus l'image de fond du header." value={t.headerGradient} onChange={v=>set("headerGradient",v)}/></>);}
 
