@@ -20,6 +20,11 @@
     preview: "🎸🔇🎛️",
     dark: false,
 
+    // --- Images de l'app ---
+    appLogo: ASSETS + "/Batterie.png",
+    iconMeeting: ASSETS + "/reu.png",
+    iconStart: ASSETS + "/fusee.gif",
+
     // --- Couleurs globales ---
     bodyBg: "#F8EBDB",
     cardBg: "#FFFAF5",
@@ -121,6 +126,7 @@
       title: "🥊 1ère règle du GI Club 🥊",
       quote: "\"Il est interdit de parler du GI Club.\"",
       author: "- Tyler Durden, probablement...",
+      image: ASSETS + "/GIClub.png",
     },
     vibeTitle: "Vibe check",
     feedbackTitle: "🫳 Drop the mic",
