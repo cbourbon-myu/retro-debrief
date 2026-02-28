@@ -43,7 +43,7 @@
       high: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg3.gif",
       mid: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg2.gif",
       low: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg1.gif",
-      none: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg2.gif",
+      none: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/none.png",
     },
 
     // --- Login (écran de connexion) ---
