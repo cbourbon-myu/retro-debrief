@@ -371,15 +371,12 @@
 
       const deleteRetro = async () => {
         if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu. Tu reviendras à l'écran de configuration.")) return;
-        try {
-          if (db) {
-            const key = sprintDateKey;
-            await db.ref("retro-" + key).remove();
-            await db.ref("config/sprintDate").remove();
-            await db.ref("config/templateId").remove();
-          }
-          setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-        } catch(e) { if (e.message && !e.message.includes("PERMISSION_DENIED")) { console.error("deleteRetro error:", e); alert("Erreur : " + e.message); } }
+        const key = sprintDateKey;
+        if (!db || !key) return;
+        try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
+        try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("sprintDate:", e.message); }
+        try { await db.ref("config/templateId").set(null); } catch(e) { console.warn("templateId:", e.message); }
+        setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
       };
 
       const changeTemplate = async (newTplId) => {
