@@ -111,7 +111,7 @@
       high: { text: "Feedback dans les oreilles et sang sur les cordes : merci la meute, le son était crade et c'est pour ça qu'on s'aime. On revient foutre le feu dans 15 jours.", emoji: "🤘🏚️" },
       mid: { text: "Larsen en boucle, sueur au front et équipe au sommet : merci pour le chaos, on revient tout casser dans 15 jours.", emoji: "🤘🔥" },
       low: { text: "Le rideau tombe mais l'ampli siffle encore : merci à l'équipe, on sonne d'enfer ensemble et on remet le son dans 15 jours !", emoji: "🤘🎸" },
-      none: { text: "Larsen en boucle, sueur au front et équipe au sommet : merci pour le chaos, on revient tout casser dans 15 jours.", emoji: "🤘🔥" },
+      none: { text: "On accorde les guitares et on libère les chevaux... Préparez-vous, ça va secouer les fondations !", emoji: "💥⚡️" },
     },
 
     // --- Labels pour l'export Markdown/Confluence ---
