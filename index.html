@@ -374,14 +374,12 @@
         try {
           if (db) {
             const key = sprintDateKey;
-            const updates = {};
-            updates["retro-" + key] = null;
-            updates["config/sprintDate"] = null;
-            updates["config/templateId"] = null;
-            await db.ref().update(updates);
+            await db.ref("retro-" + key).remove();
+            await db.ref("config/sprintDate").remove();
+            await db.ref("config/templateId").remove();
           }
           setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-        } catch(e) { console.error("deleteRetro error:", e); alert("Erreur : " + e.message); }
+        } catch(e) { if (e.message && !e.message.includes("PERMISSION_DENIED")) { console.error("deleteRetro error:", e); alert("Erreur : " + e.message); } }
       };
 
       const changeTemplate = async (newTplId) => {
