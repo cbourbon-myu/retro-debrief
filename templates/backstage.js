@@ -33,17 +33,17 @@
 
     // --- Images & fonds ---
     headerGradient: "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
-    headerImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/backstage-debrief/main/assets/titre.jpg")',
-    rulesImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/backstage-debrief/main/assets/neon.jpg")',
-    summaryImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/backstage-debrief/main/assets/concert.jpg")',
+    headerImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/titre.jpg")',
+    rulesImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/neon.jpg")',
+    summaryImage: 'url("https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/concert.jpg")',
     summaryOverlay: "linear-gradient(135deg, rgba(28,10,10,0.88) 0%, rgba(50,14,14,0.92) 50%, rgba(28,10,10,0.88) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(255,246,238,0.7) 60%, rgba(255,246,238,0.2) 80%, transparent 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, #FFF6EE 0%, #FFF6EE 50%, rgba(255,246,238,0.7) 70%, rgba(255,246,238,0.3) 100%)",
     outroGifs: {
-      high: "https://raw.githubusercontent.com/cbourbon-myu/backstage-debrief/main/assets/msg3.gif",
-      mid: "https://raw.githubusercontent.com/cbourbon-myu/backstage-debrief/main/assets/msg2.gif",
-      low: "https://raw.githubusercontent.com/cbourbon-myu/backstage-debrief/main/assets/msg1.gif",
-      none: "https://raw.githubusercontent.com/cbourbon-myu/backstage-debrief/main/assets/msg2.gif",
+      high: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg3.gif",
+      mid: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg2.gif",
+      low: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg1.gif",
+      none: "https://raw.githubusercontent.com/cbourbon-myu/retro-debrief/main/assets/msg2.gif",
     },
 
     // --- Login (écran de connexion) ---
