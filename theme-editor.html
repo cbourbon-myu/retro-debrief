@@ -304,7 +304,7 @@ function CF({label,value,onChange,tooltip}) {
     <div className="field"><label style={{display:"flex",alignItems:"center",gap:4}}>
       {label}
       {tooltip && <span onMouseEnter={()=>setShowTip(true)} onMouseLeave={()=>setShowTip(false)} style={{position:"relative",cursor:"help",fontSize:12,color:"#555",lineHeight:1}}>ⓘ
-        {showTip && <span style={{position:"absolute",bottom:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",background:"#222",color:"#ccc",fontSize:10,padding:"6px 10px",borderRadius:6,whiteSpace:"normal",width:220,lineHeight:1.4,boxShadow:"0 4px 16px rgba(0,0,0,0.4)",border:"1px solid #333",zIndex:100,fontWeight:400,pointerEvents:"none"}}>{tooltip}</span>}
+        {showTip && <span style={{position:"absolute",top:"50%",left:"calc(100% + 8px)",transform:"translateY(-50%)",background:"#E8E8E8",color:"#1A1A1A",fontSize:11,padding:"8px 12px",borderRadius:8,whiteSpace:"normal",width:240,lineHeight:1.5,boxShadow:"0 4px 16px rgba(0,0,0,0.25)",border:"1px solid #ccc",zIndex:100,fontWeight:400,pointerEvents:"none"}}>{tooltip}</span>}
       </span>}
     </label>
       <div className="color-field">
