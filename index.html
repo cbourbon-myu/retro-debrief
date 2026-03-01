@@ -432,6 +432,8 @@
       const IMG_LOGO = T.appLogo || "assets/backstage/Batterie.png";
       const IMG_MEETING = T.iconMeeting || "assets/backstage/reu.png";
       const IMG_START = T.iconStart || "assets/backstage/fusee.gif";
+      // Helper: garantit le format CSS url("...") pour les backgroundImage
+      const bg = s => s && s !== "none" ? (s.startsWith("url(") || s.startsWith("data:") ? (s.startsWith("data:") ? `url("${s}")` : s) : `url("${s}")`) : null;
 
       // ╔══════════════════════════════════════════════════════╗
       // ║                      RENDER                          ║
@@ -441,7 +443,7 @@
 
           {/* ==================== HEADER ==================== */}
           <div style={{ position: "relative", zIndex: 10, padding: isMobile ? "16px 12px" : "32px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: isMobile ? 8 : 12, minHeight: isMobile ? 80 : 110 }}>
-            {T.headerImage !== "none" && <div style={{ position: "absolute", inset: 0, overflow: "hidden", backgroundImage: T.headerImage, backgroundSize: "cover", backgroundPosition: "85% 85%", opacity: 0.45 }} />}
+            {bg(T.headerImage) && <div style={{ position: "absolute", inset: 0, overflow: "hidden", backgroundImage: bg(T.headerImage), backgroundSize: "cover", backgroundPosition: "85% 85%", opacity: 0.45 }} />}
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.headerGradient }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: isMobile ? 17 : 34, fontWeight: 800, color: T.accent, letterSpacing: isMobile ? 1 : 2.5, display: "flex", alignItems: "center" }}>
@@ -525,7 +527,7 @@
 
             {/* ==================== RÈGLES ==================== */}
             <div style={{ borderRadius: 16, padding: 0, marginBottom: 20, position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
-              {T.rulesImage !== "none" && <div style={{ position: "absolute", inset: 0, backgroundImage: T.rulesImage, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5, borderRadius: 16 }} />}
+              {bg(T.rulesImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.rulesImage), backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5, borderRadius: 16 }} />}
               <div style={{ position: "absolute", inset: 0, background: isMobile ? T.rulesOverlayMobile : T.rulesOverlayDesktop, borderRadius: 16 }} />
               <div style={{ flex: 1, padding: isMobile ? "16px 16px 20px" : "0px 28px", zIndex: 1, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
                 <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: T.rulesColor, marginBottom: 6, display: "flex", alignItems: "center", gap: 8, position: "relative" }}>
@@ -534,7 +536,7 @@
                     {T.rulesName}
                     {showPitTooltip && <div style={{ position: "absolute", bottom: isMobile ? "auto" : "calc(100% + 14px)", top: isMobile ? "calc(100% + 10px)" : "auto", left: isMobile ? "-30px" : "-140px", minWidth: isMobile ? 300 : 480, padding: 0, zIndex: 200, animation: "tooltipFadeIn 0.3s ease", borderRadius: 12, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}>
                       <div style={{ background: "linear-gradient(135deg, #1a0a0a 0%, #2d1010 40%, #1a0505 100%)", padding: isMobile ? "18px 16px" : "24px 30px 44px 30px", position: "relative", overflow: "hidden" }}>
-                        <div style={{ position: "absolute", inset: 0, backgroundImage: T.tooltip.image ? `url('${T.tooltip.image}')` : "url('assets/backstage/GIClub.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
+                        <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.tooltip?.image) || "url('assets/backstage/GIClub.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
                         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "linear-gradient(90deg, transparent, #DC2626, #B91C1C, transparent)" }} />
                         <div style={{ position: "relative", zIndex: 1 }}>
                           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, textTransform: "uppercase", color: "#DC2626", marginBottom: 20, textAlign: "center" }}>{T.tooltip.title}</div>
@@ -681,7 +683,7 @@
               const hasContent = pinnedFeedbacks.length > 0 || actions.length > 0 || avgAmbiance || avgSatisfaction || avgRoti;
               return (
                 <div style={{ borderRadius: 16, padding: 0, marginBottom: 24, position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
-                  {T.summaryImage !== "none" && <div style={{ position: "absolute", inset: 0, backgroundImage: T.summaryImage, backgroundSize: "cover", backgroundPosition: "center top", opacity: 0.45 }} />}
+                  {bg(T.summaryImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.summaryImage), backgroundSize: "cover", backgroundPosition: "center top", opacity: 0.45 }} />}
                   <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
                   <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "24px 16px" : "32px 28px" }}>
                     <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 20, textAlign: "center" }}>{T.summaryTitle}</div>
