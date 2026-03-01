@@ -11,6 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -107,6 +108,17 @@
   .reorder-label { flex: 1; font-size: 13px; font-weight: 600; color: #ccc; }
   .reorder-lock { font-size: 11px; color: #555; }
 
+  /* Image upload field */
+  .uf-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .uf-row { display: flex; gap: 6px; align-items: center; }
+  .uf-row input[type="text"] { flex: 1; }
+  .uf-preview { width: 40px; height: 40px; border-radius: 6px; border: 1px solid #333; object-fit: cover; flex-shrink: 0; cursor: pointer; background: #111; }
+  .uf-btn { padding: 4px 8px; border-radius: 6px; border: 1px solid #333; background: #1A1A1A; color: #ccc; cursor: pointer; font-size: 11px; font-family: inherit; white-space: nowrap; transition: border-color 0.2s, background 0.2s; }
+  .uf-btn:hover { border-color: #F97316; background: #261A0F; color: #F97316; }
+  .uf-btn.danger:hover { border-color: #EF4444; background: #1F0A0A; color: #EF4444; }
+  .uf-progress { height: 3px; border-radius: 2px; background: #222; overflow: hidden; }
+  .uf-progress-bar { height: 100%; background: #F97316; transition: width 0.2s; }
+
   /* Collapsible sections */
   .collapse-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 4px 0; margin: 16px 0 0; user-select: none; transition: opacity 0.15s; }
   .collapse-header:first-child { margin-top: 0; }
@@ -124,8 +136,8 @@
 <script>
   var ADMIN_EMAILS = ["c.bourbon@myunisoft.fr", "m.gonzalez@myunisoft.fr"];
   var firebaseConfig = { apiKey: "AIzaSyBPH2KoTL5kYXT5c7obYidciDuElmr2C7Y", authDomain: "backstage-debrief.firebaseapp.com", databaseURL: "https://backstage-debrief-default-rtdb.europe-west1.firebasedatabase.app", projectId: "backstage-debrief", storageBucket: "backstage-debrief.firebasestorage.app", messagingSenderId: "313402258283", appId: "1:313402258283:web:5f6ce5828effa0a519d22e" };
-  var db = null, auth = null;
-  try { firebase.initializeApp(firebaseConfig); db = firebase.database(); auth = firebase.auth(); } catch(e) { console.warn("Firebase:", e); }
+  var db = null, auth = null, storage = null;
+  try { firebase.initializeApp(firebaseConfig); db = firebase.database(); auth = firebase.auth(); storage = firebase.storage(); } catch(e) { console.warn("Firebase:", e); }
   window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
 </script>
 <script src="templates/backstage.js"></script>
@@ -325,7 +337,69 @@ function CF({label,value,onChange,tooltip}) {
   );
 }
 function TF({label,value,onChange,placeholder,multiline}){return(<div className="field"><label>{label}</label>{multiline?<textarea value={value||""} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>:<input type="text" value={value||""} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>}</div>);}
-function UF({label,value,onChange}){return(<div className="field"><label>{label}</label><input type="url" value={value||""} onChange={e=>onChange(e.target.value)} placeholder="https://... ou 'none'"/></div>);}
+// Context pour passer l'ID du thème aux composants ImageField
+const TemplateIdContext = React.createContext("custom-theme");
+
+// Composant image avec upload Firebase Storage + preview + delete
+function ImageField({label,value,onChange,cssUrl}){
+  const templateId = React.useContext(TemplateIdContext);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const fileRef = React.useRef(null);
+
+  // Extraire l'URL brute si format css url("...")
+  const rawUrl = React.useMemo(() => {
+    if(!value) return "";
+    if(cssUrl){const m=value.match(/url\(["']?([^"')]+)["']?\)/);return m?m[1]:value;}
+    return value;
+  },[value,cssUrl]);
+
+  const handleFile = async(e) => {
+    const file = e.target.files?.[0];
+    if(!file || !storage) return;
+    setUploading(true); setProgress(0);
+    const ext = file.name.split(".").pop();
+    const name = Date.now()+"_"+file.name.replace(/[^a-zA-Z0-9._-]/g,"");
+    const path = "themes/"+templateId+"/"+name;
+    const ref = storage.ref(path);
+    const task = ref.put(file);
+    task.on("state_changed",
+      (snap)=> setProgress(Math.round((snap.bytesTransferred/snap.totalBytes)*100)),
+      (err)=> { alert("Erreur upload: "+err.message); setUploading(false); },
+      async()=> {
+        const url = await ref.getDownloadURL();
+        onChange(cssUrl ? 'url("'+url+'")' : url);
+        setUploading(false); setProgress(0);
+      }
+    );
+    e.target.value = "";
+  };
+
+  const handleDelete = async() => {
+    if(!rawUrl) return;
+    // Supprimer du Storage si c'est une URL Firebase
+    if(rawUrl.includes("firebasestorage.googleapis.com") || rawUrl.includes("firebasestorage.app")){
+      try{const ref=storage.refFromURL(rawUrl);await ref.delete();}catch(e){console.warn("Delete:",e);}
+    }
+    onChange(cssUrl ? "none" : "");
+  };
+
+  return(
+    <div className="field">
+      <label>{label}</label>
+      <div className="uf-wrap">
+        <div className="uf-row">
+          {rawUrl && rawUrl!=="none" && <img className="uf-preview" src={rawUrl} onError={e=>e.target.style.display="none"} alt=""/>}
+          <input type="text" value={value||""} onChange={e=>onChange(e.target.value)} placeholder={cssUrl ? 'url("...") ou none' : "https://... ou vide"}/>
+          <button className="uf-btn" onClick={()=>fileRef.current?.click()} title="Importer depuis le PC">📁</button>
+          {rawUrl && rawUrl!=="none" && <button className="uf-btn danger" onClick={handleDelete} title="Supprimer l'image">🗑️</button>}
+        </div>
+        {uploading && <div className="uf-progress"><div className="uf-progress-bar" style={{width:progress+"%"}}/></div>}
+        <input ref={fileRef} type="file" accept="image/*,.gif" style={{display:"none"}} onChange={handleFile}/>
+      </div>
+    </div>
+  );
+}
 
 function Collapsible({title, defaultOpen, children}) {
   const [open, setOpen] = useState(defaultOpen !== false);
@@ -486,25 +560,25 @@ function SectionReorder({ order, onChange }) {
 // ============================
 // TABS (Ordre calqué sur backstage.js)
 // ============================
-function TabIdentite({t,set}){return(<><Collapsible title="Identité"><TF label="ID unique" value={t.id} onChange={v=>set("id",v.toLowerCase().replace(/[^a-z0-9-]/g,""))}/><TF label="Nom" value={t.name} onChange={v=>set("name",v)}/><TF label="Description" value={t.desc} onChange={v=>set("desc",v)}/><TF label="Emojis aperçu" value={t.preview} onChange={v=>set("preview",v)}/><div className="toggle-row"><span className="toggle-label">Adapter au mode sombre</span><button className={`toggle ${t.dark?"on":"off"}`} onClick={()=>set("dark",!t.dark)}/></div></Collapsible><Collapsible title="Images de l'app" defaultOpen={false}><div className="section-desc">Logo et icônes affichés dans le header et les boutons. Laisser vide pour garder les images par défaut.</div><UF label="Logo / Mascotte" value={t.appLogo} onChange={v=>set("appLogo",v)}/><UF label="Icône réunion" value={t.iconMeeting} onChange={v=>set("iconMeeting",v)}/><UF label="Icône démarrer" value={t.iconStart} onChange={v=>set("iconStart",v)}/></Collapsible></>);}
+function TabIdentite({t,set}){return(<><Collapsible title="Identité"><TF label="ID unique" value={t.id} onChange={v=>set("id",v.toLowerCase().replace(/[^a-z0-9-]/g,""))}/><TF label="Nom" value={t.name} onChange={v=>set("name",v)}/><TF label="Description" value={t.desc} onChange={v=>set("desc",v)}/><TF label="Emojis aperçu" value={t.preview} onChange={v=>set("preview",v)}/><div className="toggle-row"><span className="toggle-label">Adapter au mode sombre</span><button className={`toggle ${t.dark?"on":"off"}`} onClick={()=>set("dark",!t.dark)}/></div></Collapsible><Collapsible title="Images de l'app" defaultOpen={false}><div className="section-desc">Logo et icônes affichés dans le header et les boutons. Laisser vide pour garder les images par défaut.</div><ImageField label="Logo / Mascotte" value={t.appLogo} onChange={v=>set("appLogo",v)}/><ImageField label="Icône réunion" value={t.iconMeeting} onChange={v=>set("iconMeeting",v)}/><ImageField label="Icône démarrer" value={t.iconStart} onChange={v=>set("iconStart",v)}/></Collapsible></>);}
 
 function TabCouleurs({t,set}){return(<><Collapsible title="Principales"><CF label="Accent" tooltip="Couleur star : titre header, boutons Ajouter, bordure Actions, compteur /3, titre Résumé, titre Outro, glow des votes" value={t.accent} onChange={v=>set("accent",v)}/><CF label="Accent foncé" tooltip="2e couleur du dégradé des boutons Ajouter, titre Actions en mode clair" value={t.accentDark} onChange={v=>set("accentDark",v)}/><CF label="Accent clair" tooltip="Fond des items d'action, fond des cartes de thème sélectionnées dans le picker" value={t.accentLight} onChange={v=>set("accentLight",v)}/></Collapsible><Collapsible title="Arrière-plans"><CF label="Body" tooltip="Fond de toute la page, visible derrière les cartes" value={t.bodyBg} onChange={v=>set("bodyBg",v)}/><CF label="Cartes" tooltip="Fond des cartes : Ressenti, colonnes feedbacks, carte ROTI, carte Actions, cercles de vote non sélectionnés" value={t.cardBg} onChange={v=>set("cardBg",v)}/><CF label="Bordures" tooltip="Bordure neutre du conteneur Ressenti (bordure de structure)" value={t.cardBorder} onChange={v=>set("cardBorder",v)}/><CF label="Inputs" tooltip="Fond des champs de saisie : input feedback et inputs action/responsable" value={t.inputBg} onChange={v=>set("inputBg",v)}/><CF label="Inputs bord." tooltip="Bordure des inputs au repos (avant focus) et bordure des cercles emoji de vote non sélectionnés" value={t.inputBorder} onChange={v=>set("inputBorder",v)}/><CF label="Progress" tooltip="Fond de la barre de progression des résultats de vote (barre grise derrière la barre colorée)" value={t.progressBg} onChange={v=>set("progressBg",v)}/></Collapsible><Collapsible title="Textes"><CF label="Primaire" tooltip="Texte principal : titres de section, texte des feedbacks, items de règles, texte des actions, couleur de frappe" value={t.textPrimary} onChange={v=>set("textPrimary",v)}/><CF label="Secondaire" tooltip="Texte d'importance moyenne : label « / 5 — Bien » sous les résultats, texte des règles en mode sombre" value={t.textSecondary} onChange={v=>set("textSecondary",v)}/><CF label="Atténué" tooltip="Texte discret : « Aucun retour », « Choisis ton emoji pour voter », compteur de votes, nombre de votants" value={t.textMuted} onChange={v=>set("textMuted",v)}/></Collapsible></>);}
 
-function TabHeader({t,set}){return(<><Collapsible title="Entrée (Header)"><div className="section-desc">Le bandeau en haut de la rétro avec titre et image de fond.</div><TF label="Titre" value={t.appTitle} onChange={v=>set("appTitle",v)}/><TF label="Sous-titre" value={t.subtitle} onChange={v=>set("subtitle",v)}/><UF label="Image de fond" value={t.headerImage} onChange={v=>set("headerImage",v)}/><GradientBuilder label="Gradient overlay" description="Dégradé appliqué par-dessus l'image de fond du header." value={t.headerGradient} onChange={v=>set("headerGradient",v)}/></Collapsible></>);}
+function TabHeader({t,set}){return(<><Collapsible title="Entrée (Header)"><div className="section-desc">Le bandeau en haut de la rétro avec titre et image de fond.</div><TF label="Titre" value={t.appTitle} onChange={v=>set("appTitle",v)}/><TF label="Sous-titre" value={t.subtitle} onChange={v=>set("subtitle",v)}/><ImageField label="Image de fond" cssUrl value={t.headerImage} onChange={v=>set("headerImage",v)}/><GradientBuilder label="Gradient overlay" description="Dégradé appliqué par-dessus l'image de fond du header." value={t.headerGradient} onChange={v=>set("headerGradient",v)}/></Collapsible></>);}
 
-function TabRegles({t,set}){const sT=(k,v)=>set("tooltip",{...t.tooltip,[k]:v});const uR=(i,v)=>{const a=[...t.rulesItems];a[i]=v;set("rulesItems",a);};return(<><Collapsible title="Apparence des règles"><div className="section-desc">Style visuel du bloc règles affiché sous le header.</div><div className="field-row"><TF label="Emoji" value={t.rulesTitle} onChange={v=>set("rulesTitle",v)}/><TF label="Nom" value={t.rulesName} onChange={v=>set("rulesName",v)}/></div><CF label="Couleur titre" value={t.rulesColor} onChange={v=>set("rulesColor",v)}/><CF label="Puces" value={t.rulesDotColor} onChange={v=>set("rulesDotColor",v)}/><UF label="Image de fond" value={t.rulesImage} onChange={v=>set("rulesImage",v)}/><GradientBuilder label="Overlay mobile" description="Dégradé appliqué sur l'image de fond en version mobile (typiquement de haut en bas)." value={t.rulesOverlayMobile} onChange={v=>set("rulesOverlayMobile",v)}/><GradientBuilder label="Overlay desktop" description="Dégradé appliqué sur l'image de fond en version desktop (typiquement de gauche à droite)." value={t.rulesOverlayDesktop} onChange={v=>set("rulesOverlayDesktop",v)}/></Collapsible><Collapsible title={`Liste des règles (${t.rulesItems.length})`}><div className="section-desc">Les textes affichés comme règles de la rétro.</div>{t.rulesItems.map((r,i)=>(<div key={i} style={{display:"flex",gap:6,marginBottom:6}}><input type="text" value={r} onChange={e=>uR(i,e.target.value)} style={{flex:1,padding:"6px 10px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:12,fontFamily:"inherit"}}/><button className="btn-remove" onClick={()=>set("rulesItems",t.rulesItems.filter((_,j)=>j!==i))}>✕</button></div>))}<button className="btn-add" onClick={()=>set("rulesItems",[...t.rulesItems,"Nouvelle règle"])}>+ Ajouter</button></Collapsible><Collapsible title="Tooltip des règles" defaultOpen={false}><div className="section-desc">Bulle affichée au survol du titre des règles.</div><TF label="Titre" value={t.tooltip.title} onChange={v=>sT("title",v)}/><TF label="Citation" value={t.tooltip.quote} onChange={v=>sT("quote",v)} multiline/><TF label="Auteur" value={t.tooltip.author} onChange={v=>sT("author",v)}/><UF label="Image du tooltip" value={t.tooltip.image} onChange={v=>sT("image",v)}/></Collapsible></>);}
+function TabRegles({t,set}){const sT=(k,v)=>set("tooltip",{...t.tooltip,[k]:v});const uR=(i,v)=>{const a=[...t.rulesItems];a[i]=v;set("rulesItems",a);};return(<><Collapsible title="Apparence des règles"><div className="section-desc">Style visuel du bloc règles affiché sous le header.</div><div className="field-row"><TF label="Emoji" value={t.rulesTitle} onChange={v=>set("rulesTitle",v)}/><TF label="Nom" value={t.rulesName} onChange={v=>set("rulesName",v)}/></div><CF label="Couleur titre" value={t.rulesColor} onChange={v=>set("rulesColor",v)}/><CF label="Puces" value={t.rulesDotColor} onChange={v=>set("rulesDotColor",v)}/><ImageField label="Image de fond" cssUrl value={t.rulesImage} onChange={v=>set("rulesImage",v)}/><GradientBuilder label="Overlay mobile" description="Dégradé appliqué sur l'image de fond en version mobile (typiquement de haut en bas)." value={t.rulesOverlayMobile} onChange={v=>set("rulesOverlayMobile",v)}/><GradientBuilder label="Overlay desktop" description="Dégradé appliqué sur l'image de fond en version desktop (typiquement de gauche à droite)." value={t.rulesOverlayDesktop} onChange={v=>set("rulesOverlayDesktop",v)}/></Collapsible><Collapsible title={`Liste des règles (${t.rulesItems.length})`}><div className="section-desc">Les textes affichés comme règles de la rétro.</div>{t.rulesItems.map((r,i)=>(<div key={i} style={{display:"flex",gap:6,marginBottom:6}}><input type="text" value={r} onChange={e=>uR(i,e.target.value)} style={{flex:1,padding:"6px 10px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:12,fontFamily:"inherit"}}/><button className="btn-remove" onClick={()=>set("rulesItems",t.rulesItems.filter((_,j)=>j!==i))}>✕</button></div>))}<button className="btn-add" onClick={()=>set("rulesItems",[...t.rulesItems,"Nouvelle règle"])}>+ Ajouter</button></Collapsible><Collapsible title="Tooltip des règles" defaultOpen={false}><div className="section-desc">Bulle affichée au survol du titre des règles.</div><TF label="Titre" value={t.tooltip.title} onChange={v=>sT("title",v)}/><TF label="Citation" value={t.tooltip.quote} onChange={v=>sT("quote",v)} multiline/><TF label="Auteur" value={t.tooltip.author} onChange={v=>sT("author",v)}/><ImageField label="Image du tooltip" value={t.tooltip.image} onChange={v=>sT("image",v)}/></Collapsible></>);}
 
-function TabVibeCheck({t,set}){const uV=(i,k,v)=>{const vs=[...t.vibeChecks];vs[i]={...vs[i],[k]:v};set("vibeChecks",vs);};return(<><Collapsible title="Ressenti"><div className="section-desc">Les votes d'ambiance et satisfaction (avant les feedbacks).</div><TF label="Titre section" value={t.vibeTitle} onChange={v=>set("vibeTitle",v)}/>{t.vibeChecks.map((vc,i)=>(<div key={i} className="array-item"><div className="array-item-title" style={{marginBottom:8}}>🎤 {vc.label || vc.id}</div><TF label="Label" value={vc.label} onChange={v=>uV(i,"label",v)}/><div className="field-row"><CF label="Couleur texte" value={vc.color} onChange={v=>uV(i,"color",v)}/><CF label="Fond sélection" value={vc.bg} onChange={v=>uV(i,"bg",v)}/></div><CF label="Bordure" value={vc.border} onChange={v=>uV(i,"border",v)}/><UF label="Image" value={vc.image} onChange={v=>uV(i,"image",v)}/></div>))}</Collapsible><Collapsible title="Labels de vote (1-5)" defaultOpen={false}><div className="section-desc">Emojis et textes pour chaque note de 1 à 5.</div>{[1,2,3,4,5].map(n=>(<div key={n} className="emoji-grid"><span className="num">{n}</span><input type="text" value={t.ratingLabels[n]?.emoji||""} onChange={e=>set("ratingLabels",{...t.ratingLabels,[n]:{...t.ratingLabels[n],emoji:e.target.value}})} style={{padding:"6px 8px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:14,fontFamily:"inherit",textAlign:"center"}}/><input type="text" value={t.ratingLabels[n]?.label||""} onChange={e=>set("ratingLabels",{...t.ratingLabels,[n]:{...t.ratingLabels[n],label:e.target.value}})} style={{padding:"6px 8px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:12,fontFamily:"inherit"}}/></div>))}</Collapsible></>);}
+function TabVibeCheck({t,set}){const uV=(i,k,v)=>{const vs=[...t.vibeChecks];vs[i]={...vs[i],[k]:v};set("vibeChecks",vs);};return(<><Collapsible title="Ressenti"><div className="section-desc">Les votes d'ambiance et satisfaction (avant les feedbacks).</div><TF label="Titre section" value={t.vibeTitle} onChange={v=>set("vibeTitle",v)}/>{t.vibeChecks.map((vc,i)=>(<div key={i} className="array-item"><div className="array-item-title" style={{marginBottom:8}}>🎤 {vc.label || vc.id}</div><TF label="Label" value={vc.label} onChange={v=>uV(i,"label",v)}/><div className="field-row"><CF label="Couleur texte" value={vc.color} onChange={v=>uV(i,"color",v)}/><CF label="Fond sélection" value={vc.bg} onChange={v=>uV(i,"bg",v)}/></div><CF label="Bordure" value={vc.border} onChange={v=>uV(i,"border",v)}/><ImageField label="Image" value={vc.image} onChange={v=>uV(i,"image",v)}/></div>))}</Collapsible><Collapsible title="Labels de vote (1-5)" defaultOpen={false}><div className="section-desc">Emojis et textes pour chaque note de 1 à 5.</div>{[1,2,3,4,5].map(n=>(<div key={n} className="emoji-grid"><span className="num">{n}</span><input type="text" value={t.ratingLabels[n]?.emoji||""} onChange={e=>set("ratingLabels",{...t.ratingLabels,[n]:{...t.ratingLabels[n],emoji:e.target.value}})} style={{padding:"6px 8px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:14,fontFamily:"inherit",textAlign:"center"}}/><input type="text" value={t.ratingLabels[n]?.label||""} onChange={e=>set("ratingLabels",{...t.ratingLabels,[n]:{...t.ratingLabels[n],label:e.target.value}})} style={{padding:"6px 8px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:12,fontFamily:"inherit"}}/></div>))}</Collapsible></>);}
 
 function TabColonnes({t,set}){const uC=(i,k,v)=>{const c=[...t.categories];c[i]={...c[i],[k]:v};set("categories",c);};const uCol=(id,k,v)=>set("columns",{...t.columns,[id]:{...t.columns[id],[k]:v}});return(<><Collapsible title={`Colonnes Feedbacks (${t.categories.length})`}><div className="section-desc">Les colonnes où les participants déposent leurs retours.</div><TF label="Titre feedbacks" value={t.feedbackTitle} onChange={v=>set("feedbackTitle",v)}/>{t.categories.map((cat,i)=>(<div key={i} className="array-item"><div className="array-item-header"><span className="array-item-title">{t.columns[cat.id]?.title || cat.id}</span>{t.categories.length>2&&<button className="btn-remove" onClick={()=>{const c={...t.columns};delete c[cat.id];set("categories",t.categories.filter((_,j)=>j!==i));set("columns",c);}}>✕</button>}</div><div className="field-row"><TF label="ID" value={cat.id} onChange={v=>{const old=cat.id;const c={...t.columns};c[v]=c[old];delete c[old];uC(i,"id",v);set("columns",c);}}/><TF label="Label bouton" value={cat.label} onChange={v=>uC(i,"label",v)}/></div><TF label="Titre colonne" value={t.columns[cat.id]?.title||""} onChange={v=>uCol(cat.id,"title",v)}/><div className="field-row"><CF label="Couleur" value={t.columns[cat.id]?.color} onChange={v=>uCol(cat.id,"color",v)}/><CF label="Bordure" value={t.columns[cat.id]?.border} onChange={v=>uCol(cat.id,"border",v)}/></div></div>))}{t.categories.length<5&&<button className="btn-add" onClick={()=>{const id="cat"+(t.categories.length+1);set("categories",[...t.categories,{id,label:"Nouveau"}]);set("columns",{...t.columns,[id]:{title:"🆕 Nouveau",color:"#6B7280",border:"#E5E7EB"}});}}>+ Ajouter</button>}</Collapsible></>);}
 
-function TabRoti({t,set}){return(<><Collapsible title="ROTI"><div className="section-desc">Le vote ROTI (Return On Time Invested), affiché à côté des actions.</div><div className="array-item"><TF label="Label" value={t.roti.label} onChange={v=>set("roti",{...t.roti,label:v})}/><div className="field-row"><CF label="Couleur texte" value={t.roti.color} onChange={v=>set("roti",{...t.roti,color:v})}/><CF label="Fond sélection" value={t.roti.bg} onChange={v=>set("roti",{...t.roti,bg:v})}/></div><CF label="Bordure" value={t.roti.border} onChange={v=>set("roti",{...t.roti,border:v})}/><UF label="Image" value={t.roti.image} onChange={v=>set("roti",{...t.roti,image:v})}/></div><TF label="Titre section (affiché au-dessus)" value={t.afterTitle} onChange={v=>set("afterTitle",v)}/></Collapsible></>);}
+function TabRoti({t,set}){return(<><Collapsible title="ROTI"><div className="section-desc">Le vote ROTI (Return On Time Invested), affiché à côté des actions.</div><div className="array-item"><TF label="Label" value={t.roti.label} onChange={v=>set("roti",{...t.roti,label:v})}/><div className="field-row"><CF label="Couleur texte" value={t.roti.color} onChange={v=>set("roti",{...t.roti,color:v})}/><CF label="Fond sélection" value={t.roti.bg} onChange={v=>set("roti",{...t.roti,bg:v})}/></div><CF label="Bordure" value={t.roti.border} onChange={v=>set("roti",{...t.roti,border:v})}/><ImageField label="Image" value={t.roti.image} onChange={v=>set("roti",{...t.roti,image:v})}/></div><TF label="Titre section (affiché au-dessus)" value={t.afterTitle} onChange={v=>set("afterTitle",v)}/></Collapsible></>);}
 
 function TabActions({t,set}){return(<><Collapsible title="Actions"><div className="section-desc">Les actions décidées en rétro (affiché à côté du ROTI).</div><TF label="Titre actions" value={t.actionTitle} onChange={v=>set("actionTitle",v)}/><TF label="Citation" value={t.actionQuote} onChange={v=>set("actionQuote",v)} multiline/></Collapsible></>);}
 
-function TabResume({t,set}){return(<><Collapsible title="Résumé"><div className="section-desc">La section récapitulative avec moyennes, retours épinglés et actions.</div><TF label="Titre" value={t.summaryTitle} onChange={v=>set("summaryTitle",v)}/><UF label="Image de fond" value={t.summaryImage} onChange={v=>set("summaryImage",v)}/><GradientBuilder label="Overlay résumé" description="Dégradé sombre par-dessus l'image de fond du résumé." value={t.summaryOverlay} onChange={v=>set("summaryOverlay",v)}/><TF label="Hint épingles" value={t.summaryPinHint} onChange={v=>set("summaryPinHint",v)}/></Collapsible></>);}
+function TabResume({t,set}){return(<><Collapsible title="Résumé"><div className="section-desc">La section récapitulative avec moyennes, retours épinglés et actions.</div><TF label="Titre" value={t.summaryTitle} onChange={v=>set("summaryTitle",v)}/><ImageField label="Image de fond" cssUrl value={t.summaryImage} onChange={v=>set("summaryImage",v)}/><GradientBuilder label="Overlay résumé" description="Dégradé sombre par-dessus l'image de fond du résumé." value={t.summaryOverlay} onChange={v=>set("summaryOverlay",v)}/><TF label="Hint épingles" value={t.summaryPinHint} onChange={v=>set("summaryPinHint",v)}/></Collapsible></>);}
 
-function TabOutro({t,set}){const sO=(k,f,v)=>set("outro",{...t.outro,[k]:{...t.outro[k],[f]:v}});const sG=(k,v)=>set("outroGifs",{...t.outroGifs,[k]:v});const keys=[{key:"none",label:"⏳ En attente",color:"#6B7280"},{key:"low",label:"😬 Basse",color:"#EF4444"},{key:"mid",label:"👍 Moyenne",color:"#F59E0B"},{key:"high",label:"🎉 Haute",color:"#10B981"}];return(<><Collapsible title="Mot de la Fin"><div className="section-desc">Messages de clôture affichés selon la moyenne globale.</div><TF label="Titre" value={t.outroTitle} onChange={v=>set("outroTitle",v)}/></Collapsible>{keys.map(({key,label,color})=>(<Collapsible key={key} title={label} defaultOpen={false}><div className="outro-block"><div className="field-row"><div className="field" style={{maxWidth:60}}><label>Emoji</label><input type="text" value={t.outro[key]?.emoji||""} onChange={e=>sO(key,"emoji",e.target.value)} style={{textAlign:"center",fontSize:18,padding:"4px",width:"100%",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontFamily:"inherit"}}/></div><TF label="Message" value={t.outro[key]?.text||""} onChange={v=>sO(key,"text",v)} multiline/></div><UF label={"GIF ("+key+")"} value={t.outroGifs?.[key]} onChange={v=>sG(key,v)}/></div></Collapsible>))}</>);}
+function TabOutro({t,set}){const sO=(k,f,v)=>set("outro",{...t.outro,[k]:{...t.outro[k],[f]:v}});const sG=(k,v)=>set("outroGifs",{...t.outroGifs,[k]:v});const keys=[{key:"none",label:"⏳ En attente",color:"#6B7280"},{key:"low",label:"😬 Basse",color:"#EF4444"},{key:"mid",label:"👍 Moyenne",color:"#F59E0B"},{key:"high",label:"🎉 Haute",color:"#10B981"}];return(<><Collapsible title="Mot de la Fin"><div className="section-desc">Messages de clôture affichés selon la moyenne globale.</div><TF label="Titre" value={t.outroTitle} onChange={v=>set("outroTitle",v)}/></Collapsible>{keys.map(({key,label,color})=>(<Collapsible key={key} title={label} defaultOpen={false}><div className="outro-block"><div className="field-row"><div className="field" style={{maxWidth:60}}><label>Emoji</label><input type="text" value={t.outro[key]?.emoji||""} onChange={e=>sO(key,"emoji",e.target.value)} style={{textAlign:"center",fontSize:18,padding:"4px",width:"100%",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontFamily:"inherit"}}/></div><TF label="Message" value={t.outro[key]?.text||""} onChange={v=>sO(key,"text",v)} multiline/></div><ImageField label={"GIF ("+key+")"} value={t.outroGifs?.[key]} onChange={v=>sG(key,v)}/></div></Collapsible>))}</>);}
 
 function TabOrdre({t,set}){
   const order = t.sectionOrder || [...DEFAULT_SECTION_ORDER];
@@ -679,6 +753,7 @@ function App(){
         {customIds.length>0&&<optgroup label="Thèmes custom">{customIds.map(id=><option key={id} value={id}>✨ {id}</option>)}</optgroup>}
       </select></div>
     <div className="tabs">{tabs.map(tab=><button key={tab.id} className={`tab ${activeTab===tab.id?"active":""}`} onClick={()=>setActiveTab(tab.id)}>{tab.label}</button>)}</div>
+    <TemplateIdContext.Provider value={template.id}>
     <div className="section">
       {activeTab==="identite"&&<TabIdentite t={template} set={set}/>}
       {activeTab==="couleurs"&&<TabCouleurs t={template} set={set}/>}
@@ -693,6 +768,7 @@ function App(){
       {activeTab==="ordre"&&<TabOrdre t={template} set={set}/>}
       {activeTab==="markdown"&&<TabMarkdown t={template} set={set}/>}
     </div>
+    </TemplateIdContext.Provider>
     <div className="status-bar"><span><span className="status-dot" style={{background:saveStatus==="saved"?"#10B981":saveStatus==="saving"?"#F59E0B":saveStatus==="error"?"#EF4444":"#555"}}/>{saveStatus==="saving"?"Enregistrement...":saveStatus==="saved"?"Enregistré ✓":saveStatus==="error"?"Erreur":isExisting?"Thème existant":"Non enregistré"}</span><span style={{color:"#444"}}>ID: {template.id}</span></div>
     <div className="btn-bar"><button className="btn-secondary" onClick={exportJS} title="Télécharger .js">⬇️ .js</button>{isExisting&&<button className="btn-danger" onClick={deleteFromFirebase}>🗑️</button>}<button className="btn-primary" onClick={saveToFirebase} disabled={saveStatus==="saving"} style={{opacity:saveStatus==="saving"?0.6:1}}>{saveStatus==="saving"?"⏳...":isExisting?"💾 Mettre à jour":"🚀 Enregistrer dans l'app"}</button></div>
   </div><div className="preview-panel"><Preview t={template}/></div></div>);
