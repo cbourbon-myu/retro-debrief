@@ -43,10 +43,10 @@
     inputBg: "#1F2937",
     progressBg: "#1F2937",
 
-    headerGradient: "linear-gradient(135deg, rgba(5,5,20,0.5) 0%, rgba(10,15,40,0.25) 40%, rgba(20,10,50,0) 100%)",
-    summaryOverlay: "linear-gradient(135deg, rgba(5,5,20,0.5) 0%, rgba(10,15,40,0.25) 50%, rgba(5,5,20,0) 100%)",
-    rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.5) 0%, rgba(17,24,39,0.25) 40%, rgba(17,24,39,0) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
-    rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.5) 0%, rgba(17,24,39,0.25) 50%, rgba(17,24,39,0) 70%, rgba(17,24,39,0.5) 100%)",
+    headerGradient: "linear-gradient(135deg, rgba(5,5,20,0.92) 0%, rgba(10,15,40,0.88) 40%, rgba(20,10,50,0.7) 100%)",
+    summaryOverlay: "linear-gradient(135deg, rgba(5,5,20,0.92) 0%, rgba(10,15,40,0.88) 50%, rgba(5,5,20,0.7) 100%)",
+    rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 40%, rgba(17,24,39,0.8) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
+    rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 50%, rgba(17,24,39,0.8) 70%, rgba(17,24,39,0.5) 100%)",
 
     loginBg: "#0a0e1a",
     loginCardBg: "#111827",
