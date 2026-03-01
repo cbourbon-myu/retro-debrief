@@ -5,12 +5,30 @@
 (function () {
   window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
 
+  var ASSETS = "assets/retro80";
+
   window.RETRO_TEMPLATES["retro80"] = {
     id: "retro80",
     name: "📼 Années 80-2000",
     desc: "Nostalgie & néons",
     preview: "📼📟💾",
     dark: true,
+
+    sectionOrder: ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"],
+
+    // --- Emojis fallback ---
+    emojiLogo: "📼",
+    emojiMeeting: "📺",
+    emojiStart: "📡",
+
+    // --- Images ---
+    appLogo: null,
+    iconMeeting: null,
+    iconStart: null,
+    headerImage: 'url("' + ASSETS + '/titre.jpg")',
+    rulesImage: 'url("' + ASSETS + '/regles.jpg")',
+    summaryImage: 'url("' + ASSETS + '/resume.jpg")',
+    outroGifs: null,
 
     bodyBg: "#1a0a2e",
     cardBg: "#1e1035",
@@ -26,13 +44,9 @@
     progressBg: "#2a1045",
 
     headerGradient: "linear-gradient(135deg, rgba(26,10,46,0.92) 0%, rgba(45,10,30,0.88) 40%, rgba(60,20,80,0.7) 100%)",
-    headerImage: "none",
-    rulesImage: "none",
-    summaryImage: "none",
     summaryOverlay: "linear-gradient(135deg, rgba(26,10,46,0.95) 0%, rgba(30,16,53,0.92) 50%, rgba(26,10,46,0.95) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(30,16,53,0.97) 0%, rgba(30,16,53,0.95) 40%, rgba(30,16,53,0.8) 60%, rgba(30,16,53,0.5) 80%, rgba(30,16,53,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(30,16,53,0.97) 0%, rgba(30,16,53,0.95) 50%, rgba(30,16,53,0.8) 70%, rgba(30,16,53,0.5) 100%)",
-    outroGifs: null,
 
     loginBg: "#1a0a2e",
     loginCardBg: "#1e1035",
