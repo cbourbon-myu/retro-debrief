@@ -429,9 +429,12 @@
       const voteSize = isMobile ? 42 : 52;
       const voteFontSize = isMobile ? 22 : 26;
       const isDark = T.dark;
-      const IMG_LOGO = T.appLogo || "assets/backstage/Batterie.png";
-      const IMG_MEETING = T.iconMeeting || "assets/backstage/reu.png";
-      const IMG_START = T.iconStart || "assets/backstage/fusee.gif";
+      const IMG_LOGO = T.appLogo || null;
+      const IMG_MEETING = T.iconMeeting || null;
+      const IMG_START = T.iconStart || null;
+      const EMOJI_MEETING = T.emojiMeeting || "📋";
+      const EMOJI_START = T.emojiStart || "🚀";
+      const EMOJI_LOGO = T.emojiLogo || "🎯";
       // Helper: garantit le format CSS url("...") pour les backgroundImage
       const bg = s => s && s !== "none" ? (s.startsWith("url(") || s.startsWith("data:") ? (s.startsWith("data:") ? `url("${s}")` : s) : `url("${s}")`) : null;
 
@@ -447,7 +450,7 @@
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.headerGradient }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: isMobile ? 17 : 34, fontWeight: 800, color: T.accent, letterSpacing: isMobile ? 1 : 2.5, display: "flex", alignItems: "center" }}>
-                <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: "50%", objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} />
+                {IMG_LOGO ? <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: "50%", objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} /> : <span style={{ fontSize: isMobile ? 32 : 52, marginRight: isMobile ? 8 : 12 }}>{EMOJI_LOGO}</span>}
                 {T.appTitle}
               </div>
             </div>
@@ -461,7 +464,7 @@
               {/* Présence */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowPresence(!showPresence); setShowUserMenu(false); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.4)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} />
+                  {IMG_MEETING ? <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} /> : <span style={{ fontSize: 20 }}>{EMOJI_MEETING}</span>}
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{connectedUsers.length}</span>
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showPresence ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -474,7 +477,7 @@
               {/* Partager */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowIntegration(!showIntegration); setShowPresence(false); setShowUserMenu(false); }} className="no-print" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.55)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} />
+                  {IMG_START ? <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} /> : <span style={{ fontSize: 16 }}>{EMOJI_START}</span>}
                   {!isMobile && <span style={{ fontSize: 12, fontWeight: 500 }}>Partager</span>}
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showIntegration ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -528,7 +531,7 @@
             {/* ==================== SECTIONS DYNAMIQUES (basées sur T.sectionOrder) ==================== */}
             {(() => { const _order = T.sectionOrder || ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"]; const _rendered = new Set(); return _order.map(sectionId => { if (_rendered.has(sectionId)) return null; _rendered.add(sectionId);
 
-              {/* ---- RÈGLES ---- */}
+              // ---- RÈGLES ----
               if (sectionId === "regles") return (
               <div key="regles" style={{ borderRadius: 16, padding: 0, marginBottom: 20, position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
                 {bg(T.rulesImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.rulesImage), backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5, borderRadius: 16 }} />}
@@ -558,7 +561,7 @@
                 </div>
               </div>);
 
-              {/* ---- RESSENTI ---- */}
+              // ---- RESSENTI ----
               if (sectionId === "ressenti") return (
               <div key="ressenti" style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
@@ -586,7 +589,7 @@
                 </div>
               </div>);
 
-              {/* ---- 3 COLONNES RETOURS ---- */}
+              // ---- COLONNES RETOURS ----
               if (sectionId === "retours") return (
               <div key="retours" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
                 {T.categories.map(cat => { const col = T.columns[cat.id]; const items = getFeedbacksByCategory(cat.id); return (
@@ -611,7 +614,7 @@
                   </div>); })}
               </div>);
 
-              {/* ---- SAISIE FEEDBACK ---- */}
+              // ---- SAISIE ----
               if (sectionId === "saisie") return (
               <div key="saisie" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: "1px solid " + T.cardBorder, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12 }}>{T.feedbackTitle}</div>
@@ -624,7 +627,7 @@
                 </div>
               </div>);
 
-              {/* ---- ROTI + ACTIONS (rendus ensemble en grid) ---- */}
+              // ---- ROTI + ACTIONS ----
               if (sectionId === "roti" || sectionId === "actions") { _rendered.add("roti"); _rendered.add("actions"); const rotiFirst = _order.indexOf("roti") < _order.indexOf("actions") || !_order.includes("actions"); return (
               <div key="roti-actions" style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
@@ -665,7 +668,7 @@
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
                               : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
-                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> {action.responsable}</div>}
+                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>{IMG_MEETING ? <img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> : <span style={{ fontSize: 11 }}>{EMOJI_MEETING}</span>} {action.responsable}</div>}
                             </div>
                             <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
                           </div>))}
@@ -686,7 +689,7 @@
                 </div>
               </div>); }
 
-              {/* ---- RÉSUMÉ ---- */}
+              // ---- RÉSUMÉ ----
               if (sectionId === "resume") return (() => {
                 const pinnedFeedbacks = feedbacks.filter(f => f.pinned); const pinnedByCat = {}; T.categories.forEach(c => { pinnedByCat[c.id] = pinnedFeedbacks.filter(f => f.category === c.id); });
                 const avgAmbiance = getAvg("ambiance"); const avgSatisfaction = getAvg("satisfaction"); const avgRoti = getAvg("roti");
@@ -731,7 +734,7 @@
                   </div>);
               })();
 
-              {/* ---- MOT DE LA FIN ---- */}
+              // ---- MOT DE LA FIN ----
               if (sectionId === "fin") return (() => {
                 const a1 = getAvg("ambiance"), a2 = getAvg("satisfaction"), a3 = getAvg("roti");
                 const vals = [a1, a2, a3].filter(v => v !== null).map(Number);
@@ -751,7 +754,7 @@
                   </div>);
               })();
 
-              return null; {/* Section inconnue → ignorée */}
+              return null;
             }); })()}
           </div>
 
