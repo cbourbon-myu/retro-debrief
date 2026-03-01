@@ -649,7 +649,7 @@ function Preview({t}){
     <div className="preview-card" style={{position:"relative",minHeight:90,display:"flex",alignItems:"center",padding:"20px 24px",border:"1px solid rgba(255,255,255,0.12)",background:"#1A1A1A"}}>
       {bg(t.headerImage)&&<div style={{position:"absolute",inset:0,backgroundImage:bg(t.headerImage),backgroundSize:t.headerImageZoom&&t.headerImageZoom!==100?`${t.headerImageZoom}%`:"cover",backgroundPosition:t.headerImagePos||"85% 85%",opacity:0.45,borderRadius:16}}/>}
       <div style={{position:"absolute",inset:0,background:t.headerGradient,borderRadius:16}}/>
-      <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:12}}>{t.appLogo&&<img src={t.appLogo} style={{width:40,height:40,objectFit:"contain",borderRadius:8}} onError={e=>{e.target.style.display="none";}}/>}<div><div style={{fontSize:22,fontWeight:800,color:t.accent,letterSpacing:2,textShadow:"0 1px 6px rgba(0,0,0,0.7)"}}>{t.appTitle}</div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)",marginTop:2,textShadow:"0 1px 3px rgba(0,0,0,0.5)"}}>{t.subtitle}</div></div></div>
+      <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:12}}>{t.appLogo&&<img src={t.appLogo} style={{width:44,height:44,objectFit:"cover",borderRadius:"50%",border:"2px solid rgba(255,255,255,0.2)",boxShadow:"0 2px 8px rgba(0,0,0,0.4)"}} onError={e=>{e.target.style.display="none";}}/>}<div><div style={{fontSize:22,fontWeight:800,color:t.accent,letterSpacing:2,textShadow:"0 1px 6px rgba(0,0,0,0.7)"}}>{t.appTitle}</div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)",marginTop:2,textShadow:"0 1px 3px rgba(0,0,0,0.5)"}}>{t.subtitle}</div></div></div>
     </div>
 
     {/* REGLES */}
@@ -731,12 +731,20 @@ function Preview({t}){
       </div>
     </div>
 
-    {/* OUTRO */}
-    <div className="preview-card" style={{position:"relative",padding:16}}>
-      {t.outroGifs?.high&&<div style={{position:"absolute",inset:0,backgroundImage:`url(${t.outroGifs.high})`,backgroundSize:t.outroGifZoom?.high&&t.outroGifZoom.high!==100?`${t.outroGifZoom.high}%`:"cover",backgroundPosition:t.outroGifPos?.high||"50% 50%",filter:"blur(0.5px)",opacity:t.outroGifOpacity?.high??0.6,borderRadius:16}}/>}
+    {/* FIN — 4 états */}
+    <div style={{fontSize:11,fontWeight:700,color:"#555",textTransform:"uppercase",letterSpacing:2,marginBottom:8,marginTop:4}}>🎬 Fin</div>
+    {[{key:"none",label:"En attente"},{key:"low",label:"Basse"},{key:"mid",label:"Moyenne"},{key:"high",label:"Haute"}].map(({key,label})=>{const oSt=t.outroStyle?.[key]||{};const gif=t.outroGifs?.[key];return(
+    <div key={key} className="preview-card" style={{position:"relative",padding:0,marginBottom:6,minHeight:60}}>
+      {gif&&<div style={{position:"absolute",inset:0,backgroundImage:`url(${gif})`,backgroundSize:t.outroGifZoom?.[key]&&t.outroGifZoom[key]!==100?`${t.outroGifZoom[key]}%`:"cover",backgroundPosition:t.outroGifPos?.[key]||"50% 50%",filter:"blur(0.5px)",opacity:t.outroGifOpacity?.[key]??0.6,borderRadius:16}}/>}
       <div style={{position:"absolute",inset:0,background:t.summaryOverlay,borderRadius:16}}/>
-      <div style={{position:"relative",zIndex:1,textAlign:t.outroStyle?.high?.align||"center",padding:"12px 16px"}}><div style={{fontSize:14,fontWeight:700,color:t.accent,marginBottom:6,textAlign:"center"}}>{t.outroTitle}</div><div style={{fontSize:24,marginBottom:4}}>{t.outro.high?.emoji}</div><div style={{fontSize:12,color:"#fff",fontStyle:t.outroStyle?.high?.italic?"italic":"normal",fontWeight:t.outroStyle?.high?.bold?700:400}}>"{t.outro.high?.text}"</div></div>
-    </div>
+      <div style={{position:"relative",zIndex:1,textAlign:oSt.align||"left",padding:"10px 14px"}}>
+        <div style={{fontSize:9,fontWeight:600,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:1,marginBottom:4,textAlign:"left"}}>{label}</div>
+        <div style={{display:"flex",alignItems:oSt.align==="center"?"center":oSt.align==="right"?"flex-end":"flex-start",flexDirection:"column"}}>
+          <div style={{fontSize:18,marginBottom:2}}>{t.outro[key]?.emoji}</div>
+          <div style={{fontSize:11,color:"#fff",fontStyle:oSt.italic?"italic":"normal",fontWeight:oSt.bold?700:400}}>"{t.outro[key]?.text}"</div>
+        </div>
+      </div>
+    </div>);})}
 
     {/* PALETTE */}
     <div style={{marginTop:16,fontSize:11,fontWeight:700,color:"#555",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Palette</div>
