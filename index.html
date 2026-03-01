@@ -525,219 +525,232 @@
           <div style={{ maxWidth: 1400, margin: "0 auto", padding: isMobile ? "16px 10px 32px" : "24px 20px 40px" }}>
             <ConcertCurtain visible={!!activeCurtain} catLabel={activeCurtain ? T.ratingCatLabels[activeCurtain] : ""} />
 
-            {/* ==================== RÈGLES ==================== */}
-            <div style={{ borderRadius: 16, padding: 0, marginBottom: 20, position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
-              {bg(T.rulesImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.rulesImage), backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5, borderRadius: 16 }} />}
-              <div style={{ position: "absolute", inset: 0, background: isMobile ? T.rulesOverlayMobile : T.rulesOverlayDesktop, borderRadius: 16 }} />
-              <div style={{ flex: 1, padding: isMobile ? "16px 16px 20px" : "0px 28px", zIndex: 1, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
-                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: T.rulesColor, marginBottom: 6, display: "flex", alignItems: "center", gap: 8, position: "relative" }}>
-                  <span style={{ fontSize: isMobile ? 28 : 36 }}>{T.rulesTitle}</span>
-                  <span onMouseEnter={() => !isMobile && setShowPitTooltip(true)} onMouseLeave={() => setShowPitTooltip(false)} onClick={() => isMobile && setShowPitTooltip(!showPitTooltip)} style={{ cursor: "pointer", position: "relative" }}>
-                    {T.rulesName}
-                    {showPitTooltip && <div style={{ position: "absolute", bottom: isMobile ? "auto" : "calc(100% + 14px)", top: isMobile ? "calc(100% + 10px)" : "auto", left: isMobile ? "-30px" : "-140px", minWidth: isMobile ? 300 : 480, padding: 0, zIndex: 200, animation: "tooltipFadeIn 0.3s ease", borderRadius: 12, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}>
-                      <div style={{ background: "linear-gradient(135deg, #1a0a0a 0%, #2d1010 40%, #1a0505 100%)", padding: isMobile ? "18px 16px" : "24px 30px 44px 30px", position: "relative", overflow: "hidden" }}>
-                        <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.tooltip?.image) || "url('assets/backstage/GIClub.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
-                        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "linear-gradient(90deg, transparent, #DC2626, #B91C1C, transparent)" }} />
-                        <div style={{ position: "relative", zIndex: 1 }}>
-                          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, textTransform: "uppercase", color: "#DC2626", marginBottom: 20, textAlign: "center" }}>{T.tooltip.title}</div>
-                          <div style={{ fontSize: isMobile ? 12 : 15, fontWeight: 700, color: "#FAFAF9", textTransform: "uppercase", lineHeight: 1.4, textAlign: "center", textShadow: "0 2px 8px rgba(220,38,38,0.3)" }}>{T.tooltip.quote}</div>
-                          <div style={{ marginTop: 36, fontSize: 9, color: "rgba(255,255,255,0.25)", letterSpacing: 1.5, fontStyle: "italic", textAlign: "right" }}>{T.tooltip.author}</div>
+            {/* ==================== SECTIONS DYNAMIQUES (basées sur T.sectionOrder) ==================== */}
+            {(T.sectionOrder || ["rules", "vibecheck", "feedbacks", "feedbackInput", "roti", "summary", "outro"]).map(sectionId => {
+
+              {/* ---- RÈGLES ---- */}
+              if (sectionId === "rules") return (
+              <div key="rules" style={{ borderRadius: 16, padding: 0, marginBottom: 20, position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
+                {bg(T.rulesImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.rulesImage), backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5, borderRadius: 16 }} />}
+                <div style={{ position: "absolute", inset: 0, background: isMobile ? T.rulesOverlayMobile : T.rulesOverlayDesktop, borderRadius: 16 }} />
+                <div style={{ flex: 1, padding: isMobile ? "16px 16px 20px" : "0px 28px", zIndex: 1, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
+                  <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: T.rulesColor, marginBottom: 6, display: "flex", alignItems: "center", gap: 8, position: "relative" }}>
+                    <span style={{ fontSize: isMobile ? 28 : 36 }}>{T.rulesTitle}</span>
+                    <span onMouseEnter={() => !isMobile && setShowPitTooltip(true)} onMouseLeave={() => setShowPitTooltip(false)} onClick={() => isMobile && setShowPitTooltip(!showPitTooltip)} style={{ cursor: "pointer", position: "relative" }}>
+                      {T.rulesName}
+                      {showPitTooltip && <div style={{ position: "absolute", bottom: isMobile ? "auto" : "calc(100% + 14px)", top: isMobile ? "calc(100% + 10px)" : "auto", left: isMobile ? "-30px" : "-140px", minWidth: isMobile ? 300 : 480, padding: 0, zIndex: 200, animation: "tooltipFadeIn 0.3s ease", borderRadius: 12, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}>
+                        <div style={{ background: "linear-gradient(135deg, #1a0a0a 0%, #2d1010 40%, #1a0505 100%)", padding: isMobile ? "18px 16px" : "24px 30px 44px 30px", position: "relative", overflow: "hidden" }}>
+                          <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.tooltip?.image) || "url('assets/backstage/GIClub.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
+                          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "linear-gradient(90deg, transparent, #DC2626, #B91C1C, transparent)" }} />
+                          <div style={{ position: "relative", zIndex: 1 }}>
+                            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, textTransform: "uppercase", color: "#DC2626", marginBottom: 20, textAlign: "center" }}>{T.tooltip.title}</div>
+                            <div style={{ fontSize: isMobile ? 12 : 15, fontWeight: 700, color: "#FAFAF9", textTransform: "uppercase", lineHeight: 1.4, textAlign: "center", textShadow: "0 2px 8px rgba(220,38,38,0.3)" }}>{T.tooltip.quote}</div>
+                            <div style={{ marginTop: 36, fontSize: 9, color: "rgba(255,255,255,0.25)", letterSpacing: 1.5, fontStyle: "italic", textAlign: "right" }}>{T.tooltip.author}</div>
+                          </div>
                         </div>
+                        <div style={{ position: "absolute", ...(isMobile ? { top: -8, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderBottom: "10px solid #1a0a0a" } : { bottom: -8, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderTop: "10px solid #1a0a0a" }), left: isMobile ? 60 : 170, width: 0, height: 0 }} />
+                      </div>}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 7 : 9, maxWidth: 700, paddingLeft: isMobile ? 10 : 60 }}>
+                    {T.rulesItems.map((rule, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: isMobile ? 12.5 : 14, color: isDark ? T.textSecondary : "#57534E", whiteSpace: isMobile ? "normal" : "nowrap" }}><div style={{ width: 6, height: 6, borderRadius: "50%", background: T.rulesDotColor, flexShrink: 0, marginLeft: isMobile ? 0 : 36 }} />{rule}</div>))}
+                  </div>
+                </div>
+              </div>);
+
+              {/* ---- VIBE CHECK ---- */}
+              if (sectionId === "vibecheck") return (
+              <div key="vibecheck" style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/></svg>
+                  {T.vibeTitle}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
+                  {T.vibeChecks.map(cat => { const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
+                    <div key={cat.id} style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 10px" : "16px 14px", textAlign: "center" }}>
+                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>{cat.image && <div onClick={() => setZoomedImage(cat.image)} style={{ width: isMobile ? 34 : 30, height: isMobile ? 34 : 30, borderRadius: "50%", overflow: "hidden", flexShrink: 0, cursor: "pointer" }}><img src={cat.image} style={{ width: "110%", height: "110%", objectFit: "cover", marginTop: "-5%", marginLeft: "-5%" }} /></div>}{cat.label}</div>
+                      <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12 }}>
+                        {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
                       </div>
-                      <div style={{ position: "absolute", ...(isMobile ? { top: -8, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderBottom: "10px solid #1a0a0a" } : { bottom: -8, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderTop: "10px solid #1a0a0a" }), left: isMobile ? 60 : 170, width: 0, height: 0 }} />
-                    </div>}
-                  </span>
+                      {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
+                      {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
+                      {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
+                        <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.emoji}</div>
+                        <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
+                        <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
+                        <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: isDark ? cat.border : cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
+                        <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
+                        <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
+                      </div>}
+                    </div>); })}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 7 : 9, maxWidth: 700, paddingLeft: isMobile ? 10 : 60 }}>
-                  {T.rulesItems.map((rule, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: isMobile ? 12.5 : 14, color: isDark ? T.textSecondary : "#57534E", whiteSpace: isMobile ? "normal" : "nowrap" }}><div style={{ width: 6, height: 6, borderRadius: "50%", background: T.rulesDotColor, flexShrink: 0, marginLeft: isMobile ? 0 : 36 }} />{rule}</div>))}
-                </div>
-              </div>
-            </div>
+              </div>);
 
-            {/* ==================== VIBE CHECK ==================== */}
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/></svg>
-                {T.vibeTitle}
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
-                {T.vibeChecks.map(cat => { const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
-                  <div key={cat.id} style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 10px" : "16px 14px", textAlign: "center" }}>
-                    <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>{cat.image && <div onClick={() => setZoomedImage(cat.image)} style={{ width: isMobile ? 34 : 30, height: isMobile ? 34 : 30, borderRadius: "50%", overflow: "hidden", flexShrink: 0, cursor: "pointer" }}><img src={cat.image} style={{ width: "110%", height: "110%", objectFit: "cover", marginTop: "-5%", marginLeft: "-5%" }} /></div>}{cat.label}</div>
-                    <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12 }}>
-                      {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
+              {/* ---- 3 COLONNES FEEDBACKS ---- */}
+              if (sectionId === "feedbacks") return (
+              <div key="feedbacks" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
+                {T.categories.map(cat => { const col = T.columns[cat.id]; const items = getFeedbacksByCategory(cat.id); return (
+                  <div key={cat.id} style={{ background: T.cardBg, borderRadius: 16, border: "2px solid " + col.border, minHeight: 130, padding: isMobile ? "14px 12px" : "20px 18px" }}>
+                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: isDark ? col.border : col.color, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: isMobile ? 22 : 26 }}>{col.title.split(" ")[0]}</span><span>{col.title.split(" ").slice(1).join(" ")}</span>
+                      {items.length > 0 && <span style={{ fontSize: 11, fontWeight: 600, background: col.border + "20", color: isDark ? col.border : col.color, borderRadius: 10, padding: "1px 8px" }}>{items.length}</span>}
                     </div>
-                    {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
-                    {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
-                    {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
-                      <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.emoji}</div>
-                      <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
-                      <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
-                      <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: isDark ? cat.border : cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
-                      <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
-                      <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
-                    </div>}
+                    {items.length === 0 && <div style={{ fontSize: 12.5, color: T.textMuted, fontStyle: "italic", padding: "6px 0" }}>Aucun retour pour le moment</div>}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                      {items.map(fbk => { const isOwner = fbk.authorUid === user?.uid; return (
+                        <div key={fbk.id} style={{ background: cat.bg, borderRadius: 10, padding: "9px 11px", fontSize: 13, color: T.textPrimary, border: fbk.pinned ? "2px solid " + col.border : "1px solid " + col.border + "33", animation: "fadeIn 0.3s ease" }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                            {editingFeedback === fbk.id ? <input autoFocus defaultValue={fbk.text} onBlur={e => { fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }); setEditingFeedback(null); }} onKeyDown={e => e.key === "Enter" && (fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }), setEditingFeedback(null))} style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, fontFamily: "inherit", color: T.textPrimary }} />
+                            : <div style={{ flex: 1, cursor: isOwner ? "pointer" : "default" }} onClick={() => isOwner && setEditingFeedback(fbk.id)}>{fbk.text}</div>}
+                            {isAdmin && <button onClick={() => fb.updateItem(fbk.id, { pinned: !fbk.pinned })} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0, fontSize: 14, opacity: fbk.pinned ? 1 : 0.3, transition: "opacity 0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = "1"} onMouseLeave={e => e.currentTarget.style.opacity = fbk.pinned ? "1" : "0.3"}>📌</button>}
+                            {isOwner && <button onClick={() => fb.removeItem(fbk.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>}
+                          </div>
+                          {(fbk.author || fbk.pinned) && <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>{fbk.author ? <div style={{ fontSize: 10.5, color: isDark ? col.border : col.color, opacity: 0.7 }}>— {fbk.author}</div> : <div />}{fbk.pinned && <div style={{ fontSize: 7, fontStyle: "italic", fontWeight: 700, color: col.border, letterSpacing: 0.5 }}>Épinglé</div>}</div>}
+                        </div>); })}
+                    </div>
                   </div>); })}
-              </div>
-            </div>
+              </div>);
 
-            {/* ==================== 3 COLONNES FEEDBACKS ==================== */}
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
-              {T.categories.map(cat => { const col = T.columns[cat.id]; const items = getFeedbacksByCategory(cat.id); return (
-                <div key={cat.id} style={{ background: T.cardBg, borderRadius: 16, border: "2px solid " + col.border, minHeight: 130, padding: isMobile ? "14px 12px" : "20px 18px" }}>
-                  <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: isDark ? col.border : col.color, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: isMobile ? 22 : 26 }}>{col.title.split(" ")[0]}</span><span>{col.title.split(" ").slice(1).join(" ")}</span>
-                    {items.length > 0 && <span style={{ fontSize: 11, fontWeight: 600, background: col.border + "20", color: isDark ? col.border : col.color, borderRadius: 10, padding: "1px 8px" }}>{items.length}</span>}
-                  </div>
-                  {items.length === 0 && <div style={{ fontSize: 12.5, color: T.textMuted, fontStyle: "italic", padding: "6px 0" }}>Aucun retour pour le moment</div>}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                    {items.map(fbk => { const isOwner = fbk.authorUid === user?.uid; return (
-                      <div key={fbk.id} style={{ background: cat.bg, borderRadius: 10, padding: "9px 11px", fontSize: 13, color: T.textPrimary, border: fbk.pinned ? "2px solid " + col.border : "1px solid " + col.border + "33", animation: "fadeIn 0.3s ease" }}>
-                        <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                          {editingFeedback === fbk.id ? <input autoFocus defaultValue={fbk.text} onBlur={e => { fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }); setEditingFeedback(null); }} onKeyDown={e => e.key === "Enter" && (fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }), setEditingFeedback(null))} style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, fontFamily: "inherit", color: T.textPrimary }} />
-                          : <div style={{ flex: 1, cursor: isOwner ? "pointer" : "default" }} onClick={() => isOwner && setEditingFeedback(fbk.id)}>{fbk.text}</div>}
-                          {isAdmin && <button onClick={() => fb.updateItem(fbk.id, { pinned: !fbk.pinned })} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0, fontSize: 14, opacity: fbk.pinned ? 1 : 0.3, transition: "opacity 0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = "1"} onMouseLeave={e => e.currentTarget.style.opacity = fbk.pinned ? "1" : "0.3"}>📌</button>}
-                          {isOwner && <button onClick={() => fb.removeItem(fbk.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>}
-                        </div>
-                        {(fbk.author || fbk.pinned) && <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>{fbk.author ? <div style={{ fontSize: 10.5, color: isDark ? col.border : col.color, opacity: 0.7 }}>— {fbk.author}</div> : <div />}{fbk.pinned && <div style={{ fontSize: 7, fontStyle: "italic", fontWeight: 700, color: col.border, letterSpacing: 0.5 }}>Épinglé</div>}</div>}
-                      </div>); })}
-                  </div>
-                </div>); })}
-            </div>
-
-            {/* ==================== FEEDBACK INPUT ==================== */}
-            <div className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: "1px solid " + T.cardBorder, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
-              <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12 }}>{T.feedbackTitle}</div>
-              <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
-                {T.categories.map(cat => (<button key={cat.id} onClick={() => setSelectedCat(cat.id)} style={{ padding: isMobile ? "5px 10px" : "5px 15px", borderRadius: 16, fontSize: isMobile ? 11 : 12.5, cursor: "pointer", fontWeight: selectedCat === cat.id ? 700 : 500, transition: "all 0.2s", border: selectedCat === cat.id ? "2px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + cat.border, background: cat.border, color: "#fff", opacity: selectedCat === cat.id ? 1 : 0.55 }}>{cat.label}</button>))}
-              </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <input ref={feedbackInputRef} type="text" value={feedbackText} onChange={e => setFeedbackText(e.target.value)} onKeyDown={e => e.key === "Enter" && addFeedback()} placeholder="Votre retour..." style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: "1px solid " + T.inputBorder, fontSize: 13.5, background: T.inputBg, color: T.textPrimary, minWidth: 0 }} onFocus={e => e.target.style.borderColor = T.categories.find(c => c.id === selectedCat).border} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                <button onClick={addFeedback} style={{ width: 42, height: 42, borderRadius: 10, border: "none", background: T.accent, color: isDark ? "#000" : "#fff", fontSize: 22, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>+</button>
-              </div>
-            </div>
-
-            {/* ==================== ROTI + ACTIONS ==================== */}
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG2)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/></svg>
-                {T.afterTitle}
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, alignItems: "stretch" }}>
-                {/* ROTI */}
-                {(() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
-                  <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center" }}>
-                    <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <img src={cat.image} onClick={() => setZoomedImage(cat.image)} style={{ objectFit: "contain", cursor: "pointer", ...(cat.imageStyle || { width: 30, height: 30 }) }} />}<span>{cat.label}</span></div>
-                    <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
-                      {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
-                    </div>
-                    {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
-                    {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
-                    {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
-                      <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.emoji}</div>
-                      <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
-                      <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
-                      <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: isDark ? cat.border : cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
-                      <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
-                      <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
-                    </div>}
-                  </div>); })()}
-
-                {/* ACTIONS */}
-                <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + T.accent, padding: isMobile ? "14px 12px" : "20px 20px", display: "flex", flexDirection: "column" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: isDark ? T.accent : T.accentDark, display: "flex", alignItems: "center", gap: 8 }}>{T.actionTitle}</div>
-                    <div style={{ border: "1.5px solid " + T.accent, borderRadius: 13, padding: "2px 12px", fontSize: 11, fontWeight: 600, color: T.accent, flexShrink: 0, marginLeft: 8 }}>{actions.length}/3</div>
-                  </div>
-                  <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 12 }} />
-                  {actions.length === 0 ? <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, fontWeight: 600, color: T.textMuted }}>Aucune action définie</div> : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
-                      {actions.map(action => (
-                        <div key={action.id} style={{ background: T.accentLight, borderRadius: 10, padding: "9px 11px", display: "flex", alignItems: "center", gap: 9, border: "1px solid " + T.accent + "40", animation: "fadeIn 0.3s ease" }}>
-                          <input type="checkbox" checked={action.done || false} onChange={() => act.updateItem(action.id, { done: !action.done })} style={{ width: 16, height: 16, accentColor: T.accent, cursor: "pointer", flexShrink: 0 }} />
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
-                            : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
-                            {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> {action.responsable}</div>}
-                          </div>
-                          <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
-                        </div>))}
-                    </div>)}
-                  {actions.length < 3 && <div className="no-print">
-                    <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 10, marginTop: 6 }} />
-                    <div style={{ display: "flex", gap: 6, marginBottom: 6, flexDirection: "column" }}>
-                      <input type="text" value={actionDesc} onChange={e => setActionDesc(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Description de l'action..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                      <input type="text" value={actionResp} onChange={e => setActionResp(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Responsable..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                    </div>
-                    <button onClick={addAction} style={{ width: "100%", padding: "9px 0", borderRadius: 8, border: "none", background: "linear-gradient(135deg, " + T.accent + ", " + T.accentDark + ")", color: isDark ? "#000" : "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>+ Ajouter</button>
-                  </div>}
-                  <div style={{ textAlign: "center", fontSize: isMobile ? 10 : 11.5, color: T.accent, fontStyle: "italic", opacity: 0.65, marginTop: "auto", paddingTop: 10 }}>{T.actionQuote}</div>
+              {/* ---- FEEDBACK INPUT ---- */}
+              if (sectionId === "feedbackInput") return (
+              <div key="feedbackInput" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: "1px solid " + T.cardBorder, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
+                <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12 }}>{T.feedbackTitle}</div>
+                <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
+                  {T.categories.map(cat => (<button key={cat.id} onClick={() => setSelectedCat(cat.id)} style={{ padding: isMobile ? "5px 10px" : "5px 15px", borderRadius: 16, fontSize: isMobile ? 11 : 12.5, cursor: "pointer", fontWeight: selectedCat === cat.id ? 700 : 500, transition: "all 0.2s", border: selectedCat === cat.id ? "2px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + cat.border, background: cat.border, color: "#fff", opacity: selectedCat === cat.id ? 1 : 0.55 }}>{cat.label}</button>))}
                 </div>
-              </div>
-            </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input ref={feedbackInputRef} type="text" value={feedbackText} onChange={e => setFeedbackText(e.target.value)} onKeyDown={e => e.key === "Enter" && addFeedback()} placeholder="Votre retour..." style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: "1px solid " + T.inputBorder, fontSize: 13.5, background: T.inputBg, color: T.textPrimary, minWidth: 0 }} onFocus={e => e.target.style.borderColor = T.categories.find(c => c.id === selectedCat).border} onBlur={e => e.target.style.borderColor = T.inputBorder} />
+                  <button onClick={addFeedback} style={{ width: 42, height: 42, borderRadius: 10, border: "none", background: T.accent, color: isDark ? "#000" : "#fff", fontSize: 22, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>+</button>
+                </div>
+              </div>);
 
-            {/* ==================== RÉSUMÉ ==================== */}
-            {(() => {
-              const pinnedFeedbacks = feedbacks.filter(f => f.pinned); const pinnedByCat = {}; T.categories.forEach(c => { pinnedByCat[c.id] = pinnedFeedbacks.filter(f => f.category === c.id); });
-              const avgAmbiance = getAvg("ambiance"); const avgSatisfaction = getAvg("satisfaction"); const avgRoti = getAvg("roti");
-              const hasContent = pinnedFeedbacks.length > 0 || actions.length > 0 || avgAmbiance || avgSatisfaction || avgRoti;
-              return (
-                <div style={{ borderRadius: 16, padding: 0, marginBottom: 24, position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
-                  {bg(T.summaryImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.summaryImage), backgroundSize: "cover", backgroundPosition: "center top", opacity: 0.45 }} />}
-                  <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
-                  <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "24px 16px" : "32px 28px" }}>
-                    <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 20, textAlign: "center" }}>{T.summaryTitle}</div>
-                    {!hasContent ? <div style={{ fontSize: isMobile ? 12 : 13.5, color: "rgba(255,255,255,0.5)", fontStyle: "italic", textAlign: "center" }}>{T.summaryPinHint}</div> : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                        {(avgAmbiance || avgSatisfaction || avgRoti) && <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{T.mdGlobal}</div>
-                          <div style={{ display: "flex", gap: isMobile ? 10 : 16, flexWrap: "wrap", justifyContent: "center" }}>
-                            {[{ label: T.ratingCatLabels.ambiance, avg: avgAmbiance, color: T.vibeChecks[0]?.border }, { label: T.ratingCatLabels.satisfaction, avg: avgSatisfaction, color: T.vibeChecks[1]?.border }, { label: "ROTI", avg: avgRoti, color: T.roti.border }].filter(v => v.avg).map(v => (
-                              <div key={v.label} style={{ background: "rgba(255,255,255,0.08)", borderRadius: 12, padding: isMobile ? "10px 14px" : "12px 20px", textAlign: "center", border: "1px solid " + v.color + "44", minWidth: isMobile ? 90 : 110 }}>
-                                <div style={{ fontSize: 24, marginBottom: 2 }}>{T.ratingLabels[Math.round(v.avg)]?.emoji}</div>
-                                <div style={{ fontSize: 22, fontWeight: 900, color: v.color }}>{v.avg}</div>
-                                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{v.label}</div>
-                              </div>))}
-                          </div>
-                        </div>}
-                        {pinnedFeedbacks.length > 0 && <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Retours clés</div>
-                          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
-                            {T.categories.map(cat => { const items = pinnedByCat[cat.id] || []; if (!items.length) return null; const col = T.columns[cat.id]; return (
-                              <div key={cat.id} style={{ background: cat.bg + (isDark ? "" : "1F"), borderRadius: 10, border: "1px solid " + col.border + "44", padding: "10px 12px" }}>
-                                <div style={{ fontSize: 11, fontWeight: 700, color: col.border, marginBottom: 8 }}>{col.title}</div>
-                                <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>{items.map(f => (<div key={f.id} style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>• {f.text}</div>))}</div>
-                              </div>); })}
-                          </div>
-                        </div>}
-                        {actions.length > 0 && <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{T.actionTitle}</div>
-                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                            {actions.map(a => (<div key={a.id} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 12px", border: "1px solid " + T.accent + "33" }}><span style={{ fontSize: 14 }}>{a.done ? "✅" : "🎯"}</span><div style={{ flex: 1, fontSize: 12.5, color: "rgba(255,255,255,0.85)", textDecoration: a.done ? "line-through" : "none", opacity: a.done ? 0.6 : 1 }}>{a.description}</div>{a.responsable && <div style={{ fontSize: 10.5, color: T.accent, fontWeight: 500 }}>{a.responsable}</div>}</div>))}
-                          </div>
-                        </div>}
+              {/* ---- ROTI + ACTIONS ---- */}
+              if (sectionId === "roti") return (
+              <div key="roti" style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG2)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/></svg>
+                  {T.afterTitle}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, alignItems: "stretch" }}>
+                  {/* ROTI */}
+                  {(() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
+                    <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center" }}>
+                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <img src={cat.image} onClick={() => setZoomedImage(cat.image)} style={{ objectFit: "contain", cursor: "pointer", ...(cat.imageStyle || { width: 30, height: 30 }) }} />}<span>{cat.label}</span></div>
+                      <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
+                        {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
+                      </div>
+                      {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
+                      {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
+                      {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
+                        <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.emoji}</div>
+                        <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
+                        <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
+                        <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: isDark ? cat.border : cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
+                        <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
+                        <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
+                      </div>}
+                    </div>); })()}
+
+                  {/* ACTIONS */}
+                  <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + T.accent, padding: isMobile ? "14px 12px" : "20px 20px", display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: isDark ? T.accent : T.accentDark, display: "flex", alignItems: "center", gap: 8 }}>{T.actionTitle}</div>
+                      <div style={{ border: "1.5px solid " + T.accent, borderRadius: 13, padding: "2px 12px", fontSize: 11, fontWeight: 600, color: T.accent, flexShrink: 0, marginLeft: 8 }}>{actions.length}/3</div>
+                    </div>
+                    <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 12 }} />
+                    {actions.length === 0 ? <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, fontWeight: 600, color: T.textMuted }}>Aucune action définie</div> : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
+                        {actions.map(action => (
+                          <div key={action.id} style={{ background: T.accentLight, borderRadius: 10, padding: "9px 11px", display: "flex", alignItems: "center", gap: 9, border: "1px solid " + T.accent + "40", animation: "fadeIn 0.3s ease" }}>
+                            <input type="checkbox" checked={action.done || false} onChange={() => act.updateItem(action.id, { done: !action.done })} style={{ width: 16, height: 16, accentColor: T.accent, cursor: "pointer", flexShrink: 0 }} />
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
+                              : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
+                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> {action.responsable}</div>}
+                            </div>
+                            <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
+                          </div>))}
                       </div>)}
+                    {actions.length < 3 && <div className="no-print">
+                      <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 10, marginTop: 6 }} />
+                      <div style={{ display: "flex", gap: 6, marginBottom: 6, flexDirection: "column" }}>
+                        <input type="text" value={actionDesc} onChange={e => setActionDesc(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Description de l'action..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
+                        <input type="text" value={actionResp} onChange={e => setActionResp(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Responsable..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
+                      </div>
+                      <button onClick={addAction} style={{ width: "100%", padding: "9px 0", borderRadius: 8, border: "none", background: "linear-gradient(135deg, " + T.accent + ", " + T.accentDark + ")", color: isDark ? "#000" : "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>+ Ajouter</button>
+                    </div>}
+                    <div style={{ textAlign: "center", fontSize: isMobile ? 10 : 11.5, color: T.accent, fontStyle: "italic", opacity: 0.65, marginTop: "auto", paddingTop: 10 }}>{T.actionQuote}</div>
                   </div>
-                </div>); })()}
+                </div>
+              </div>);
 
-            {/* ==================== OUTRO ==================== */}
-            {(() => {
-              const a1 = getAvg("ambiance"), a2 = getAvg("satisfaction"), a3 = getAvg("roti");
-              const vals = [a1, a2, a3].filter(v => v !== null).map(Number);
-              const globalAvg = vals.length === 3 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-              const outroKey = globalAvg === null ? "none" : globalAvg > 4 ? "high" : globalAvg >= 3 ? "mid" : "low";
-              const msgData = T.outro[outroKey];
-              const gifUrl = T.outroGifs ? T.outroGifs[outroKey] : null;
-              return (
-                <div style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, minHeight: isMobile ? 140 : 180 }}>
-                  {gifUrl && <div style={{ position: "absolute", inset: -4, backgroundImage: `url(${gifUrl})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(0.5px)", opacity: 0.75 }} />}
-                  <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
-                  <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "20px 16px" : "28px 32px", textAlign: "left" }}>
-                    <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 8, textAlign: "center" }}>{T.outroTitle}</div>
-                    <div style={{ fontSize: isMobile ? 20 : 28, marginBottom: 8 }}>{msgData.emoji}</div>
-                    <div style={{ fontSize: isMobile ? 14 : 18, color: "#fff", fontStyle: "italic", lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>"{msgData.text}"</div>
-                  </div>
-                </div>); })()}
+              {/* ---- RÉSUMÉ ---- */}
+              if (sectionId === "summary") return (() => {
+                const pinnedFeedbacks = feedbacks.filter(f => f.pinned); const pinnedByCat = {}; T.categories.forEach(c => { pinnedByCat[c.id] = pinnedFeedbacks.filter(f => f.category === c.id); });
+                const avgAmbiance = getAvg("ambiance"); const avgSatisfaction = getAvg("satisfaction"); const avgRoti = getAvg("roti");
+                const hasContent = pinnedFeedbacks.length > 0 || actions.length > 0 || avgAmbiance || avgSatisfaction || avgRoti;
+                return (
+                  <div key="summary" style={{ borderRadius: 16, padding: 0, marginBottom: 24, position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
+                    {bg(T.summaryImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.summaryImage), backgroundSize: "cover", backgroundPosition: "center top", opacity: 0.45 }} />}
+                    <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
+                    <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "24px 16px" : "32px 28px" }}>
+                      <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 20, textAlign: "center" }}>{T.summaryTitle}</div>
+                      {!hasContent ? <div style={{ fontSize: isMobile ? 12 : 13.5, color: "rgba(255,255,255,0.5)", fontStyle: "italic", textAlign: "center" }}>{T.summaryPinHint}</div> : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                          {(avgAmbiance || avgSatisfaction || avgRoti) && <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{T.mdGlobal}</div>
+                            <div style={{ display: "flex", gap: isMobile ? 10 : 16, flexWrap: "wrap", justifyContent: "center" }}>
+                              {[{ label: T.ratingCatLabels.ambiance, avg: avgAmbiance, color: T.vibeChecks[0]?.border }, { label: T.ratingCatLabels.satisfaction, avg: avgSatisfaction, color: T.vibeChecks[1]?.border }, { label: "ROTI", avg: avgRoti, color: T.roti.border }].filter(v => v.avg).map(v => (
+                                <div key={v.label} style={{ background: "rgba(255,255,255,0.08)", borderRadius: 12, padding: isMobile ? "10px 14px" : "12px 20px", textAlign: "center", border: "1px solid " + v.color + "44", minWidth: isMobile ? 90 : 110 }}>
+                                  <div style={{ fontSize: 24, marginBottom: 2 }}>{T.ratingLabels[Math.round(v.avg)]?.emoji}</div>
+                                  <div style={{ fontSize: 22, fontWeight: 900, color: v.color }}>{v.avg}</div>
+                                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{v.label}</div>
+                                </div>))}
+                            </div>
+                          </div>}
+                          {pinnedFeedbacks.length > 0 && <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Retours clés</div>
+                            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
+                              {T.categories.map(cat => { const items = pinnedByCat[cat.id] || []; if (!items.length) return null; const col = T.columns[cat.id]; return (
+                                <div key={cat.id} style={{ background: cat.bg + (isDark ? "" : "1F"), borderRadius: 10, border: "1px solid " + col.border + "44", padding: "10px 12px" }}>
+                                  <div style={{ fontSize: 11, fontWeight: 700, color: col.border, marginBottom: 8 }}>{col.title}</div>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>{items.map(f => (<div key={f.id} style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>• {f.text}</div>))}</div>
+                                </div>); })}
+                            </div>
+                          </div>}
+                          {actions.length > 0 && <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{T.actionTitle}</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {actions.map(a => (<div key={a.id} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 12px", border: "1px solid " + T.accent + "33" }}><span style={{ fontSize: 14 }}>{a.done ? "✅" : "🎯"}</span><div style={{ flex: 1, fontSize: 12.5, color: "rgba(255,255,255,0.85)", textDecoration: a.done ? "line-through" : "none", opacity: a.done ? 0.6 : 1 }}>{a.description}</div>{a.responsable && <div style={{ fontSize: 10.5, color: T.accent, fontWeight: 500 }}>{a.responsable}</div>}</div>))}
+                            </div>
+                          </div>}
+                        </div>)}
+                    </div>
+                  </div>);
+              })();
+
+              {/* ---- OUTRO ---- */}
+              if (sectionId === "outro") return (() => {
+                const a1 = getAvg("ambiance"), a2 = getAvg("satisfaction"), a3 = getAvg("roti");
+                const vals = [a1, a2, a3].filter(v => v !== null).map(Number);
+                const globalAvg = vals.length === 3 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+                const outroKey = globalAvg === null ? "none" : globalAvg > 4 ? "high" : globalAvg >= 3 ? "mid" : "low";
+                const msgData = T.outro[outroKey];
+                const gifUrl = T.outroGifs ? T.outroGifs[outroKey] : null;
+                return (
+                  <div key="outro" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, minHeight: isMobile ? 140 : 180 }}>
+                    {gifUrl && <div style={{ position: "absolute", inset: -4, backgroundImage: `url(${gifUrl})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(0.5px)", opacity: 0.75 }} />}
+                    <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
+                    <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "20px 16px" : "28px 32px", textAlign: "left" }}>
+                      <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 8, textAlign: "center" }}>{T.outroTitle}</div>
+                      <div style={{ fontSize: isMobile ? 20 : 28, marginBottom: 8 }}>{msgData.emoji}</div>
+                      <div style={{ fontSize: isMobile ? 14 : 18, color: "#fff", fontStyle: "italic", lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>"{msgData.text}"</div>
+                    </div>
+                  </div>);
+              })();
+
+              return null; {/* Section inconnue → ignorée */}
+            })}
           </div>
 
           <style>{`
