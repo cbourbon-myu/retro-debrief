@@ -694,7 +694,8 @@ function App(){
   };
 
   const saveToFirebase=async()=>{if(!db||!template.id)return;setSaveStatus("saving");try{const d={...template};delete d._custom;await db.ref("customTemplates/"+template.id).set(d);setSaveStatus("saved");setTimeout(()=>setSaveStatus(null),3000);}catch(e){setSaveStatus("error");alert("Erreur : "+e.message);setTimeout(()=>setSaveStatus(null),3000);}};
-  const deleteFromFirebase=async()=>{if(!db||!customIds.includes(template.id))return;if(!confirm("Supprimer \""+template.name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+template.id).set(null);alert("Supprimé !");}catch(e){alert("Erreur : "+e.message);}};
+  const baseRef=useRef(null);
+  const deleteFromFirebase=async()=>{if(!db||!customIds.includes(template.id))return;if(!confirm("Supprimer \""+template.name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+template.id).set(null);setTemplate(JSON.parse(JSON.stringify(DEFAULT_TPL)));setActiveTab("identite");if(baseRef.current)baseRef.current.value="";alert("Supprimé !");}catch(e){alert("Erreur : "+e.message);}};
   const exportJS=()=>{const js="// "+template.name+"\n(function(){if(!window.RETRO_TEMPLATES)window.RETRO_TEMPLATES={};window.RETRO_TEMPLATES["+JSON.stringify(template.id)+"]="+JSON.stringify(template,null,2)+";})();\n";const b=new Blob([js],{type:"text/javascript"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=template.id+".js";a.click();};
 
   // Tabs dans l'ordre de l'app (comme backstage.js)
@@ -729,7 +730,7 @@ function App(){
   return(<div className="app"><div className="sidebar">
     <div className="sidebar-header"><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><h1>🎭 Éditeur de Thème</h1><button onClick={()=>auth.signOut()} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,color:"#555"}} title="Se déconnecter">👋 {user.displayName?.split(" ")[0]}</button></div><p>Crée ton template, enregistre-le dans l'app.</p></div>
     <div className="base-picker"><label style={{fontSize:11,fontWeight:600,color:"#888",display:"block",marginBottom:4}}>Partir d'un thème existant :</label>
-      <select onChange={e=>loadBase(e.target.value)} defaultValue=""><option value="" disabled>— Choisir une base —</option><option value="__blank">🆕 Template vierge</option>
+      <select ref={baseRef} onChange={e=>loadBase(e.target.value)} defaultValue=""><option value="" disabled>— Choisir une base —</option><option value="__blank">🆕 Template vierge</option>
         <optgroup label="Thèmes officiels">{Object.values(window.RETRO_TEMPLATES||{}).filter(t=>!t._custom).map(t=><option key={t.id} value={t.id}>{t.preview} {t.name}</option>)}</optgroup>
         {customIds.length>0&&<optgroup label="Thèmes custom">{customIds.map(id=><option key={id} value={id}>✨ {id}</option>)}</optgroup>}
       </select></div>
