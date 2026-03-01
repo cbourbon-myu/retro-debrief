@@ -12,6 +12,9 @@
     preview: "🏆💀🔧",
     dark: true,
 
+   // 👇 Ajouter ici — l'ordre par défaut
+    sectionOrder: ["rules", "vibecheck", "feedbacks", "feedbackInput", "roti", "summary", "outro"],
+ 
     bodyBg: "#0f0f1a",
     cardBg: "#1a1a2e",
     cardBorder: "#2d2d5e",
