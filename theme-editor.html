@@ -715,7 +715,8 @@ function App(){
     if(data){const v=deepMerge(DEFAULT_TPL,JSON.parse(JSON.stringify(data)));if(!v.sectionOrder)v.sectionOrder=[...DEFAULT_SECTION_ORDER];v.id=id;setTemplate(v);setActiveTab("identite");if(baseRef.current)baseRef.current.value="";}
   };
 
-  const deleteCustomTheme=async(id,name)=>{if(!db)return;if(!confirm("Supprimer \""+name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+id).set(null);if(template.id===id){setTemplate(JSON.parse(JSON.stringify(DEFAULT_TPL)));setActiveTab("identite");if(baseRef.current)baseRef.current.value="";}alert("Supprimé !");}catch(e){alert("Erreur : "+e.message);}};
+  const[deleteMsg,setDeleteMsg]=useState(null);
+  const deleteCustomTheme=async(id,name)=>{if(!db)return;if(!confirm("Supprimer \""+name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+id).set(null);if(template.id===id){setTemplate(JSON.parse(JSON.stringify(DEFAULT_TPL)));setActiveTab("identite");if(baseRef.current)baseRef.current.value="";}setDeleteMsg("\""+name+"\" supprimé ✓");setTimeout(()=>setDeleteMsg(null),3000);}catch(e){setDeleteMsg("Erreur : "+e.message);setTimeout(()=>setDeleteMsg(null),4000);}};
 
   const saveToFirebase=async()=>{if(!db||!template.id)return;setSaveStatus("saving");try{const d={...template};delete d._custom;await db.ref("customTemplates/"+template.id).set(d);setSaveStatus("saved");setTimeout(()=>setSaveStatus(null),3000);}catch(e){setSaveStatus("error");alert("Erreur : "+e.message);setTimeout(()=>setSaveStatus(null),3000);}};
   const baseRef=useRef(null);
@@ -760,6 +761,7 @@ function App(){
       </select></div>
     {customIds.length>0&&<div className="custom-themes">
       <div className="custom-themes-title">Mes thèmes enregistrés <span>{customIds.length}</span></div>
+      {deleteMsg&&<div style={{fontSize:11,fontWeight:600,color:deleteMsg.includes("Erreur")?"#EF4444":"#10B981",background:deleteMsg.includes("Erreur")?"#1F0A0A":"#0A1F15",border:"1px solid "+(deleteMsg.includes("Erreur")?"#7F1D1D":"#065F46"),borderRadius:8,padding:"6px 10px",marginBottom:8,textAlign:"center"}}>{deleteMsg}</div>}
       {customIds.map(id=>{const ct=customThemes[id];const name=ct?.name||id;const preview=ct?.preview||"✨";const isActive=template.id===id;return(
         <div key={id} className={`ct-item${isActive?" active":""}`} onClick={()=>openCustomTheme(id)} title={"Ouvrir "+name}>
           <div className="ct-emoji">{preview}</div>
