@@ -1,816 +1,760 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Backstage Debrief — Rétrospective Sprint</title>
-  <link rel="icon" type="image/png" href= "assets/favicon.png?v=2"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; background: #F8EBDB; }
-    input:focus { outline: none; }
-    button { font-family: inherit; }
-    @media print { .no-print { display: none !important; } body { background: #fff; } }
-    .vote-icon { transition: transform 0.3s ease, filter 0.3s ease !important; }
-    .vote-icon:hover { transform: scale(1.3) rotate(-8deg) !important; filter: drop-shadow(0 2px 8px rgba(249,115,22,0.5)) !important; }
-    @media (max-width: 768px) { .hide-mobile { display: none !important; } }
-    @media (min-width: 769px) { .hide-desktop { display: none !important; } }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎭 Retro Debrief — Éditeur de Thème</title>
+<link rel="icon" type="image/png" href="assets/favicon.png"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #0F0F0F; color: #E5E5E5; min-height: 100vh; }
+  .app { display: grid; grid-template-columns: 440px 1fr; height: 100vh; }
+  @media (max-width: 900px) { .app { grid-template-columns: 1fr; } .preview-panel { display: none; } }
+  .sidebar { background: #161616; border-right: 1px solid #2A2A2A; overflow-y: auto; display: flex; flex-direction: column; }
+  .sidebar-header { padding: 20px 18px 12px; border-bottom: 1px solid #2A2A2A; flex-shrink: 0; }
+  .sidebar-header h1 { font-size: 18px; font-weight: 800; color: #F97316; letter-spacing: 0.5px; }
+  .sidebar-header p { font-size: 11px; color: #666; margin-top: 4px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 2px; padding: 10px 12px; border-bottom: 1px solid #2A2A2A; flex-shrink: 0; }
+  .tab { padding: 6px 10px; border-radius: 6px; border: none; background: none; color: #777; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+  .tab:hover { color: #bbb; background: #1E1E1E; }
+  .tab.active { color: #F97316; background: #261A0F; }
+  .section { padding: 14px 16px; flex: 1; overflow-y: auto; }
+  .section-title { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1.5px; margin: 16px 0 8px; }
+  .section-title:first-child { margin-top: 0; }
+  .section-desc { font-size: 10px; color: #999; margin: -4px 0 10px; font-style: italic; }
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: #888; margin-bottom: 4px; }
+  .field input[type="text"], .field input[type="url"], .field textarea, .field select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #333; background: #1A1A1A; color: #E5E5E5; font-size: 12px; font-family: inherit; outline: none; transition: border-color 0.15s; }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: #F97316; }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .field-row { display: flex; gap: 8px; align-items: flex-end; }
+  .field-row .field { flex: 1; }
+  .color-field { display: flex; align-items: center; gap: 8px; }
+  .color-field input[type="color"] { width: 32px; height: 32px; border: 2px solid #333; border-radius: 6px; cursor: pointer; background: none; padding: 0; }
+  .color-field input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
+  .color-field input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+  .toggle-label { font-size: 12px; font-weight: 600; color: #aaa; }
+  .toggle { width: 40px; height: 22px; border-radius: 12px; border: none; cursor: pointer; position: relative; transition: background 0.2s; }
+  .toggle.on { background: #F97316; } .toggle.off { background: #333; }
+  .toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: white; top: 3px; transition: left 0.2s; }
+  .toggle.on::after { left: 21px; } .toggle.off::after { left: 3px; }
+  .emoji-grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px; align-items: center; margin-bottom: 6px; }
+  .emoji-grid .num { font-size: 11px; color: #555; font-weight: 700; text-align: center; width: 18px; }
+  .array-item { background: #1A1A1A; border: 1px solid #2A2A2A; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+  .array-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .array-item-title { font-size: 12px; font-weight: 700; color: #ccc; }
+  .btn-remove { background: none; border: none; color: #EF4444; cursor: pointer; font-size: 14px; padding: 2px 6px; border-radius: 4px; }
+  .btn-remove:hover { background: rgba(239,68,68,0.1); }
+  .btn-add { padding: 8px 14px; border-radius: 8px; border: 1px dashed #444; background: none; color: #888; font-size: 12px; cursor: pointer; width: 100%; font-family: inherit; font-weight: 600; transition: all 0.15s; }
+  .btn-add:hover { border-color: #F97316; color: #F97316; }
+  .outro-block { background: #1A1A1A; border: 1px solid #2A2A2A; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+  .outro-block-title { font-size: 11px; font-weight: 700; color: #F97316; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .preview-panel { overflow-y: auto; padding: 24px; background: #0F0F0F; }
+  .preview-card { border-radius: 16px; overflow: hidden; margin-bottom: 16px; }
+  .btn-bar { padding: 12px 16px; border-top: 1px solid #2A2A2A; display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-primary { flex: 1; padding: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg, #F97316, #EA580C); color: white; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform 0.1s; }
+  .btn-primary:hover { transform: scale(1.02); }
+  .btn-secondary { padding: 10px; border-radius: 10px; border: 1px solid #444; background: none; color: #aaa; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .btn-secondary:hover { border-color: #888; color: #ddd; }
+  .btn-danger { padding: 10px; border-radius: 10px; border: 1px solid #7F1D1D; background: none; color: #EF4444; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .btn-danger:hover { background: #7F1D1D22; }
+  .status-bar { padding: 8px 16px; border-top: 1px solid #2A2A2A; font-size: 11px; color: #555; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .login-screen { min-height: 100vh; background: #0F0F0F; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .login-card { background: #161616; border: 1px solid #2A2A2A; border-radius: 20px; padding: 40px 32px; max-width: 420px; width: 100%; text-align: center; }
+  .base-picker { padding: 12px 16px; border-bottom: 1px solid #2A2A2A; flex-shrink: 0; }
+  .base-picker select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #333; background: #1A1A1A; color: #ccc; font-size: 12px; font-family: inherit; }
+
+  /* Color Picker Popup */
+  .cpk-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+  .cpk-popup { background: #1A1A1A; border: 1px solid #333; border-radius: 16px; padding: 20px; width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  .cpk-spectrum { width: 100%; height: 160px; border-radius: 8px; cursor: crosshair; position: relative; margin-bottom: 10px; border: 1px solid #333; }
+  .cpk-hue-bar { width: 100%; height: 16px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; border: 1px solid #333; }
+  .cpk-alpha-bar { width: 100%; height: 16px; border-radius: 8px; cursor: pointer; margin-bottom: 12px; border: 1px solid #333; background-image: linear-gradient(45deg, #333 25%, transparent 25%), linear-gradient(-45deg, #333 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #333 75%), linear-gradient(-45deg, transparent 75%, #333 75%); background-size: 10px 10px; background-position: 0 0, 0 5px, 5px -5px, -5px 0px; position: relative; overflow: hidden; }
+  .cpk-palette { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin-bottom: 12px; }
+  .cpk-palette button { width: 100%; aspect-ratio: 1; border-radius: 4px; border: 1px solid #333; cursor: pointer; transition: transform 0.1s, border-color 0.1s; }
+  .cpk-palette button:hover { transform: scale(1.15); border-color: #fff; z-index: 1; }
+  .cpk-inputs { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; }
+  .cpk-inputs input { padding: 6px 8px; border-radius: 6px; border: 1px solid #333; background: #111; color: #E5E5E5; font-size: 12px; font-family: inherit; outline: none; width: 100%; }
+  .cpk-inputs input:focus { border-color: #F97316; }
+  .cpk-preview { width: 100%; height: 36px; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; }
+  .cpk-btns { display: flex; gap: 8px; }
+  .cpk-btns button { flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+  /* Gradient Builder */
+  .grad-stop { display: flex; gap: 6px; align-items: center; background: #111; border: 1px solid #2A2A2A; border-radius: 8px; padding: 6px 8px; margin-bottom: 4px; }
+  .grad-stop input[type="color"] { width: 28px; height: 28px; border: 1px solid #444; border-radius: 4px; cursor: pointer; background: none; padding: 0; flex-shrink: 0; }
+  .grad-stop input[type="color"]::-webkit-color-swatch { border-radius: 3px; border: none; }
+  .grad-stop input[type="color"]::-webkit-color-swatch-wrapper { padding: 1px; }
+  .grad-stop input[type="text"], .grad-stop input[type="number"] { padding: 5px 6px; border-radius: 4px; border: 1px solid #333; background: #1A1A1A; color: #ccc; font-size: 11px; font-family: inherit; outline: none; }
+  .grad-preview { height: 32px; border-radius: 8px; border: 1px solid #333; margin: 8px 0; }
+
+  /* Section Reorder (drag and drop) */
+  .reorder-item { display: flex; align-items: center; gap: 10px; background: #1A1A1A; border: 1px solid #2A2A2A; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; cursor: grab; transition: all 0.15s; user-select: none; }
+  .reorder-item:active { cursor: grabbing; }
+  .reorder-item.dragging { opacity: 0.4; border-color: #F97316; }
+  .reorder-item.drag-over { border-color: #F97316; background: #261A0F; transform: scale(1.02); }
+  .reorder-item.locked { opacity: 0.5; cursor: not-allowed; background: #111; }
+  .reorder-handle { font-size: 16px; color: #555; flex-shrink: 0; }
+  .reorder-label { flex: 1; font-size: 13px; font-weight: 600; color: #ccc; }
+  .reorder-lock { font-size: 11px; color: #555; }
+
+  /* Image upload field */
+  .uf-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .uf-row { display: flex; gap: 6px; align-items: center; }
+  .uf-row input[type="text"] { flex: 1; }
+  .uf-preview { width: 40px; height: 40px; border-radius: 6px; border: 1px solid #333; object-fit: cover; flex-shrink: 0; cursor: pointer; background: #111; }
+  .uf-btn { padding: 4px 8px; border-radius: 6px; border: 1px solid #333; background: #1A1A1A; color: #ccc; cursor: pointer; font-size: 11px; font-family: inherit; white-space: nowrap; transition: border-color 0.2s, background 0.2s; }
+  .uf-btn:hover { border-color: #F97316; background: #261A0F; color: #F97316; }
+  .uf-btn.danger:hover { border-color: #EF4444; background: #1F0A0A; color: #EF4444; }
+
+  /* Collapsible sections */
+  .collapse-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 4px 0; margin: 16px 0 0; user-select: none; transition: opacity 0.15s; }
+  .collapse-header:first-child { margin-top: 0; }
+  .collapse-header:hover { opacity: 0.8; }
+  .collapse-header .section-title { margin: 0; pointer-events: none; flex: 1; }
+  .collapse-chevron { font-size: 12px; color: #555; transition: transform 0.2s; padding: 2px 4px; }
+  .collapse-chevron.open { transform: rotate(90deg); }
+  .collapse-body { transition: max-height 0.3s ease, opacity 0.2s ease; }
+  .collapse-body.closed { max-height: 0; opacity: 0; padding: 0; overflow: hidden; }
+  .collapse-body.open { max-height: 3000px; opacity: 1; padding-top: 8px; overflow: visible; }
+</style>
 </head>
 <body>
-  <div id="root"></div>
+<div id="root"></div>
+<script>
+  var ADMIN_EMAILS = ["c.bourbon@myunisoft.fr", "m.gonzalez@myunisoft.fr"];
+  var firebaseConfig = { apiKey: "AIzaSyBPH2KoTL5kYXT5c7obYidciDuElmr2C7Y", authDomain: "backstage-debrief.firebaseapp.com", databaseURL: "https://backstage-debrief-default-rtdb.europe-west1.firebasedatabase.app", projectId: "backstage-debrief", storageBucket: "backstage-debrief.firebasestorage.app", messagingSenderId: "313402258283", appId: "1:313402258283:web:5f6ce5828effa0a519d22e" };
+  var db = null, auth = null;
+  try { firebase.initializeApp(firebaseConfig); db = firebase.database(); auth = firebase.auth(); } catch(e) { console.warn("Firebase:", e); }
+  window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
+</script>
+<script src="templates/backstage.js"></script>
+<script src="templates/starwars.js"></script>
+<script src="templates/gaming.js"></script>
+<script src="templates/retro80.js"></script>
+<script src="templates/kohlanta.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
 
-  <!-- ============================================================ -->
-  <!-- FIREBASE CONFIG                                              -->
-  <!-- ============================================================ -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBPH2KoTL5kYXT5c7obYidciDuElmr2C7Y",
-      authDomain: "backstage-debrief.firebaseapp.com",
-      databaseURL: "https://backstage-debrief-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "backstage-debrief",
-      storageBucket: "backstage-debrief.firebasestorage.app",
-      messagingSenderId: "313402258283",
-      appId: "1:313402258283:web:5f6ce5828effa0a519d22e"
+// ============================
+// DEFAULT TEMPLATE
+// ============================
+const DEFAULT_SECTION_ORDER = ["header","regles","vibecheck","colonnes","roti","actions","resume","outro"];
+const LOCKED_SECTIONS = ["header","resume","outro"];
+const SECTION_LABELS = {header:"🔝 Entrée (Header)",regles:"📋 Règles",vibecheck:"🎤 Ressenti",colonnes:"📊 Colonnes Feedbacks",roti:"📈 ROTI",actions:"🎯 Actions",resume:"🏆 Résumé",outro:"🎬 Mot de la Fin"};
+
+const DEFAULT_TPL = { id:"custom-theme",name:"Mon Thème Custom",desc:"Un thème personnalisé",preview:"🎨✨🎭",dark:false,appLogo:"",iconMeeting:"",iconStart:"",accent:"#F97316",accentDark:"#C2410C",accentLight:"#FFF7ED",bodyBg:"#F8EBDB",cardBg:"#FFFAF5",cardBorder:"#E8C9A8",inputBg:"#FFFAF5",inputBorder:"#E8C9A8",textPrimary:"#1F2937",textSecondary:"#6B7280",textMuted:"#9CA3AF",progressBg:"#FED7AA",appTitle:"MON THÈME",subtitle:"Rétro Sprint — MyUnisoft GI",headerImage:"none",headerGradient:"linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",rulesTitle:"🎼",rulesName:"Règles du Pitt",rulesColor:"#78350F",rulesDotColor:"#F97316",rulesImage:"none",rulesOverlayMobile:"linear-gradient(to bottom, #FFF6EE 0%, #FFF6EE 50%, rgba(255,246,238,0.7) 70%, rgba(255,246,238,0.3) 100%)",rulesOverlayDesktop:"linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(255,246,238,0.7) 60%, rgba(255,246,238,0.2) 80%, transparent 100%)",rulesItems:["Ce qui se dit en rétro reste en rétro","Pas de jugement, que du feedback constructif","Tout le monde parle, personne ne domine","On cherche des solutions, pas des coupables","Les décisions se prennent ensemble"],tooltip:{title:"LES RÈGLES DU GI CLUB",quote:"LA PREMIÈRE RÈGLE DU GI CLUB EST :\nON NE PARLE PAS DU GI CLUB EN DEHORS DU GI CLUB",author:"— Tyler Durden, probablement PO dans une autre vie",image:""},categories:[{id:"rock",label:"Rock"},{id:"fausse",label:"Fausse note"},{id:"ameliorer",label:"Améliorer"}],columns:{rock:{title:"🎸 Rock",color:"#15803D",border:"#BBF7D0"},fausse:{title:"🎵 Fausse Note",color:"#DC2626",border:"#FECACA"},ameliorer:{title:"🔧 Améliorer",color:"#2563EB",border:"#BFDBFE"}},vibeTitle:"🎤 Ressenti",vibeChecks:[{id:"ambiance",label:"Ambiance du Sprint",color:"#B45309",bg:"#FEF3C7",border:"#F59E0B",image:"",imageStyle:null},{id:"satisfaction",label:"Satisfaction Travail",color:"#7C3AED",bg:"#EDE9FE",border:"#8B5CF6",image:"",imageStyle:null}],roti:{id:"roti",label:"ROTI",color:"#C2410C",bg:"#FFEDD5",border:"#EA580C",image:"",imageStyle:null},ratingLabels:{1:{emoji:"😤",label:"Catastrophe"},2:{emoji:"😕",label:"Pas top"},3:{emoji:"😐",label:"Moyen"},4:{emoji:"😊",label:"Bien"},5:{emoji:"🤩",label:"Excellent"}},ratingCatLabels:{ambiance:"Ambiance du Sprint",satisfaction:"Satisfaction Travail",roti:"ROTI"},feedbackTitle:"💬 Feedbacks",actionTitle:"🎯 Actions",actionQuote:"\"L'action est la clé du succès.\"",afterTitle:"📊 Résultats & Actions",summaryTitle:"🏆 Résumé de la Rétro",summaryImage:"none",summaryOverlay:"linear-gradient(135deg, rgba(28,10,10,0.88) 0%, rgba(50,14,14,0.92) 50%, rgba(28,10,10,0.88) 100%)",summaryPinHint:"Les retours 📌 épinglés par l'admin apparaîtront ici.",outroTitle:"🎬 Le Mot de la Fin",outro:{none:{text:"En attente des votes...",emoji:"⏳"},low:{text:"Message basse moyenne",emoji:"😬"},mid:{text:"Message moyenne correcte",emoji:"👍"},high:{text:"Message haute moyenne",emoji:"🎉"}},outroGifs:{none:"",low:"",mid:"",high:""},mdTitle:"🎤 Rétro Sprint",mdSummary:"📊 Résumé",mdGlobal:"🎯 Moyenne globale",mdPinned:"📌 Retours épinglés",mdActions:"🎯 Actions",mdDetail:"📋 Détail des retours",sectionOrder:[...DEFAULT_SECTION_ORDER]};
+
+// ============================
+// PAINT-STYLE COLOR PALETTE
+// ============================
+const PAINT_COLORS = [
+  // Row 1: Basic
+  "#000000","#7F7F7F","#880015","#ED1C24","#FF7F27","#FFF200","#22B14C","#00A2E8","#3F48CC","#A349A4",
+  // Row 2: Lighter
+  "#FFFFFF","#C3C3C3","#B97A57","#FFAEC9","#FFC90E","#EFE4B0","#B5E61D","#99D9EA","#7092BE","#C8BFE7",
+  // Row 3: Extended
+  "#1B1464","#2E3192","#0054A6","#2B388F","#00AEEF","#6DCFF6","#00A651","#39B54A","#8DC63F","#D9E021",
+  // Row 4: Warm extended
+  "#F26522","#F7941D","#FBB03B","#FCB040","#F15A24","#BE1E2D","#93278F","#662D91","#9E005D","#C1272D",
+  // Row 5: Pastels
+  "#FDE8E8","#FCE4EC","#F3E5F5","#EDE7F6","#E8EAF6","#E3F2FD","#E0F7FA","#E0F2F1","#E8F5E9","#FFF8E1",
+  // Row 6: Dark variants
+  "#1A1A2E","#16213E","#0F3460","#1B262C","#222831","#2C3333","#1A3C40","#2C3639","#3C2A21","#3E065F"
+];
+
+// ============================
+// COLOR PICKER COMPONENT
+// ============================
+function ColorPickerPopup({ value, onChange, onClose }) {
+  const [hex, setHex] = useState(value || "#F97316");
+  const [r, setR] = useState(249); const [g, setG] = useState(115); const [b, setB] = useState(22);
+  const spectrumRef = useRef(null);
+  const hueRef = useRef(null);
+  const [hue, setHue] = useState(0);
+  const [sat, setSat] = useState(100);
+  const [light, setLight] = useState(50);
+
+  useEffect(() => {
+    const c = value || "#F97316";
+    setHex(c);
+    const rgb = hexToRgb(c);
+    if (rgb) { setR(rgb.r); setG(rgb.g); setB(rgb.b);
+      const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+      setHue(hsl.h); setSat(hsl.s); setLight(hsl.l);
+    }
+  }, []);
+
+  function hexToRgb(h) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+    return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
+  }
+  function rgbToHex(r,g,b) { return "#" + [r,g,b].map(x => x.toString(16).padStart(2,"0")).join(""); }
+  function rgbToHsl(r,g,b) {
+    r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h,s,l=(mx+mn)/2;
+    if(mx===mn){h=s=0;}else{const d=mx-mn;s=l>0.5?d/(2-mx-mn):d/(mx+mn);
+      switch(mx){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}
+    }
+    return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};
+  }
+  function hslToRgb(h,s,l) {
+    h/=360;s/=100;l/=100;let r,g,b;
+    if(s===0){r=g=b=l;}else{
+      const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;
+      function hue2rgb(p,q,t){if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;}
+      r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);
+    }
+    return{r:Math.round(r*255),g:Math.round(g*255),b:Math.round(b*255)};
+  }
+
+  const updateFromHSL = (h, s, l) => {
+    const rgb = hslToRgb(h, s, l);
+    setR(rgb.r); setG(rgb.g); setB(rgb.b);
+    setHex(rgbToHex(rgb.r, rgb.g, rgb.b));
+  };
+
+  const handleSpectrumClick = (e) => {
+    const rect = spectrumRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    const newSat = Math.round(x * 100);
+    const newLight = Math.round((1 - y) * 100);
+    setSat(newSat); setLight(newLight);
+    updateFromHSL(hue, newSat, newLight);
+  };
+  const handleHueClick = (e) => {
+    const rect = hueRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const newHue = Math.round(x * 360);
+    setHue(newHue);
+    updateFromHSL(newHue, sat, light);
+  };
+  const handleHexInput = (v) => {
+    setHex(v);
+    const rgb = hexToRgb(v);
+    if (rgb) { setR(rgb.r); setG(rgb.g); setB(rgb.b);
+      const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+      setHue(hsl.h); setSat(hsl.s); setLight(hsl.l);
+    }
+  };
+  const handlePalette = (c) => { handleHexInput(c); };
+  const confirm = () => { onChange(hex); onClose(); };
+
+  const spectrumBg = `linear-gradient(to right, hsl(${hue},0%,50%), hsl(${hue},100%,50%))`;
+
+  return (
+    <div className="cpk-overlay" onClick={onClose}>
+      <div className="cpk-popup" onClick={e => e.stopPropagation()}>
+        <div style={{fontSize:13,fontWeight:700,color:"#F97316",marginBottom:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span>🎨 Sélecteur de couleur</span>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#555",fontSize:18,cursor:"pointer"}}>✕</button>
+        </div>
+
+        {/* Spectrum: saturation x lightness */}
+        <div ref={spectrumRef} className="cpk-spectrum" onClick={handleSpectrumClick}
+          onMouseDown={(e) => { handleSpectrumClick(e); const move = (ev) => handleSpectrumClick(ev); const up = () => { document.removeEventListener("mousemove",move); document.removeEventListener("mouseup",up); }; document.addEventListener("mousemove",move); document.addEventListener("mouseup",up); }}
+          style={{background:`linear-gradient(to bottom, white, transparent, black), linear-gradient(to right, gray, hsl(${hue},100%,50%))`, backgroundBlendMode:"normal"}}>
+          <div style={{position:"absolute",left:`${sat}%`,top:`${100-light}%`,width:12,height:12,borderRadius:"50%",border:"2px solid white",boxShadow:"0 0 4px rgba(0,0,0,0.5)",transform:"translate(-50%,-50%)",pointerEvents:"none"}}/>
+        </div>
+
+        {/* Hue bar */}
+        <div style={{fontSize:10,color:"#555",fontWeight:600,marginBottom:3}}>Teinte (Hue)</div>
+        <div ref={hueRef} className="cpk-hue-bar" onClick={handleHueClick}
+          onMouseDown={(e) => { handleHueClick(e); const move = (ev) => handleHueClick(ev); const up = () => { document.removeEventListener("mousemove",move); document.removeEventListener("mouseup",up); }; document.addEventListener("mousemove",move); document.addEventListener("mouseup",up); }}
+          style={{background:"linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)", position:"relative"}}>
+          <div style={{position:"absolute",left:`${hue/360*100}%`,top:"50%",width:6,height:20,borderRadius:3,border:"2px solid white",boxShadow:"0 0 4px rgba(0,0,0,0.4)",transform:"translate(-50%,-50%)",pointerEvents:"none",background:`hsl(${hue},100%,50%)`}}/>
+        </div>
+
+        {/* Paint-style palette */}
+        <div style={{fontSize:10,color:"#555",fontWeight:600,marginBottom:4,marginTop:8}}>Palette rapide</div>
+        <div className="cpk-palette">
+          {PAINT_COLORS.map((c,i) => (
+            <button key={i} onClick={() => handlePalette(c)} style={{background:c, borderColor: hex.toLowerCase()===c.toLowerCase() ? "#F97316" : "#333", borderWidth: hex.toLowerCase()===c.toLowerCase() ? 2 : 1}} title={c}/>
+          ))}
+        </div>
+
+        {/* Inputs */}
+        <div style={{fontSize:10,color:"#555",fontWeight:600,marginBottom:4}}>Valeur</div>
+        <div className="cpk-inputs">
+          <div style={{flex:2}}><input value={hex} onChange={e => handleHexInput(e.target.value)} placeholder="#RRGGBB" style={{fontFamily:"monospace"}}/></div>
+          <div style={{flex:1,textAlign:"center"}}><div style={{fontSize:9,color:"#555",marginBottom:2}}>R</div><input value={r} onChange={e => { const v=Math.min(255,Math.max(0,parseInt(e.target.value)||0)); setR(v); const h2=rgbToHex(v,g,b); setHex(h2); const hsl=rgbToHsl(v,g,b); setHue(hsl.h);setSat(hsl.s);setLight(hsl.l);}} style={{textAlign:"center",fontFamily:"monospace"}}/></div>
+          <div style={{flex:1,textAlign:"center"}}><div style={{fontSize:9,color:"#555",marginBottom:2}}>G</div><input value={g} onChange={e => { const v=Math.min(255,Math.max(0,parseInt(e.target.value)||0)); setG(v); const h2=rgbToHex(r,v,b); setHex(h2); const hsl=rgbToHsl(r,v,b); setHue(hsl.h);setSat(hsl.s);setLight(hsl.l);}} style={{textAlign:"center",fontFamily:"monospace"}}/></div>
+          <div style={{flex:1,textAlign:"center"}}><div style={{fontSize:9,color:"#555",marginBottom:2}}>B</div><input value={b} onChange={e => { const v=Math.min(255,Math.max(0,parseInt(e.target.value)||0)); setB(v); const h2=rgbToHex(r,g,v); setHex(h2); const hsl=rgbToHsl(r,g,v); setHue(hsl.h);setSat(hsl.s);setLight(hsl.l);}} style={{textAlign:"center",fontFamily:"monospace"}}/></div>
+        </div>
+
+        {/* Preview */}
+        <div className="cpk-preview" style={{background:hex}}/>
+
+        <div className="cpk-btns">
+          <button onClick={onClose} style={{background:"none",border:"1px solid #444",color:"#aaa"}}>Annuler</button>
+          <button onClick={confirm} style={{background:"linear-gradient(135deg,#F97316,#EA580C)",border:"none",color:"#fff"}}>Appliquer</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================
+// FORM COMPONENTS
+// ============================
+function CF({label,value,onChange,tooltip}) {
+  const [showPicker, setShowPicker] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+  const [tipPos, setTipPos] = useState({top:0,left:0});
+  const tipRef = React.useRef(null);
+  const handleEnter = () => {
+    if(tipRef.current){
+      const r = tipRef.current.getBoundingClientRect();
+      setTipPos({top: r.top - 4, left: r.right + 10});
+    }
+    setShowTip(true);
+  };
+  return (
+    <div className="field"><label style={{display:"flex",alignItems:"center",gap:4}}>
+      {label}
+      {tooltip && <span ref={tipRef} onMouseEnter={handleEnter} onMouseLeave={()=>setShowTip(false)} style={{cursor:"help",fontSize:12,color:"#888",lineHeight:1}}>ⓘ
+        {showTip && ReactDOM.createPortal(<span style={{position:"fixed",top:tipPos.top,left:tipPos.left,background:"#EFEFEF",color:"#1A1A1A",fontSize:11,padding:"8px 12px",borderRadius:8,whiteSpace:"normal",width:250,lineHeight:1.5,boxShadow:"0 4px 16px rgba(0,0,0,0.3)",border:"1px solid #bbb",zIndex:9999,fontWeight:400,pointerEvents:"none"}}>{tooltip}</span>, document.body)}
+      </span>}
+    </label>
+      <div className="color-field">
+        <div onClick={() => setShowPicker(true)} style={{width:32,height:32,borderRadius:6,border:"2px solid #333",background:value||"#000",cursor:"pointer",flexShrink:0}} title="Ouvrir le sélecteur"/>
+        <input type="text" value={value||""} onChange={e=>onChange(e.target.value)} placeholder="#RRGGBB ou rgba(...)"/>
+      </div>
+      {showPicker && <ColorPickerPopup value={value} onChange={onChange} onClose={() => setShowPicker(false)}/>}
+    </div>
+  );
+}
+function TF({label,value,onChange,placeholder,multiline}){return(<div className="field"><label>{label}</label>{multiline?<textarea value={value||""} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>:<input type="text" value={value||""} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>}</div>);}
+// Context pour passer l'ID du thème aux composants ImageField
+
+// Composant image avec import local base64 + preview + delete
+function ImageField({label,value,onChange,cssUrl}){
+  const fileRef = React.useRef(null);
+
+  // Extraire l'URL brute si format css url("...")
+  const rawUrl = React.useMemo(() => {
+    if(!value) return "";
+    if(cssUrl){const m=value.match(/url\(["']?([^"')]+)["']?\)/);return m?m[1]:value;}
+    return value;
+  },[value,cssUrl]);
+
+  const handleFile = (e) => {
+    const file = e.target.files?.[0];
+    if(!file) return;
+    // Limite 500 Ko pour ne pas alourdir la base
+    if(file.size > 500*1024){alert("Image trop lourde (max 500 Ko). Redimensionne-la ou compresse-la avant.");e.target.value="";return;}
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const b64 = ev.target.result;
+      onChange(cssUrl ? 'url("'+b64+'")' : b64);
     };
-    let db = null;
-    let auth = null;
-    try { firebase.initializeApp(firebaseConfig); db = firebase.database(); auth = firebase.auth(); }
-    catch(e) { console.warn("Firebase init error:", e); }
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
-    // Registre global des templates (rempli par les fichiers templates/*.js)
-    window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
+  const handleDelete = () => {
+    onChange(cssUrl ? "none" : "");
+  };
 
-    // Charge les templates custom depuis Firebase au démarrage
-    if (db) {
-      db.ref("customTemplates").on("value", (snap) => {
-        const customs = snap.val();
-        if (customs) {
-          Object.entries(customs).forEach(([id, tpl]) => {
-            window.RETRO_TEMPLATES[id] = { ...tpl, _custom: true };
-          });
-        }
-        // Nettoyage : retirer les custom supprimés
-        Object.keys(window.RETRO_TEMPLATES).forEach(id => {
-          if (window.RETRO_TEMPLATES[id]._custom && (!customs || !customs[id])) {
-            delete window.RETRO_TEMPLATES[id];
-          }
-        });
-        // Dispatch event pour que React re-render
-        window.dispatchEvent(new Event("templates-updated"));
-      });
-    }
-  </script>
-
-  <!-- ============================================================ -->
-  <!-- TEMPLATES (ajoute/retire des lignes ici pour gérer les thèmes) -->
-  <!-- ============================================================ -->
-  <script src="templates/backstage.js"></script>
-  <script src="templates/starwars.js"></script>
-  <script src="templates/gaming.js"></script>
-  <script src="templates/retro80.js"></script>
-  <script src="templates/kohlanta.js"></script>
-
-  <!-- ============================================================ -->
-  <!-- APPLICATION PRINCIPALE                                       -->
-  <!-- ============================================================ -->
-  <script type="text/babel">
-    const { useState, useRef, useEffect, useCallback, useMemo } = React;
-
-    // --- Récupère la liste des templates chargés ---
-    function getTemplates() { return window.RETRO_TEMPLATES || {}; }
-    function getTemplateList() { return Object.values(getTemplates()); }
-    function getTemplate(id) { return getTemplates()[id] || getTemplateList()[0] || null; }
-
-    // --- Hook pour forcer un re-render quand les templates custom changent ---
-    function useTemplateRefresh() {
-      const [, setTick] = useState(0);
-      useEffect(() => {
-        const handler = () => setTick(t => t + 1);
-        window.addEventListener("templates-updated", handler);
-        return () => window.removeEventListener("templates-updated", handler);
-      }, []);
-    }
-
-    // --- RESPONSIVE HOOK ---
-    function useResponsive() {
-      const [width, setWidth] = useState(window.innerWidth);
-      useEffect(() => {
-        const handle = () => setWidth(window.innerWidth);
-        window.addEventListener("resize", handle);
-        return () => window.removeEventListener("resize", handle);
-      }, []);
-      return { isMobile: width <= 768, isTablet: width > 768 && width <= 1024, isDesktop: width > 1024, width };
-    }
-
-    // --- AUTH HOOK ---
-    function useAuth() {
-      const [user, setUser] = useState(null);
-      const [loading, setLoading] = useState(true);
-      const [error, setError] = useState(null);
-      useEffect(() => {
-        if (!auth) { setLoading(false); return; }
-        return auth.onAuthStateChanged((u) => { setUser(u); setLoading(false); });
-      }, []);
-      const signIn = async () => {
-        setError(null);
-        try {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          provider.setCustomParameters({ hd: "myunisoft.fr" });
-          await auth.signInWithPopup(provider);
-        } catch (e) { setError(e.message); }
-      };
-      const signOut = async () => { await auth.signOut(); };
-      return { user, loading, error, signIn, signOut };
-    }
-
-    // --- FIREBASE DB HOOK ---
-    function useFirebase(path, defaultVal, enabled) {
-      const [data, setData] = useState(defaultVal);
-      const [status, setStatus] = useState("connecting");
-      useEffect(() => {
-        if (!enabled || !db) { setStatus("offline"); return; }
-        const ref = db.ref(path);
-        const handler = ref.on("value", (snap) => {
-          const val = snap.val();
-          setData(val ? Object.values(val) : []);
-          setStatus("synced");
-        }, (err) => { setStatus("error"); console.error(err); });
-        return () => ref.off("value", handler);
-      }, [path, enabled]);
-      const setItems = useCallback(async (newData) => { if (!db) return; setStatus("saving"); const obj = {}; newData.forEach((item) => { obj[item.id] = item; }); await db.ref(path).set(obj); setStatus("synced"); }, [path]);
-      const pushItem = useCallback(async (item) => { if (!db) return; setStatus("saving"); await db.ref(path + "/" + item.id).set(item); setStatus("synced"); }, [path]);
-      const removeItem = useCallback(async (id) => { if (!db) return; setStatus("saving"); await db.ref(path + "/" + id).remove(); setStatus("synced"); }, [path]);
-      const updateItem = useCallback(async (id, updates) => { if (!db) return; setStatus("saving"); await db.ref(path + "/" + id).update(updates); setStatus("synced"); }, [path]);
-      return { data, status, setItems, pushItem, removeItem, updateItem };
-    }
-
-    // --- RIDEAU CONCERT ---
-    function ConcertCurtain({ visible, catLabel }) {
-      if (!visible) return null;
-      const folds = Array.from({ length: 8 });
-      return (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9999, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, width: "50%", height: "100%", animation: "curtainLeft 2.4s cubic-bezier(0.4,0,0.2,1) forwards", display: "flex" }}>
-            {folds.map((_, i) => (<div key={i} style={{ flex: 1, height: "100%", background: `linear-gradient(180deg, #6B0000 0%, #CC0000 ${20+i*8}%, #8B0000 ${50+i*4}%, #DC143C 100%)`, boxShadow: i%2===0?"inset -6px 0 12px rgba(0,0,0,0.4)":"inset 6px 0 12px rgba(255,255,255,0.1)", borderRight: "1px solid rgba(0,0,0,0.2)" }} />))}
-            <div style={{ position: "absolute", right: -2, top: 0, width: 18, height: "100%", background: "repeating-linear-gradient(180deg, #FFD700 0px, #B8860B 8px, #FFD700 16px)", opacity: 0.9 }} />
-          </div>
-          <div style={{ position: "absolute", top: 0, right: 0, width: "50%", height: "100%", animation: "curtainRight 2.4s cubic-bezier(0.4,0,0.2,1) forwards", display: "flex", flexDirection: "row-reverse" }}>
-            {folds.map((_, i) => (<div key={i} style={{ flex: 1, height: "100%", background: `linear-gradient(180deg, #6B0000 0%, #CC0000 ${20+i*8}%, #8B0000 ${50+i*4}%, #DC143C 100%)`, boxShadow: i%2===0?"inset 6px 0 12px rgba(0,0,0,0.4)":"inset -6px 0 12px rgba(255,255,255,0.1)", borderLeft: "1px solid rgba(0,0,0,0.2)" }} />))}
-            <div style={{ position: "absolute", left: -2, top: 0, width: 18, height: "100%", background: "repeating-linear-gradient(180deg, #FFD700 0px, #B8860B 8px, #FFD700 16px)", opacity: 0.9 }} />
-          </div>
-          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, animation: "curtainText 2.4s ease forwards" }}>
-            <div style={{ fontSize: 64 }}>🤔</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#FFD700", textShadow: "0 2px 8px rgba(0,0,0,0.6)", textAlign: "center", padding: "0 20px" }}>Résultats {catLabel}</div>
-            <div style={{ fontSize: 14, color: "#FDE047", opacity: 0.8 }}>Tout le monde a voté !</div>
-          </div>
+  return(
+    <div className="field">
+      <label>{label}</label>
+      <div className="uf-wrap">
+        <div className="uf-row">
+          {rawUrl && rawUrl!=="none" && !rawUrl.startsWith("data:") && <img className="uf-preview" src={rawUrl} onError={e=>e.target.style.display="none"} alt=""/>}
+          {rawUrl && rawUrl.startsWith("data:") && <img className="uf-preview" src={rawUrl} alt=""/>}
+          <input type="text" value={value && !value.startsWith("data:") && !(cssUrl && value.includes("data:")) ? value : (rawUrl.startsWith("data:") ? "📎 Image importée" : value||"")} onChange={e=>onChange(e.target.value)} placeholder={cssUrl ? 'url("...") ou none' : "https://... ou vide"} readOnly={rawUrl.startsWith("data:")}/>
+          <button className="uf-btn" onClick={()=>fileRef.current?.click()} title="Importer depuis le PC (max 500 Ko)">📁</button>
+          {rawUrl && rawUrl!=="none" && <button className="uf-btn danger" onClick={handleDelete} title="Supprimer l'image">🗑️</button>}
         </div>
-      );
+        <input ref={fileRef} type="file" accept="image/*,.gif" style={{display:"none"}} onChange={handleFile}/>
+      </div>
+    </div>
+  );
+}
+
+function Collapsible({title, defaultOpen, children}) {
+  const [open, setOpen] = useState(defaultOpen !== false);
+  return (
+    <div>
+      <div className="collapse-header" onClick={() => setOpen(!open)}>
+        <div className="section-title">{title}</div>
+        <span className={`collapse-chevron ${open ? "open" : ""}`}>▶</span>
+      </div>
+      <div className={`collapse-body ${open ? "open" : "closed"}`}>{children}</div>
+    </div>
+  );
+}
+
+// ============================
+// GRADIENT BUILDER
+// ============================
+function parseGradient(str) {
+  if (!str || !str.includes("gradient")) return null;
+  try {
+    const match = str.match(/linear-gradient\(([^,]+),\s*(.*)\)/s);
+    if (!match) return null;
+    const direction = match[1].trim();
+    const stopsStr = match[2];
+    const stops = [];
+    const re = /(rgba?\([^)]+\)|#[a-fA-F0-9]{3,8}|[a-z]+)\s*(\d+%)?/g;
+    let m;
+    while ((m = re.exec(stopsStr)) !== null) {
+      stops.push({ color: m[1], position: m[2] || "" });
     }
+    return { direction, stops: stops.length ? stops : [{ color: "#000000", position: "0%" }, { color: "#ffffff", position: "100%" }] };
+  } catch (e) { return null; }
+}
 
-    // --- ADMINS ---
-    const ADMIN_EMAILS = ["c.bourbon@myunisoft.fr", "m.gonzalez@myunisoft.fr"];
+function buildGradient(parsed) {
+  if (!parsed) return "";
+  const stopsStr = parsed.stops.map(s => `${s.color} ${s.position}`).join(", ");
+  return `linear-gradient(${parsed.direction}, ${stopsStr})`;
+}
 
-    // --- SPRINT DATE + TEMPLATE SELECTION ---
-    function SprintDateScreen({ onSave }) {
-      const [date, setDate] = React.useState(new Date().toISOString().split("T")[0]);
-      const [selectedTemplate, setSelectedTemplate] = React.useState(getTemplateList()[0]?.id || "backstage");
-      const { isMobile } = useResponsive();
-      useTemplateRefresh();
-      const templates = getTemplateList();
-      return (
-        <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#FEF5EC", borderRadius: 24, padding: isMobile ? "28px 16px" : "48px 40px", maxWidth: 600, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(0,0,0,0.1)" }}>
-            <img src="assets/backstage/Batterie.png" style={{ width: 100, height: 100, borderRadius: "50%", marginBottom: 12, objectFit: "cover" }} />
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#1F2937", marginBottom: 4 }}>Nouveau Sprint !</div>
-            <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 20 }}>Configure la session : date et format de rétro.</div>
-            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1px solid #E8C9A8", fontSize: 15, marginBottom: 20, textAlign: "center" }} />
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#1F2937", marginBottom: 12, textAlign: "left" }}>🎭 Choisis le thème de la rétro :</div>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 12 }}>
-              {templates.map(t => (
-                <button key={t.id} onClick={() => setSelectedTemplate(t.id)} style={{
-                  padding: "12px 14px", borderRadius: 12, cursor: "pointer",
-                  border: selectedTemplate === t.id ? "2.5px solid " + t.accent : "1.5px solid #E8C9A8",
-                  background: selectedTemplate === t.id ? (t.dark ? t.cardBg : t.accentLight || "#FFF7ED") : "#FFFAF5",
-                  textAlign: "left", transition: "all 0.2s",
-                  transform: selectedTemplate === t.id ? "scale(1.02)" : "scale(1)",
-                  boxShadow: selectedTemplate === t.id ? "0 4px 16px " + t.accent + "44" : "none",
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: selectedTemplate === t.id ? (t.dark ? t.accent : t.accentDark) : "#1F2937", marginBottom: 2 }}>{t.name}</div>
-                    {t._custom && <span style={{ fontSize: 9, background: "#F59E0B22", color: "#F59E0B", padding: "2px 6px", borderRadius: 4, fontWeight: 700 }}>CUSTOM</span>}
-                  </div>
-                  <div style={{ fontSize: 11, color: selectedTemplate === t.id ? (t.dark ? t.textSecondary : "#6B7280") : "#9CA3AF" }}>{t.desc}</div>
-                  <div style={{ fontSize: 16, marginTop: 4, letterSpacing: 2 }}>{t.preview}</div>
-                </button>
-              ))}
-            </div>
-            <button onClick={() => window.open("theme-editor.html", "_blank")} style={{ width: "100%", padding: "10px 0", borderRadius: 10, border: "1.5px dashed #D97706", background: "none", color: "#D97706", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 24, transition: "all 0.15s" }}
-              onMouseEnter={e => { e.currentTarget.style.background = "#FEF3C7"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "none"; }}>
-              ✨ Personnaliser un thème
-            </button>
-            <button onClick={() => onSave(date, selectedTemplate)} style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #1c0a0a, #3b0f0f)", color: "#F97316", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>🤘 Lancer la rétro</button>
-          </div>
+function GradientBuilder({ label, description, value, onChange }) {
+  const parsed = parseGradient(value);
+  const [editMode, setEditMode] = useState(!parsed ? "raw" : "visual");
+
+  if (editMode === "raw" || !parsed) {
+    return (
+      <div className="field">
+        <label style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          {label}
+          {parsed && <button onClick={() => setEditMode("visual")} style={{fontSize:9,background:"#261A0F",border:"1px solid #F97316",color:"#F97316",borderRadius:4,padding:"2px 6px",cursor:"pointer",fontFamily:"inherit"}}>Mode visuel</button>}
+        </label>
+        {description && <div className="section-desc">{description}</div>}
+        <textarea value={value||""} onChange={e=>onChange(e.target.value)} placeholder="linear-gradient(...)"/>
+        <div className="grad-preview" style={{background:value||"#333"}}/>
+      </div>
+    );
+  }
+
+  const updateDirection = (d) => { const p = {...parsed, direction: d}; onChange(buildGradient(p)); };
+  const updateStop = (i, key, val) => { const p = {...parsed, stops: parsed.stops.map((s,j) => j===i ? {...s,[key]:val} : s)}; onChange(buildGradient(p)); };
+  const addStop = () => { const p = {...parsed, stops: [...parsed.stops, {color:"rgba(0,0,0,0.5)",position:"50%"}]}; onChange(buildGradient(p)); };
+  const removeStop = (i) => { if (parsed.stops.length <= 2) return; const p = {...parsed, stops: parsed.stops.filter((_,j) => j!==i)}; onChange(buildGradient(p)); };
+
+  return (
+    <div className="field">
+      <label style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        {label}
+        <button onClick={() => setEditMode("raw")} style={{fontSize:9,background:"#1A1A1A",border:"1px solid #444",color:"#888",borderRadius:4,padding:"2px 6px",cursor:"pointer",fontFamily:"inherit"}}>Mode brut</button>
+      </label>
+      {description && <div className="section-desc">{description}</div>}
+
+      <div style={{marginBottom:6}}>
+        <div style={{fontSize:10,color:"#666",marginBottom:3,fontWeight:600}}>Direction du dégradé</div>
+        <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:4}}>
+          {[{v:"to bottom",l:"↓ Haut→Bas"},{v:"to right",l:"→ Gauche→Droite"},{v:"to top",l:"↑ Bas→Haut"},{v:"to left",l:"← Droite→Gauche"},{v:"135deg",l:"↘ Diag. 135°"},{v:"45deg",l:"↗ Diag. 45°"}].map(d => (
+            <button key={d.v} onClick={() => updateDirection(d.v)} style={{
+              padding:"3px 8px",borderRadius:4,fontSize:10,cursor:"pointer",fontFamily:"inherit",fontWeight:600,
+              border: parsed.direction === d.v ? "1px solid #F97316" : "1px solid #333",
+              background: parsed.direction === d.v ? "#261A0F" : "#111",
+              color: parsed.direction === d.v ? "#F97316" : "#888"
+            }}>{d.l}</button>
+          ))}
         </div>
-      );
-    }
+        <input type="text" value={parsed.direction} onChange={e => updateDirection(e.target.value)} style={{padding:"5px 8px",borderRadius:4,border:"1px solid #333",background:"#111",color:"#ccc",fontSize:11,fontFamily:"inherit",width:"100%"}} placeholder="Direction personnalisée (ex: 135deg, to bottom right...)"/>
+      </div>
 
-    function LoginScreen({ onSignIn, error, loading }) {
-      const { isMobile } = useResponsive();
-      return (
-        <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#FEF5EC", borderRadius: 24, padding: isMobile ? "28px 20px 36px" : "36px 56px 56px 56px", maxWidth: 520, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(0,0,0,0.1)" }}>
-            <img src="assets/backstage/Batterie.png" style={{ width: isMobile ? 90 : 120, height: isMobile ? 90 : 120, borderRadius: "50%", marginBottom: 12, objectFit: "cover" }} />
-            <div style={{ fontSize: isMobile ? 22 : 26, fontWeight: 800, color: "#1F2937", marginBottom: 4 }}>Backstage Debrief</div>
-            <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 8 }}>Rétro Sprint — MyUnisoft GI</div>
-            <button onClick={onSignIn} disabled={loading} style={{ padding: "14px 40px", borderRadius: 12, border: "2px solid #E8C9A8", background: "#FEF5EC", color: "#1F2937", fontSize: 15, fontWeight: 600, cursor: loading ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s", margin: "28px auto 0" }}
-              onMouseEnter={e => { if(!loading) e.currentTarget.style.background = "#FCB98B"; }}
-              onMouseLeave={e => e.currentTarget.style.background = "#FEF5EC"}>
-              <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-              {loading ? "Connexion…" : "Se connecter avec Google"}
-            </button>
-            <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 16, fontStyle: "italic" }}>Réservé à l'équipe MyUnisoft GI</div>
-            {error && <div style={{ marginTop: 46, fontSize: 13, color: "#EF4444", background: "#FEF2F2", borderRadius: 8, padding: "8px 8px" }}>{error}</div>}
-          </div>
+      <div style={{fontSize:10,color:"#666",marginBottom:3,fontWeight:600}}>Étapes du dégradé ({parsed.stops.length})</div>
+      <div style={{fontSize:9,color:"#999",marginBottom:6,fontStyle:"italic"}}>Chaque étape = une couleur positionnée sur l'axe. 0% = début, 100% = fin. Le rgba(r,g,b,opacité) permet la transparence.</div>
+      <div style={{display:"flex",gap:6,marginBottom:4,padding:"0 0 0 22px"}}>
+        <span style={{flex:2,fontSize:9,color:"#555",fontWeight:600}}>Couleur (hex ou rgba)</span>
+        <span style={{width:55,fontSize:9,color:"#555",fontWeight:600,textAlign:"center"}}>Position</span>
+        <span style={{width:26}}/>
+      </div>
+      {parsed.stops.map((stop, i) => (
+        <div key={i} className="grad-stop">
+          <span style={{fontSize:10,color:"#555",fontWeight:700,width:16,textAlign:"center"}}>{i+1}</span>
+          <input type="text" value={stop.color} onChange={e => updateStop(i,"color",e.target.value)} style={{flex:2}} placeholder="rgba(28,10,10,0.85) ou #1C0A0A"/>
+          <input type="text" value={stop.position} onChange={e => updateStop(i,"position",e.target.value)} style={{width:55,textAlign:"center"}} placeholder="50%"/>
+          {parsed.stops.length > 2 && <button className="btn-remove" onClick={() => removeStop(i)} style={{fontSize:12,padding:"0 4px"}}>✕</button>}
         </div>
-      );
-    }
+      ))}
+      <button className="btn-add" onClick={addStop} style={{fontSize:10,padding:"5px 0",marginTop:2}}>+ Ajouter une étape</button>
+      <div className="grad-preview" style={{background:value||"#333"}}/>
+    </div>
+  );
+}
 
-    // ╔══════════════════════════════════════════════════════╗
-    // ║                    APP PRINCIPALE                    ║
-    // ╚══════════════════════════════════════════════════════╝
-    function BackstageDebrief() {
-      const { user, loading: authLoading, error: authError, signIn, signOut } = useAuth();
-      const { isMobile, isTablet, isDesktop, width } = useResponsive();
-      useTemplateRefresh();
-      const isAuthed = !!user;
-      const userName = user?.displayName?.split(" ")[0] || "Anonyme";
-      const isAdmin = ADMIN_EMAILS.includes(user?.email);
+// ============================
+// SECTION REORDER (Drag & Drop)
+// ============================
+function SectionReorder({ order, onChange }) {
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
 
-      const todayKey = new Date().toISOString().split("T")[0];
-      const [sprintDateKey, setSprintDateKey] = useState(null);
-      const [templateId, setTemplateId] = useState(getTemplateList()[0]?.id || "backstage");
-      const [cfgLoaded, setCfgLoaded] = useState(false);
+  const handleDragStart = (i) => {
+    if (LOCKED_SECTIONS.includes(order[i])) return;
+    setDragIdx(i);
+  };
+  const handleDragOver = (e, i) => {
+    e.preventDefault();
+    if (LOCKED_SECTIONS.includes(order[i])) return;
+    setOverIdx(i);
+  };
+  const handleDrop = (i) => {
+    if (dragIdx === null || LOCKED_SECTIONS.includes(order[i]) || LOCKED_SECTIONS.includes(order[dragIdx])) { setDragIdx(null); setOverIdx(null); return; }
+    const newOrder = [...order];
+    const [moved] = newOrder.splice(dragIdx, 1);
+    newOrder.splice(i, 0, moved);
+    onChange(newOrder);
+    setDragIdx(null); setOverIdx(null);
+  };
 
-      useEffect(() => {
-        if (!isAuthed || !db) return;
-        const dateRef = db.ref("config/sprintDate");
-        const tplRef = db.ref("config/templateId");
-        dateRef.on("value", (snap) => { setSprintDateKey(snap.val() || null); });
-        tplRef.on("value", (snap) => { setTemplateId(snap.val() || getTemplateList()[0]?.id || "backstage"); setCfgLoaded(true); });
-        return () => { dateRef.off("value"); tplRef.off("value"); };
-      }, [isAuthed]);
-
-      // --- TEMPLATE ACTIF ---
-      const T = getTemplate(templateId) || getTemplateList()[0];
-
-      useEffect(() => { if (T) document.body.style.background = T.bodyBg; }, [T?.bodyBg]);
-
-      const sprintDateLabel = sprintDateKey ? new Date(sprintDateKey + "T12:00:00").toLocaleDateString("fr-FR") : "—";
-      const needsDateSetup = isAdmin && cfgLoaded && sprintDateKey !== todayKey;
-      const saveSprintDate = (date, tplId) => { if (db) { db.ref("config/sprintDate").set(date); db.ref("config/templateId").set(tplId || getTemplateList()[0]?.id); } };
-
-      const fb = useFirebase(`retro-${sprintDateKey || todayKey}/feedbacks`, [], isAuthed && cfgLoaded);
-      const act = useFirebase(`retro-${sprintDateKey || todayKey}/actions`, [], isAuthed && cfgLoaded);
-      const rat = useFirebase(`retro-${sprintDateKey || todayKey}/ratings`, [], isAuthed && cfgLoaded);
-      const feedbacks = fb.data; const actions = act.data; const ratingsRaw = rat.data;
-
-      const getRatingsForCategory = (catId) => Array.isArray(ratingsRaw) ? ratingsRaw.filter(r => r.category === catId) : [];
-      const getMyRating = (catId) => Array.isArray(ratingsRaw) ? ratingsRaw.find(r => r.category === catId && r.authorUid === user?.uid) : null;
-
-      // --- PRÉSENCE ---
-      const [connectedUsers, setConnectedUsers] = useState([]);
-      useEffect(() => {
-        if (!isAuthed || !db || !sprintDateKey) return;
-        const presenceRef = db.ref(`retro-${sprintDateKey}/presence/${user.uid}`);
-        const allRef = db.ref(`retro-${sprintDateKey}/presence`);
-        const connectedRef = db.ref(".info/connected");
-        const registerPresence = () => { presenceRef.set({ name: userName, uid: user.uid, lastSeen: Date.now() }); presenceRef.onDisconnect().remove(); };
-        connectedRef.on("value", snap => { if (snap.val() === true) registerPresence(); });
-        const heartbeat = setInterval(() => { presenceRef.update({ lastSeen: Date.now() }); }, 30000);
-        allRef.on("value", snap => {
-          const val = snap.val(); if (!val) { setConnectedUsers([]); return; }
-          const now = Date.now(); const active = [];
-          Object.entries(val).forEach(([uid, u]) => { if (u.lastSeen && (now - u.lastSeen) < 90000) active.push(u); else db.ref(`retro-${sprintDateKey}/presence/${uid}`).remove(); });
-          setConnectedUsers(active);
-        });
-        const handleUnload = () => presenceRef.remove();
-        window.addEventListener("beforeunload", handleUnload);
-        return () => { clearInterval(heartbeat); presenceRef.remove(); allRef.off("value"); connectedRef.off("value"); window.removeEventListener("beforeunload", handleUnload); };
-      }, [isAuthed, sprintDateKey, user?.uid]);
-
-      const connectedUids = connectedUsers.map(u => u.uid);
-      const everyoneVotedFor = (catId) => connectedUids.length > 0 && connectedUids.every(uid => Array.isArray(ratingsRaw) && ratingsRaw.some(r => r.category === catId && r.authorUid === uid));
-
-      const [curtainTriggered, setCurtainTriggered] = useState({});
-      const [showResults, setShowResults] = useState({});
-      useEffect(() => {
-        ["ambiance", "satisfaction", "roti"].forEach(catId => {
-          if (everyoneVotedFor(catId) && !curtainTriggered[catId]) { setCurtainTriggered(prev => ({ ...prev, [catId]: true })); setTimeout(() => setShowResults(prev => ({ ...prev, [catId]: true })), 1600); }
-        });
-      }, [ratingsRaw, connectedUids.length]);
-
-      const activeCurtain = ["ambiance","satisfaction","roti"].find(id => curtainTriggered[id] && !showResults[id]) || null;
-      const submitRating = (catId, score) => { const existing = getMyRating(catId); if (existing) rat.updateItem(existing.id, { score }); else rat.pushItem({ id: Date.now(), category: catId, score, author: userName, authorUid: user.uid }); };
-      const getAvg = (catId) => { const items = getRatingsForCategory(catId); if (!items.length) return null; return (items.reduce((s, r) => s + r.score, 0) / items.length).toFixed(1); };
-
-      const [selectedCat, setSelectedCat] = useState("rock");
-      const [feedbackText, setFeedbackText] = useState("");
-      const [actionDesc, setActionDesc] = useState("");
-      const [actionResp, setActionResp] = useState("");
-      const [editingFeedback, setEditingFeedback] = useState(null);
-      const [editingAction, setEditingAction] = useState(null);
-      const [showPresence, setShowPresence] = useState(false);
-      const [showUserMenu, setShowUserMenu] = useState(false);
-      const [showIntegration, setShowIntegration] = useState(false);
-      const [zoomedImage, setZoomedImage] = useState(null);
-      const [showPitTooltip, setShowPitTooltip] = useState(false);
-      const [showThemePicker, setShowThemePicker] = useState(false);
-      const [confluenceStatus, setConfluenceStatus] = useState(null);
-      const [confluenceUrl, setConfluenceUrl] = useState(null);
-      const feedbackInputRef = useRef(null);
-
-      useEffect(() => { const h = (e) => { if (!e.target.closest("[data-dropdown]")) { setShowPresence(false); setShowUserMenu(false); setShowIntegration(false); } }; document.addEventListener("click", h); return () => document.removeEventListener("click", h); }, []);
-      useEffect(() => { if (!isAuthed || !db || !sprintDateKey) return; const ref = db.ref(`retro-${sprintDateKey}/confluenceUrl`); ref.on("value", (snap) => { setConfluenceUrl(snap.val() || null); }); return () => ref.off("value"); }, [isAuthed, sprintDateKey]);
-
-      // --- GUARD SCREENS ---
-      if (!T) return <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ fontSize: 18, color: "#EF4444" }}>⚠️ Aucun template chargé. Vérifiez les fichiers templates/*.js</div></div>;
-      if (authLoading || (isAuthed && !cfgLoaded)) return <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ fontSize: 48 }}>🥁</div></div>;
-      if (!isAuthed) return <LoginScreen onSignIn={signIn} error={authError} loading={authLoading} />;
-      if (needsDateSetup) return <SprintDateScreen onSave={saveSprintDate} />;
-      if (!sprintDateKey) return <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}><div style={{ textAlign: "center", color: "#6B7280", fontSize: 15 }}><div style={{ fontSize: 40, marginBottom: 12 }}>⏳</div>En attente de la configuration du sprint par l'animateur…</div></div>;
-
-      const overallStatus = [fb.status, act.status].includes("error") ? "error" : [fb.status, act.status].includes("saving") ? "saving" : [fb.status, act.status].includes("connecting") ? "connecting" : "synced";
-      const addFeedback = () => { if (!feedbackText.trim()) return; fb.pushItem({ id: Date.now(), category: selectedCat, text: feedbackText.trim(), author: userName, authorUid: user.uid }); setFeedbackText(""); feedbackInputRef.current?.focus(); };
-      const addAction = () => { if (!actionDesc.trim() || actions.length >= 3) return; act.pushItem({ id: Date.now(), description: actionDesc.trim(), responsable: actionResp.trim(), done: false, authorUid: user.uid }); setActionDesc(""); setActionResp(""); };
-
-      const CONFLUENCE_FUNCTION_URL = "https://clinquant-strudel-f17230.netlify.app/.netlify/functions/export-confluence";
-
-      // --- MARKDOWN EXPORT (dynamique selon template) ---
-      const generateMarkdown = () => {
-        const dateLabel = sprintDateKey || new Date().toISOString().split("T")[0];
-        const catIds = T.categories.map(c => c.id);
-        const feedByCat = {}; catIds.forEach(id => { feedByCat[id] = feedbacks.filter(f => f.category === id); });
-        const ambianceVotes = Array.isArray(ratingsRaw) ? ratingsRaw.filter(r => r.category === "ambiance") : [];
-        const satisfactionVotes = Array.isArray(ratingsRaw) ? ratingsRaw.filter(r => r.category === "satisfaction") : [];
-        const rotiVotes = Array.isArray(ratingsRaw) ? ratingsRaw.filter(r => r.category === "roti") : [];
-        const avg = (items) => items.length ? (items.reduce((s, r) => s + r.score, 0) / items.length).toFixed(1) : "—";
-        const LABELS = {}; Object.entries(T.ratingLabels).forEach(([k, v]) => { LABELS[k] = v.emoji + " " + v.label; });
-        const allAvgs = [avg(ambianceVotes), avg(satisfactionVotes), avg(rotiVotes)].filter(v => v !== "—").map(Number);
-        const globalAvg = allAvgs.length ? (allAvgs.reduce((s, v) => s + v, 0) / allAvgs.length).toFixed(1) : "—";
-        const allAuthors = new Set(); feedbacks.forEach(f => { if (f.author) allAuthors.add(f.author); }); if (Array.isArray(ratingsRaw)) ratingsRaw.forEach(r => { if (r.author) allAuthors.add(r.author); });
-        const lines = [];
-        lines.push(`# ${T.mdTitle} — ${dateLabel}`);
-        lines.push(`> Exporté le ${new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}`);
-        lines.push("");
-        if ([...allAuthors].length) { lines.push(`**👥 Participants :** ${[...allAuthors].sort().join(", ")}`); lines.push(""); }
-        lines.push("---"); lines.push(""); lines.push(`## ${T.mdSummary}`); lines.push(""); lines.push(`### ${T.mdGlobal}`); lines.push("");
-        lines.push(`**🎯 Moyenne globale : ${globalAvg} / 5** ${globalAvg !== "—" && Number(globalAvg) > 0 ? (T.ratingLabels[Math.round(Number(globalAvg))]?.emoji || "") : ""}`);
-        lines.push(""); lines.push("| Thème | Moyenne |"); lines.push("|---|---|");
-        lines.push(`| ${T.ratingCatLabels.ambiance} | **${avg(ambianceVotes)} / 5** |`);
-        lines.push(`| ${T.ratingCatLabels.satisfaction} | **${avg(satisfactionVotes)} / 5** |`);
-        lines.push(`| ${T.ratingCatLabels.roti} | **${avg(rotiVotes)} / 5** |`); lines.push("");
-        const pinnedByCat = {}; catIds.forEach(id => { pinnedByCat[id] = (feedByCat[id] || []).filter(f => f.pinned); });
-        if (catIds.some(id => pinnedByCat[id].length > 0)) { lines.push(`### ${T.mdPinned}`); lines.push(""); catIds.forEach(id => { if (pinnedByCat[id].length) { lines.push(`**${T.columns[id].title}**`); pinnedByCat[id].forEach(f => lines.push(`- ${f.text}`)); lines.push(""); } }); }
-        if (actions.length) { lines.push(`### ${T.mdActions}`); lines.push(""); lines.push("| Action | Responsable | Statut |"); lines.push("|---|---|---|"); actions.forEach(a => lines.push(`| ${a.description} | ${a.responsable || "—"} | ${a.done ? "✅ Fait" : "⏳ À faire"} |`)); lines.push(""); }
-        lines.push("---"); lines.push(""); lines.push(`## ${T.mdDetail}`); lines.push("");
-        T.vibeChecks.forEach(vc => { const votes = Array.isArray(ratingsRaw) ? ratingsRaw.filter(r => r.category === vc.id) : []; lines.push(`### ${vc.label}`); lines.push(""); lines.push(`**Moyenne : ${avg(votes)} / 5**`); if (votes.length) { lines.push(""); votes.forEach(v => lines.push(`- ${v.author} : ${LABELS[v.score] || v.score}`)); } lines.push(""); });
-        catIds.forEach(id => { lines.push(`### ${T.columns[id].title}`); lines.push(""); if (feedByCat[id].length) feedByCat[id].forEach(f => lines.push(`- ${f.text}${f.author ? ` *(${f.author})*` : ""}`)); else lines.push("*Aucun retour*"); lines.push(""); });
-        lines.push(`### ${T.ratingCatLabels.roti}`); lines.push(""); lines.push(`**Moyenne : ${avg(rotiVotes)} / 5**`); if (rotiVotes.length) { lines.push(""); rotiVotes.forEach(v => lines.push(`- ${v.author} : ${LABELS[v.score] || v.score}`)); } lines.push("");
-        return lines.join("\n");
-      };
-
-      const exportMarkdown = () => { const md = generateMarkdown(); const blob = new Blob([md], { type: "text/markdown;charset=utf-8" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `retro-${sprintDateKey}.md`; a.click(); URL.revokeObjectURL(url); };
-
-      const exportToConfluence = async () => {
-        if (confluenceStatus === "loading") return; setConfluenceStatus("loading"); setConfluenceUrl(null);
-        try {
-          const md = generateMarkdown();
-          const response = await fetch(CONFLUENCE_FUNCTION_URL, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer bkstg-d3br13f-myu-2026-x9k7m2p4" }, body: JSON.stringify({ markdown: md, sprintDate: sprintDateKey, userEmail: user.email }) });
-          const result = await response.json(); if (!response.ok) throw new Error(result.error || "Erreur " + response.status);
-          setConfluenceStatus("success"); setConfluenceUrl(result.pageUrl); if (db) db.ref(`retro-${sprintDateKey}/confluenceUrl`).set(result.pageUrl); setTimeout(() => setConfluenceStatus(null), 8000);
-        } catch (error) { console.error("Confluence export error:", error); setConfluenceStatus("error"); alert(error.message.includes("existe déjà") ? "Une page existe déjà pour ce sprint dans confluence !" : "Erreur : " + error.message); setTimeout(() => setConfluenceStatus(null), 4000); }
-      };
-
-      const resetAll = async () => {
-        if (!confirm("⚠️ Remettre à zéro tous les feedbacks, actions et votes ?")) return;
-        await Promise.all(feedbacks.map(item => fb.removeItem(item.id)));
-        await Promise.all(actions.map(item => act.removeItem(item.id)));
-        await Promise.all((Array.isArray(ratingsRaw) ? ratingsRaw : []).map(item => rat.removeItem(item.id)));
-        setCurtainTriggered({}); setShowResults({});
-        if (db) db.ref(`retro-${sprintDateKey}/confluenceUrl`).remove(); setConfluenceUrl(null);
-      };
-
-      const deleteRetro = async () => {
-        if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu. Tu reviendras à l'écran de configuration.")) return;
-        const key = sprintDateKey;
-        if (!db || !key) return;
-        try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
-        try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("sprintDate:", e.message); }
-        try { await db.ref("config/templateId").set(null); } catch(e) { console.warn("templateId:", e.message); }
-        setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-      };
-
-      const changeTemplate = async (newTplId) => {
-        if (db) await db.ref("config/templateId").set(newTplId);
-        setShowThemePicker(false);
-      };
-
-      const getFeedbacksByCategory = (catId) => feedbacks.filter(f => f.category === catId);
-      const syncColors = { synced: "#10B981", saving: "#F59E0B", connecting: "#60A5FA", error: "#EF4444" };
-      const voteSize = isMobile ? 42 : 52;
-      const voteFontSize = isMobile ? 22 : 26;
-      const isDark = T.dark;
-      const IMG_LOGO = T.appLogo || null;
-      const IMG_MEETING = T.iconMeeting || null;
-      const IMG_START = T.iconStart || null;
-      const EMOJI_MEETING = T.emojiMeeting || "📋";
-      const EMOJI_START = T.emojiStart || "🚀";
-      const EMOJI_LOGO = T.emojiLogo || "🎯";
-      // Helper: garantit le format CSS url("...") pour les backgroundImage
-      const bg = s => s && s !== "none" ? (s.startsWith("url(") || s.startsWith("data:") ? (s.startsWith("data:") ? `url("${s}")` : s) : `url("${s}")`) : null;
-
-      // ╔══════════════════════════════════════════════════════╗
-      // ║                      RENDER                          ║
-      // ╚══════════════════════════════════════════════════════╝
-      return (
-        <div style={{ minHeight: "100vh", zoom: isMobile ? 1 : 1.15 }}>
-
-          {/* ==================== HEADER ==================== */}
-          <div style={{ position: "relative", zIndex: 10, padding: isMobile ? "16px 12px" : "32px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: isMobile ? 8 : 12, minHeight: isMobile ? 80 : 110 }}>
-            {bg(T.headerImage) && <div style={{ position: "absolute", inset: 0, overflow: "hidden", backgroundImage: bg(T.headerImage), backgroundSize: "cover", backgroundPosition: "85% 85%", opacity: 0.45 }} />}
-            <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.headerGradient }} />
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <div style={{ fontSize: isMobile ? 17 : 34, fontWeight: 800, color: T.accent, letterSpacing: isMobile ? 1 : 2.5, display: "flex", alignItems: "center" }}>
-                {IMG_LOGO ? <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: "50%", objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} /> : <span style={{ fontSize: isMobile ? 32 : 52, marginRight: isMobile ? 8 : 12 }}>{EMOJI_LOGO}</span>}
-                {T.appTitle}
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: isMobile ? 4 : 8, alignItems: "center", flexWrap: "wrap", position: "relative", zIndex: 1 }}>
-              {/* Sync */}
-              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.12)", borderRadius: 8, padding: isMobile ? "0 8px" : "0 12px", height: 34 }}>
-                <div style={{ width: 10, height: 10, borderRadius: "50%", background: syncColors[overallStatus], flexShrink: 0, animation: overallStatus === "saving" || overallStatus === "connecting" ? "pulse 1s infinite" : "none", boxShadow: "0 0 6px " + syncColors[overallStatus] }} />
-                <span style={{ fontSize: 18, lineHeight: 1, display: "flex", alignItems: "center" }}>{overallStatus === "synced" ? "🎥" : overallStatus === "saving" ? "💾" : overallStatus === "connecting" ? "📡" : "⚠️"}</span>
-                {!isMobile && <span style={{ fontSize: 12, color: "#fff", opacity: 0.85 }}>{{synced: "En direct", saving: "Enregistrement…", connecting: "Connexion…", error: "Erreur"}[overallStatus]}</span>}
-              </div>
-              {/* Présence */}
-              <div data-dropdown style={{ position: "relative" }}>
-                <button onClick={() => { setShowPresence(!showPresence); setShowUserMenu(false); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.4)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  {IMG_MEETING ? <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} /> : <span style={{ fontSize: 20 }}>{EMOJI_MEETING}</span>}
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{connectedUsers.length}</span>
-                  <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showPresence ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
-                </button>
-                {showPresence && <div style={{ position: "absolute", top: "calc(100% + 6px)", ...(isMobile ? { left: 0 } : { right: 0 }), minWidth: 200, maxWidth: isMobile ? "calc(100vw - 24px)" : "none", background: "rgba(28,10,10,0.95)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "8px 0", zIndex: 100, backdropFilter: "blur(12px)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 600, padding: "4px 14px 8px", textTransform: "uppercase", letterSpacing: 0.5 }}>En ligne — {connectedUsers.length} participant{connectedUsers.length > 1 ? "s" : ""}</div>
-                  {connectedUsers.map(u => (<div key={u.uid} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", fontSize: 12.5, color: "#fff" }}><div style={{ width: 7, height: 7, borderRadius: "50%", background: "#10B981", flexShrink: 0, boxShadow: "0 0 6px #10B981" }} /><span style={{ fontWeight: u.uid === user?.uid ? 600 : 400 }}>{u.name}{u.uid === user?.uid ? " (toi)" : ""}</span></div>))}
-                  {connectedUsers.length === 0 && <div style={{ padding: "6px 14px", fontSize: 12, color: "rgba(255,255,255,0.4)" }}>Aucun participant</div>}
-                </div>}
-              </div>
-              {/* Partager */}
-              <div data-dropdown style={{ position: "relative" }}>
-                <button onClick={() => { setShowIntegration(!showIntegration); setShowPresence(false); setShowUserMenu(false); }} className="no-print" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.55)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  {IMG_START ? <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} /> : <span style={{ fontSize: 16 }}>{EMOJI_START}</span>}
-                  {!isMobile && <span style={{ fontSize: 12, fontWeight: 500 }}>Partager</span>}
-                  <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showIntegration ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
-                </button>
-                {showIntegration && <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 220, maxWidth: isMobile ? "calc(100vw - 24px)" : "none", background: "rgba(28,10,10,0.95)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "6px 0", zIndex: 100, backdropFilter: "blur(12px)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 600, padding: "4px 14px 8px", textTransform: "uppercase", letterSpacing: 0.5 }}>Partager la rétro</div>
-                  <button onClick={() => { exportMarkdown(); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>
-                    <img src="assets/markdown.png" style={{ width: 20, height: 20, objectFit: "contain", flexShrink: 0 }} /><div><div>Télécharger Markdown</div><div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginTop: 1 }}>Fichier .md en local</div></div>
-                  </button>
-                  {!confluenceUrl && <button onClick={() => exportToConfluence()} disabled={confluenceStatus === "loading" || confluenceStatus === "success"} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: (confluenceStatus === "loading" || confluenceStatus === "success") ? "default" : "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left", opacity: confluenceStatus === "loading" ? 0.5 : 1 }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>
-                    {confluenceStatus === "loading" ? <span style={{ fontSize: 16 }}>⏳</span> : confluenceStatus === "success" ? <span style={{ fontSize: 16 }}>✅</span> : <img src="assets/confluence.png" style={{ width: 20, height: 20, objectFit: "contain" }} />}
-                    <div><div>{confluenceStatus === "loading" ? "Export en cours…" : confluenceStatus === "success" ? "Page créée !" : "Publier sur Confluence"}</div><div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginTop: 1 }}>{confluenceStatus === "success" ? "GI › Sprint Retrospectives" : "Créer une page dans GI"}</div></div>
-                  </button>}
-                  {confluenceUrl && <div style={{ display: "flex", alignItems: "center" }}>
-                    <a href={confluenceUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, padding: "6px 14px", fontSize: 11, color: "#FDE047", fontWeight: 500, background: "none", cursor: "pointer", fontFamily: "inherit", textAlign: "left", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}><span style={{ fontSize: 16 }}>🔗</span> Voir la page Confluence →</a>
-                    {isAdmin && <button onClick={(e) => { e.stopPropagation(); if (confirm("Supprimer le lien Confluence ?")) { db.ref(`retro-${sprintDateKey}/confluenceUrl`).remove(); setConfluenceUrl(null); }}} style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 10px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>}
-                  </div>}
-                </div>}
-              </div>
-              {/* Reset */}
-              {isAdmin && <button onClick={resetAll} className="no-print" style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(255,255,255,0.08)", border: "1.2px solid rgba(255,255,255,0.3)", borderRadius: 8, padding: "0 12px", height: 34, color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.7"}><img src="assets/trash.svg" style={{ width: 16, height: 16, objectFit: "contain", opacity: 0.7, transition: "opacity 0.2s" }} />{!isMobile && " Reset"}</button>}
-              {/* Profil */}
-              <div data-dropdown style={{ position: "relative" }}>
-                <button onClick={() => { setShowUserMenu(!showUserMenu); setShowPresence(false); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 8, padding: "0 12px 0 5px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  {user.photoURL && <img src={user.photoURL} style={{ width: 24, height: 24, borderRadius: "50%" }} referrerPolicy="no-referrer" />}
-                  {!isMobile && <span style={{ fontSize: 12, fontWeight: 500 }}>{userName}</span>}
-                  <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showUserMenu ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
-                </button>
-                {showUserMenu && <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 220, maxWidth: isMobile ? "calc(100vw - 24px)" : "none", background: "rgba(28,10,10,0.95)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "6px 0", zIndex: 100, backdropFilter: "blur(12px)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-                  <div style={{ padding: "6px 14px 8px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}><div style={{ fontSize: 12, color: "#fff", fontWeight: 600 }}>{user.displayName}</div><div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.45)", marginTop: 2, wordBreak: "break-all" }}>{user.email}</div></div>
-                  {isAdmin && <>
-                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontWeight: 700, padding: "8px 14px 4px", textTransform: "uppercase", letterSpacing: 1 }}>Admin</div>
-                    <button onClick={() => { setShowThemePicker(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🎭 Changer le thème</button>
-                    <button onClick={() => { deleteRetro(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🗑️ Supprimer la rétro</button>
-                    <div style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", margin: "4px 0" }} />
-                  </>}
-                  <button onClick={signOut} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}><img src="assets/logout.png" style={{ width: 16, height: 16, objectFit: "contain" }} /> Se déconnecter</button>
-                </div>}
-              </div>
-            </div>
-            {/* Sous-titre */}
-            <div style={{ width: "100%", display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", position: "relative", zIndex: 0, marginTop: -4, gap: isMobile ? 2 : 0 }}>
-              <div style={{ fontSize: isMobile ? 11 : 13, color: "#fff", opacity: 0.92 }}>{T.subtitle}</div>
-              <div style={{ fontSize: isMobile ? 9.5 : 10.5, color: "rgba(255,255,255,0.55)" }}><em>Mode collaboratif temps réel</em> — Sprint du {sprintDateLabel}</div>
-            </div>
+  return (
+    <div>
+      <div className="section-title" style={{marginTop:0}}>Ordre des sections</div>
+      <div className="section-desc">Glisse-dépose les sections pour réorganiser. Les sections verrouillées (🔒) restent fixes.</div>
+      {order.map((id, i) => {
+        const locked = LOCKED_SECTIONS.includes(id);
+        return (
+          <div key={id}
+            className={`reorder-item ${locked ? "locked" : ""} ${dragIdx === i ? "dragging" : ""} ${overIdx === i && dragIdx !== i ? "drag-over" : ""}`}
+            draggable={!locked}
+            onDragStart={() => handleDragStart(i)}
+            onDragOver={(e) => handleDragOver(e, i)}
+            onDrop={() => handleDrop(i)}
+            onDragEnd={() => { setDragIdx(null); setOverIdx(null); }}
+          >
+            <span className="reorder-handle">{locked ? "🔒" : "⠿"}</span>
+            <span className="reorder-label">{SECTION_LABELS[id] || id}</span>
+            {locked && <span className="reorder-lock">Fixe</span>}
           </div>
+        );
+      })}
+    </div>
+  );
+}
 
-          {/* ==================== MAIN CONTENT ==================== */}
-          <div style={{ maxWidth: 1400, margin: "0 auto", padding: isMobile ? "16px 10px 32px" : "24px 20px 40px" }}>
-            <ConcertCurtain visible={!!activeCurtain} catLabel={activeCurtain ? T.ratingCatLabels[activeCurtain] : ""} />
+// ============================
+// TABS (Ordre calqué sur backstage.js)
+// ============================
+function TabIdentite({t,set}){return(<><Collapsible title="Identité"><TF label="ID unique" value={t.id} onChange={v=>set("id",v.toLowerCase().replace(/[^a-z0-9-]/g,""))}/><TF label="Nom" value={t.name} onChange={v=>set("name",v)}/><TF label="Description" value={t.desc} onChange={v=>set("desc",v)}/><TF label="Emojis aperçu" value={t.preview} onChange={v=>set("preview",v)}/><div className="toggle-row"><span className="toggle-label">Adapter au mode sombre</span><button className={`toggle ${t.dark?"on":"off"}`} onClick={()=>set("dark",!t.dark)}/></div></Collapsible><Collapsible title="Images de l'app" defaultOpen={false}><div className="section-desc">Logo et icônes affichés dans le header et les boutons. Laisser vide pour garder les images par défaut.</div><ImageField label="Logo / Mascotte" value={t.appLogo} onChange={v=>set("appLogo",v)}/><ImageField label="Icône réunion" value={t.iconMeeting} onChange={v=>set("iconMeeting",v)}/><ImageField label="Icône démarrer" value={t.iconStart} onChange={v=>set("iconStart",v)}/></Collapsible></>);}
 
-            {/* ==================== SECTIONS DYNAMIQUES (basées sur T.sectionOrder) ==================== */}
-            {(() => { const _order = T.sectionOrder || ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"]; const _rendered = new Set(); return _order.map(sectionId => { if (_rendered.has(sectionId)) return null; _rendered.add(sectionId);
+function TabCouleurs({t,set}){return(<><Collapsible title="Principales"><CF label="Accent" tooltip="Couleur star : titre header, boutons Ajouter, bordure Actions, compteur /3, titre Résumé, titre Outro, glow des votes" value={t.accent} onChange={v=>set("accent",v)}/><CF label="Accent foncé" tooltip="2e couleur du dégradé des boutons Ajouter, titre Actions en mode clair" value={t.accentDark} onChange={v=>set("accentDark",v)}/><CF label="Accent clair" tooltip="Fond des items d'action, fond des cartes de thème sélectionnées dans le picker" value={t.accentLight} onChange={v=>set("accentLight",v)}/></Collapsible><Collapsible title="Arrière-plans"><CF label="Body" tooltip="Fond de toute la page, visible derrière les cartes" value={t.bodyBg} onChange={v=>set("bodyBg",v)}/><CF label="Cartes" tooltip="Fond des cartes : Ressenti, colonnes feedbacks, carte ROTI, carte Actions, cercles de vote non sélectionnés" value={t.cardBg} onChange={v=>set("cardBg",v)}/><CF label="Bordures" tooltip="Bordure neutre du conteneur Ressenti (bordure de structure)" value={t.cardBorder} onChange={v=>set("cardBorder",v)}/><CF label="Inputs" tooltip="Fond des champs de saisie : input feedback et inputs action/responsable" value={t.inputBg} onChange={v=>set("inputBg",v)}/><CF label="Inputs bord." tooltip="Bordure des inputs au repos (avant focus) et bordure des cercles emoji de vote non sélectionnés" value={t.inputBorder} onChange={v=>set("inputBorder",v)}/><CF label="Progress" tooltip="Fond de la barre de progression des résultats de vote (barre grise derrière la barre colorée)" value={t.progressBg} onChange={v=>set("progressBg",v)}/></Collapsible><Collapsible title="Textes"><CF label="Primaire" tooltip="Texte principal : titres de section, texte des feedbacks, items de règles, texte des actions, couleur de frappe" value={t.textPrimary} onChange={v=>set("textPrimary",v)}/><CF label="Secondaire" tooltip="Texte d'importance moyenne : label « / 5 — Bien » sous les résultats, texte des règles en mode sombre" value={t.textSecondary} onChange={v=>set("textSecondary",v)}/><CF label="Atténué" tooltip="Texte discret : « Aucun retour », « Choisis ton emoji pour voter », compteur de votes, nombre de votants" value={t.textMuted} onChange={v=>set("textMuted",v)}/></Collapsible></>);}
 
-              // ---- RÈGLES ----
-              if (sectionId === "regles") return (
-              <div key="regles" style={{ borderRadius: 16, padding: 0, marginBottom: 20, position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
-                {bg(T.rulesImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.rulesImage), backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5, borderRadius: 16 }} />}
-                <div style={{ position: "absolute", inset: 0, background: isMobile ? T.rulesOverlayMobile : T.rulesOverlayDesktop, borderRadius: 16 }} />
-                <div style={{ flex: 1, padding: isMobile ? "16px 16px 20px" : "0px 28px", zIndex: 1, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
-                  <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: T.rulesColor, marginBottom: 6, display: "flex", alignItems: "center", gap: 8, position: "relative" }}>
-                    <span style={{ fontSize: isMobile ? 28 : 36 }}>{T.rulesTitle}</span>
-                    <span onMouseEnter={() => !isMobile && setShowPitTooltip(true)} onMouseLeave={() => setShowPitTooltip(false)} onClick={() => isMobile && setShowPitTooltip(!showPitTooltip)} style={{ cursor: "pointer", position: "relative" }}>
-                      {T.rulesName}
-                      {showPitTooltip && <div style={{ position: "absolute", bottom: isMobile ? "auto" : "calc(100% + 14px)", top: isMobile ? "calc(100% + 10px)" : "auto", left: isMobile ? "-30px" : "-140px", minWidth: isMobile ? 300 : 480, padding: 0, zIndex: 200, animation: "tooltipFadeIn 0.3s ease", borderRadius: 12, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}>
-                        <div style={{ background: "linear-gradient(135deg, #1a0a0a 0%, #2d1010 40%, #1a0505 100%)", padding: isMobile ? "18px 16px" : "24px 30px 44px 30px", position: "relative", overflow: "hidden" }}>
-                          <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.tooltip?.image) || "url('assets/backstage/GIClub.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
-                          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "linear-gradient(90deg, transparent, #DC2626, #B91C1C, transparent)" }} />
-                          <div style={{ position: "relative", zIndex: 1 }}>
-                            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, textTransform: "uppercase", color: "#DC2626", marginBottom: 20, textAlign: "center" }}>{T.tooltip.title}</div>
-                            <div style={{ fontSize: isMobile ? 12 : 15, fontWeight: 700, color: "#FAFAF9", textTransform: "uppercase", lineHeight: 1.4, textAlign: "center", textShadow: "0 2px 8px rgba(220,38,38,0.3)" }}>{T.tooltip.quote}</div>
-                            <div style={{ marginTop: 36, fontSize: 9, color: "rgba(255,255,255,0.25)", letterSpacing: 1.5, fontStyle: "italic", textAlign: "right" }}>{T.tooltip.author}</div>
-                          </div>
-                        </div>
-                        <div style={{ position: "absolute", ...(isMobile ? { top: -8, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderBottom: "10px solid #1a0a0a" } : { bottom: -8, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderTop: "10px solid #1a0a0a" }), left: isMobile ? 60 : 170, width: 0, height: 0 }} />
-                      </div>}
-                    </span>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 7 : 9, maxWidth: 700, paddingLeft: isMobile ? 10 : 60 }}>
-                    {T.rulesItems.map((rule, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: isMobile ? 12.5 : 14, color: isDark ? T.textSecondary : "#57534E", whiteSpace: isMobile ? "normal" : "nowrap" }}><div style={{ width: 6, height: 6, borderRadius: "50%", background: T.rulesDotColor, flexShrink: 0, marginLeft: isMobile ? 0 : 36 }} />{rule}</div>))}
-                  </div>
-                </div>
-              </div>);
+function TabHeader({t,set}){return(<><Collapsible title="Entrée (Header)"><div className="section-desc">Le bandeau en haut de la rétro avec titre et image de fond.</div><TF label="Titre" value={t.appTitle} onChange={v=>set("appTitle",v)}/><TF label="Sous-titre" value={t.subtitle} onChange={v=>set("subtitle",v)}/><ImageField label="Image de fond" cssUrl value={t.headerImage} onChange={v=>set("headerImage",v)}/><GradientBuilder label="Gradient overlay" description="Dégradé appliqué par-dessus l'image de fond du header." value={t.headerGradient} onChange={v=>set("headerGradient",v)}/></Collapsible></>);}
 
-              // ---- RESSENTI ----
-              if (sectionId === "ressenti") return (
-              <div key="ressenti" style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/></svg>
-                  {T.vibeTitle}
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
-                  {T.vibeChecks.map(cat => { const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
-                    <div key={cat.id} style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 10px" : "16px 14px", textAlign: "center" }}>
-                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>{cat.image && <div onClick={() => setZoomedImage(cat.image)} style={{ width: isMobile ? 34 : 30, height: isMobile ? 34 : 30, borderRadius: "50%", overflow: "hidden", flexShrink: 0, cursor: "pointer" }}><img src={cat.image} style={{ width: "110%", height: "110%", objectFit: "cover", marginTop: "-5%", marginLeft: "-5%" }} /></div>}{cat.label}</div>
-                      <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12 }}>
-                        {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
-                      </div>
-                      {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
-                      {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
-                      {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
-                        <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.emoji}</div>
-                        <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
-                        <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
-                        <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: isDark ? cat.border : cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
-                        <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
-                        <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
-                      </div>}
-                    </div>); })}
-                </div>
-              </div>);
+function TabRegles({t,set}){const sT=(k,v)=>set("tooltip",{...t.tooltip,[k]:v});const uR=(i,v)=>{const a=[...t.rulesItems];a[i]=v;set("rulesItems",a);};return(<><Collapsible title="Apparence des règles"><div className="section-desc">Style visuel du bloc règles affiché sous le header.</div><div className="field-row"><TF label="Emoji" value={t.rulesTitle} onChange={v=>set("rulesTitle",v)}/><TF label="Nom" value={t.rulesName} onChange={v=>set("rulesName",v)}/></div><CF label="Couleur titre" value={t.rulesColor} onChange={v=>set("rulesColor",v)}/><CF label="Puces" value={t.rulesDotColor} onChange={v=>set("rulesDotColor",v)}/><ImageField label="Image de fond" cssUrl value={t.rulesImage} onChange={v=>set("rulesImage",v)}/><GradientBuilder label="Overlay mobile" description="Dégradé appliqué sur l'image de fond en version mobile (typiquement de haut en bas)." value={t.rulesOverlayMobile} onChange={v=>set("rulesOverlayMobile",v)}/><GradientBuilder label="Overlay desktop" description="Dégradé appliqué sur l'image de fond en version desktop (typiquement de gauche à droite)." value={t.rulesOverlayDesktop} onChange={v=>set("rulesOverlayDesktop",v)}/></Collapsible><Collapsible title={`Liste des règles (${t.rulesItems.length})`}><div className="section-desc">Les textes affichés comme règles de la rétro.</div>{t.rulesItems.map((r,i)=>(<div key={i} style={{display:"flex",gap:6,marginBottom:6}}><input type="text" value={r} onChange={e=>uR(i,e.target.value)} style={{flex:1,padding:"6px 10px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:12,fontFamily:"inherit"}}/><button className="btn-remove" onClick={()=>set("rulesItems",t.rulesItems.filter((_,j)=>j!==i))}>✕</button></div>))}<button className="btn-add" onClick={()=>set("rulesItems",[...t.rulesItems,"Nouvelle règle"])}>+ Ajouter</button></Collapsible><Collapsible title="Tooltip des règles" defaultOpen={false}><div className="section-desc">Bulle affichée au survol du titre des règles.</div><TF label="Titre" value={t.tooltip.title} onChange={v=>sT("title",v)}/><TF label="Citation" value={t.tooltip.quote} onChange={v=>sT("quote",v)} multiline/><TF label="Auteur" value={t.tooltip.author} onChange={v=>sT("author",v)}/><ImageField label="Image du tooltip" value={t.tooltip.image} onChange={v=>sT("image",v)}/></Collapsible></>);}
 
-              // ---- COLONNES RETOURS ----
-              if (sectionId === "retours") return (
-              <div key="retours" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
-                {T.categories.map(cat => { const col = T.columns[cat.id]; const items = getFeedbacksByCategory(cat.id); return (
-                  <div key={cat.id} style={{ background: T.cardBg, borderRadius: 16, border: "2px solid " + col.border, minHeight: 130, padding: isMobile ? "14px 12px" : "20px 18px" }}>
-                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: isDark ? col.border : col.color, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: isMobile ? 22 : 26 }}>{col.title.split(" ")[0]}</span><span>{col.title.split(" ").slice(1).join(" ")}</span>
-                      {items.length > 0 && <span style={{ fontSize: 11, fontWeight: 600, background: col.border + "20", color: isDark ? col.border : col.color, borderRadius: 10, padding: "1px 8px" }}>{items.length}</span>}
-                    </div>
-                    {items.length === 0 && <div style={{ fontSize: 12.5, color: T.textMuted, fontStyle: "italic", padding: "6px 0" }}>Aucun retour pour le moment</div>}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                      {items.map(fbk => { const isOwner = fbk.authorUid === user?.uid; return (
-                        <div key={fbk.id} style={{ background: cat.bg, borderRadius: 10, padding: "9px 11px", fontSize: 13, color: T.textPrimary, border: fbk.pinned ? "2px solid " + col.border : "1px solid " + col.border + "33", animation: "fadeIn 0.3s ease" }}>
-                          <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                            {editingFeedback === fbk.id ? <input autoFocus defaultValue={fbk.text} onBlur={e => { fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }); setEditingFeedback(null); }} onKeyDown={e => e.key === "Enter" && (fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }), setEditingFeedback(null))} style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, fontFamily: "inherit", color: T.textPrimary }} />
-                            : <div style={{ flex: 1, cursor: isOwner ? "pointer" : "default" }} onClick={() => isOwner && setEditingFeedback(fbk.id)}>{fbk.text}</div>}
-                            {isAdmin && <button onClick={() => fb.updateItem(fbk.id, { pinned: !fbk.pinned })} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0, fontSize: 14, opacity: fbk.pinned ? 1 : 0.3, transition: "opacity 0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = "1"} onMouseLeave={e => e.currentTarget.style.opacity = fbk.pinned ? "1" : "0.3"}>📌</button>}
-                            {isOwner && <button onClick={() => fb.removeItem(fbk.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>}
-                          </div>
-                          {(fbk.author || fbk.pinned) && <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>{fbk.author ? <div style={{ fontSize: 10.5, color: isDark ? col.border : col.color, opacity: 0.7 }}>— {fbk.author}</div> : <div />}{fbk.pinned && <div style={{ fontSize: 7, fontStyle: "italic", fontWeight: 700, color: col.border, letterSpacing: 0.5 }}>Épinglé</div>}</div>}
-                        </div>); })}
-                    </div>
-                  </div>); })}
-              </div>);
+function TabVibeCheck({t,set}){const uV=(i,k,v)=>{const vs=[...t.vibeChecks];vs[i]={...vs[i],[k]:v};set("vibeChecks",vs);};return(<><Collapsible title="Ressenti"><div className="section-desc">Les votes d'ambiance et satisfaction (avant les feedbacks).</div><TF label="Titre section" value={t.vibeTitle} onChange={v=>set("vibeTitle",v)}/>{t.vibeChecks.map((vc,i)=>(<div key={i} className="array-item"><div className="array-item-title" style={{marginBottom:8}}>🎤 {vc.label || vc.id}</div><TF label="Label" value={vc.label} onChange={v=>uV(i,"label",v)}/><div className="field-row"><CF label="Couleur texte" value={vc.color} onChange={v=>uV(i,"color",v)}/><CF label="Fond sélection" value={vc.bg} onChange={v=>uV(i,"bg",v)}/></div><CF label="Bordure" value={vc.border} onChange={v=>uV(i,"border",v)}/><ImageField label="Image" value={vc.image} onChange={v=>uV(i,"image",v)}/></div>))}</Collapsible><Collapsible title="Labels de vote (1-5)" defaultOpen={false}><div className="section-desc">Emojis et textes pour chaque note de 1 à 5.</div>{[1,2,3,4,5].map(n=>(<div key={n} className="emoji-grid"><span className="num">{n}</span><input type="text" value={t.ratingLabels[n]?.emoji||""} onChange={e=>set("ratingLabels",{...t.ratingLabels,[n]:{...t.ratingLabels[n],emoji:e.target.value}})} style={{padding:"6px 8px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:14,fontFamily:"inherit",textAlign:"center"}}/><input type="text" value={t.ratingLabels[n]?.label||""} onChange={e=>set("ratingLabels",{...t.ratingLabels,[n]:{...t.ratingLabels[n],label:e.target.value}})} style={{padding:"6px 8px",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:12,fontFamily:"inherit"}}/></div>))}</Collapsible></>);}
 
-              // ---- SAISIE ----
-              if (sectionId === "saisie") return (
-              <div key="saisie" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: "1px solid " + T.cardBorder, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
-                <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12 }}>{T.feedbackTitle}</div>
-                <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
-                  {T.categories.map(cat => (<button key={cat.id} onClick={() => setSelectedCat(cat.id)} style={{ padding: isMobile ? "5px 10px" : "5px 15px", borderRadius: 16, fontSize: isMobile ? 11 : 12.5, cursor: "pointer", fontWeight: selectedCat === cat.id ? 700 : 500, transition: "all 0.2s", border: selectedCat === cat.id ? "2px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + cat.border, background: cat.border, color: "#fff", opacity: selectedCat === cat.id ? 1 : 0.55 }}>{cat.label}</button>))}
-                </div>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <input ref={feedbackInputRef} type="text" value={feedbackText} onChange={e => setFeedbackText(e.target.value)} onKeyDown={e => e.key === "Enter" && addFeedback()} placeholder="Votre retour..." style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: "1px solid " + T.inputBorder, fontSize: 13.5, background: T.inputBg, color: T.textPrimary, minWidth: 0 }} onFocus={e => e.target.style.borderColor = T.categories.find(c => c.id === selectedCat).border} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                  <button onClick={addFeedback} style={{ width: 42, height: 42, borderRadius: 10, border: "none", background: T.accent, color: isDark ? "#000" : "#fff", fontSize: 22, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>+</button>
-                </div>
-              </div>);
+function TabColonnes({t,set}){const uC=(i,k,v)=>{const c=[...t.categories];c[i]={...c[i],[k]:v};set("categories",c);};const uCol=(id,k,v)=>set("columns",{...t.columns,[id]:{...t.columns[id],[k]:v}});return(<><Collapsible title={`Colonnes Feedbacks (${t.categories.length})`}><div className="section-desc">Les colonnes où les participants déposent leurs retours.</div><TF label="Titre feedbacks" value={t.feedbackTitle} onChange={v=>set("feedbackTitle",v)}/>{t.categories.map((cat,i)=>(<div key={i} className="array-item"><div className="array-item-header"><span className="array-item-title">{t.columns[cat.id]?.title || cat.id}</span>{t.categories.length>2&&<button className="btn-remove" onClick={()=>{const c={...t.columns};delete c[cat.id];set("categories",t.categories.filter((_,j)=>j!==i));set("columns",c);}}>✕</button>}</div><div className="field-row"><TF label="ID" value={cat.id} onChange={v=>{const old=cat.id;const c={...t.columns};c[v]=c[old];delete c[old];uC(i,"id",v);set("columns",c);}}/><TF label="Label bouton" value={cat.label} onChange={v=>uC(i,"label",v)}/></div><TF label="Titre colonne" value={t.columns[cat.id]?.title||""} onChange={v=>uCol(cat.id,"title",v)}/><div className="field-row"><CF label="Couleur" value={t.columns[cat.id]?.color} onChange={v=>uCol(cat.id,"color",v)}/><CF label="Bordure" value={t.columns[cat.id]?.border} onChange={v=>uCol(cat.id,"border",v)}/></div></div>))}{t.categories.length<5&&<button className="btn-add" onClick={()=>{const id="cat"+(t.categories.length+1);set("categories",[...t.categories,{id,label:"Nouveau"}]);set("columns",{...t.columns,[id]:{title:"🆕 Nouveau",color:"#6B7280",border:"#E5E7EB"}});}}>+ Ajouter</button>}</Collapsible></>);}
 
-              // ---- ROTI + ACTIONS ----
-              if (sectionId === "roti" || sectionId === "actions") { _rendered.add("roti"); _rendered.add("actions"); const rotiFirst = _order.indexOf("roti") < _order.indexOf("actions") || !_order.includes("actions"); return (
-              <div key="roti-actions" style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG2)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/></svg>
-                  {T.afterTitle}
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, alignItems: "stretch" }}>
-                  {(() => { const rotiCard = (() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
-                    <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center" }}>
-                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <img src={cat.image} onClick={() => setZoomedImage(cat.image)} style={{ objectFit: "contain", cursor: "pointer", ...(cat.imageStyle || { width: 30, height: 30 }) }} />}<span>{cat.label}</span></div>
-                      <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
-                        {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
-                      </div>
-                      {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
-                      {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
-                      {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
-                        <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.emoji}</div>
-                        <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
-                        <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
-                        <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: isDark ? cat.border : cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
-                        <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
-                        <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
-                      </div>}
-                    </div>); })();
+function TabRoti({t,set}){return(<><Collapsible title="ROTI"><div className="section-desc">Le vote ROTI (Return On Time Invested), affiché à côté des actions.</div><div className="array-item"><TF label="Label" value={t.roti.label} onChange={v=>set("roti",{...t.roti,label:v})}/><div className="field-row"><CF label="Couleur texte" value={t.roti.color} onChange={v=>set("roti",{...t.roti,color:v})}/><CF label="Fond sélection" value={t.roti.bg} onChange={v=>set("roti",{...t.roti,bg:v})}/></div><CF label="Bordure" value={t.roti.border} onChange={v=>set("roti",{...t.roti,border:v})}/><ImageField label="Image" value={t.roti.image} onChange={v=>set("roti",{...t.roti,image:v})}/></div><TF label="Titre section (affiché au-dessus)" value={t.afterTitle} onChange={v=>set("afterTitle",v)}/></Collapsible></>);}
 
-                  const actionsCard = (
-                  <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + T.accent, padding: isMobile ? "14px 12px" : "20px 20px", display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: isDark ? T.accent : T.accentDark, display: "flex", alignItems: "center", gap: 8 }}>{T.actionTitle}</div>
-                      <div style={{ border: "1.5px solid " + T.accent, borderRadius: 13, padding: "2px 12px", fontSize: 11, fontWeight: 600, color: T.accent, flexShrink: 0, marginLeft: 8 }}>{actions.length}/3</div>
-                    </div>
-                    <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 12 }} />
-                    {actions.length === 0 ? <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, fontWeight: 600, color: T.textMuted }}>Aucune action définie</div> : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
-                        {actions.map(action => (
-                          <div key={action.id} style={{ background: T.accentLight, borderRadius: 10, padding: "9px 11px", display: "flex", alignItems: "center", gap: 9, border: "1px solid " + T.accent + "40", animation: "fadeIn 0.3s ease" }}>
-                            <input type="checkbox" checked={action.done || false} onChange={() => act.updateItem(action.id, { done: !action.done })} style={{ width: 16, height: 16, accentColor: T.accent, cursor: "pointer", flexShrink: 0 }} />
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
-                              : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
-                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>{IMG_MEETING ? <img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> : <span style={{ fontSize: 11 }}>{EMOJI_MEETING}</span>} {action.responsable}</div>}
-                            </div>
-                            <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
-                          </div>))}
-                      </div>)}
-                    {actions.length < 3 && <div className="no-print">
-                      <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 10, marginTop: 6 }} />
-                      <div style={{ display: "flex", gap: 6, marginBottom: 6, flexDirection: "column" }}>
-                        <input type="text" value={actionDesc} onChange={e => setActionDesc(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Description de l'action..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                        <input type="text" value={actionResp} onChange={e => setActionResp(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Responsable..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                      </div>
-                      <button onClick={addAction} style={{ width: "100%", padding: "9px 0", borderRadius: 8, border: "none", background: "linear-gradient(135deg, " + T.accent + ", " + T.accentDark + ")", color: isDark ? "#000" : "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>+ Ajouter</button>
-                    </div>}
-                    <div style={{ textAlign: "center", fontSize: isMobile ? 10 : 11.5, color: T.accent, fontStyle: "italic", opacity: 0.65, marginTop: "auto", paddingTop: 10 }}>{T.actionQuote}</div>
-                  </div>);
+function TabActions({t,set}){return(<><Collapsible title="Actions"><div className="section-desc">Les actions décidées en rétro (affiché à côté du ROTI).</div><TF label="Titre actions" value={t.actionTitle} onChange={v=>set("actionTitle",v)}/><TF label="Citation" value={t.actionQuote} onChange={v=>set("actionQuote",v)} multiline/></Collapsible></>);}
 
-                  return rotiFirst ? <>{rotiCard}{actionsCard}</> : <>{actionsCard}{rotiCard}</>;
-                  })()}
-                </div>
-              </div>); }
+function TabResume({t,set}){return(<><Collapsible title="Résumé"><div className="section-desc">La section récapitulative avec moyennes, retours épinglés et actions.</div><TF label="Titre" value={t.summaryTitle} onChange={v=>set("summaryTitle",v)}/><ImageField label="Image de fond" cssUrl value={t.summaryImage} onChange={v=>set("summaryImage",v)}/><GradientBuilder label="Overlay résumé" description="Dégradé sombre par-dessus l'image de fond du résumé." value={t.summaryOverlay} onChange={v=>set("summaryOverlay",v)}/><TF label="Hint épingles" value={t.summaryPinHint} onChange={v=>set("summaryPinHint",v)}/></Collapsible></>);}
 
-              // ---- RÉSUMÉ ----
-              if (sectionId === "resume") return (() => {
-                const pinnedFeedbacks = feedbacks.filter(f => f.pinned); const pinnedByCat = {}; T.categories.forEach(c => { pinnedByCat[c.id] = pinnedFeedbacks.filter(f => f.category === c.id); });
-                const avgAmbiance = getAvg("ambiance"); const avgSatisfaction = getAvg("satisfaction"); const avgRoti = getAvg("roti");
-                const hasContent = pinnedFeedbacks.length > 0 || actions.length > 0 || avgAmbiance || avgSatisfaction || avgRoti;
-                return (
-                  <div key="resume" style={{ borderRadius: 16, padding: 0, marginBottom: 24, position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
-                    {bg(T.summaryImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.summaryImage), backgroundSize: "cover", backgroundPosition: "center top", opacity: 0.45 }} />}
-                    <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
-                    <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "24px 16px" : "32px 28px" }}>
-                      <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 20, textAlign: "center" }}>{T.summaryTitle}</div>
-                      {!hasContent ? <div style={{ fontSize: isMobile ? 12 : 13.5, color: "rgba(255,255,255,0.5)", fontStyle: "italic", textAlign: "center" }}>{T.summaryPinHint}</div> : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                          {(avgAmbiance || avgSatisfaction || avgRoti) && <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{T.mdGlobal}</div>
-                            <div style={{ display: "flex", gap: isMobile ? 10 : 16, flexWrap: "wrap", justifyContent: "center" }}>
-                              {[{ label: T.ratingCatLabels.ambiance, avg: avgAmbiance, color: T.vibeChecks[0]?.border }, { label: T.ratingCatLabels.satisfaction, avg: avgSatisfaction, color: T.vibeChecks[1]?.border }, { label: "ROTI", avg: avgRoti, color: T.roti.border }].filter(v => v.avg).map(v => (
-                                <div key={v.label} style={{ background: "rgba(255,255,255,0.08)", borderRadius: 12, padding: isMobile ? "10px 14px" : "12px 20px", textAlign: "center", border: "1px solid " + v.color + "44", minWidth: isMobile ? 90 : 110 }}>
-                                  <div style={{ fontSize: 24, marginBottom: 2 }}>{T.ratingLabels[Math.round(v.avg)]?.emoji}</div>
-                                  <div style={{ fontSize: 22, fontWeight: 900, color: v.color }}>{v.avg}</div>
-                                  <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{v.label}</div>
-                                </div>))}
-                            </div>
-                          </div>}
-                          {pinnedFeedbacks.length > 0 && <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Retours clés</div>
-                            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
-                              {T.categories.map(cat => { const items = pinnedByCat[cat.id] || []; if (!items.length) return null; const col = T.columns[cat.id]; return (
-                                <div key={cat.id} style={{ background: cat.bg + (isDark ? "" : "1F"), borderRadius: 10, border: "1px solid " + col.border + "44", padding: "10px 12px" }}>
-                                  <div style={{ fontSize: 11, fontWeight: 700, color: col.border, marginBottom: 8 }}>{col.title}</div>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>{items.map(f => (<div key={f.id} style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>• {f.text}</div>))}</div>
-                                </div>); })}
-                            </div>
-                          </div>}
-                          {actions.length > 0 && <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{T.actionTitle}</div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              {actions.map(a => (<div key={a.id} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 12px", border: "1px solid " + T.accent + "33" }}><span style={{ fontSize: 14 }}>{a.done ? "✅" : "🎯"}</span><div style={{ flex: 1, fontSize: 12.5, color: "rgba(255,255,255,0.85)", textDecoration: a.done ? "line-through" : "none", opacity: a.done ? 0.6 : 1 }}>{a.description}</div>{a.responsable && <div style={{ fontSize: 10.5, color: T.accent, fontWeight: 500 }}>{a.responsable}</div>}</div>))}
-                            </div>
-                          </div>}
-                        </div>)}
-                    </div>
-                  </div>);
-              })();
+function TabOutro({t,set}){const sO=(k,f,v)=>set("outro",{...t.outro,[k]:{...t.outro[k],[f]:v}});const sG=(k,v)=>set("outroGifs",{...t.outroGifs,[k]:v});const keys=[{key:"none",label:"⏳ En attente",color:"#6B7280"},{key:"low",label:"😬 Basse",color:"#EF4444"},{key:"mid",label:"👍 Moyenne",color:"#F59E0B"},{key:"high",label:"🎉 Haute",color:"#10B981"}];return(<><Collapsible title="Mot de la Fin"><div className="section-desc">Messages de clôture affichés selon la moyenne globale.</div><TF label="Titre" value={t.outroTitle} onChange={v=>set("outroTitle",v)}/></Collapsible>{keys.map(({key,label,color})=>(<Collapsible key={key} title={label} defaultOpen={false}><div className="outro-block"><div className="field-row"><div className="field" style={{maxWidth:60}}><label>Emoji</label><input type="text" value={t.outro[key]?.emoji||""} onChange={e=>sO(key,"emoji",e.target.value)} style={{textAlign:"center",fontSize:18,padding:"4px",width:"100%",borderRadius:6,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontFamily:"inherit"}}/></div><TF label="Message" value={t.outro[key]?.text||""} onChange={v=>sO(key,"text",v)} multiline/></div><ImageField label={"GIF ("+key+")"} value={t.outroGifs?.[key]} onChange={v=>sG(key,v)}/></div></Collapsible>))}</>);}
 
-              // ---- MOT DE LA FIN ----
-              if (sectionId === "fin") return (() => {
-                const a1 = getAvg("ambiance"), a2 = getAvg("satisfaction"), a3 = getAvg("roti");
-                const vals = [a1, a2, a3].filter(v => v !== null).map(Number);
-                const globalAvg = vals.length === 3 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
-                const outroKey = globalAvg === null ? "none" : globalAvg > 4 ? "high" : globalAvg >= 3 ? "mid" : "low";
-                const msgData = T.outro[outroKey];
-                const gifUrl = T.outroGifs ? T.outroGifs[outroKey] : null;
-                return (
-                  <div key="fin" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, minHeight: isMobile ? 140 : 180 }}>
-                    {gifUrl && <div style={{ position: "absolute", inset: -4, backgroundImage: `url(${gifUrl})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(0.5px)", opacity: 0.75 }} />}
-                    <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
-                    <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "20px 16px" : "28px 32px", textAlign: "left" }}>
-                      <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 8, textAlign: "center" }}>{T.outroTitle}</div>
-                      <div style={{ fontSize: isMobile ? 20 : 28, marginBottom: 8 }}>{msgData.emoji}</div>
-                      <div style={{ fontSize: isMobile ? 14 : 18, color: "#fff", fontStyle: "italic", lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>"{msgData.text}"</div>
-                    </div>
-                  </div>);
-              })();
+function TabOrdre({t,set}){
+  const order = t.sectionOrder || [...DEFAULT_SECTION_ORDER];
+  return <SectionReorder order={order} onChange={v => set("sectionOrder", v)}/>;
+}
 
-              return null;
-            }); })()}
-          </div>
+function TabMarkdown({t,set}){return(<><Collapsible title="Labels Markdown / Confluence"><div className="section-desc">Personnalise les titres utilisés dans l'export.</div><TF label="Titre" value={t.mdTitle} onChange={v=>set("mdTitle",v)}/><TF label="Résumé" value={t.mdSummary} onChange={v=>set("mdSummary",v)}/><TF label="Moyenne" value={t.mdGlobal} onChange={v=>set("mdGlobal",v)}/><TF label="Épinglés" value={t.mdPinned} onChange={v=>set("mdPinned",v)}/><TF label="Actions" value={t.mdActions} onChange={v=>set("mdActions",v)}/><TF label="Détail" value={t.mdDetail} onChange={v=>set("mdDetail",v)}/></Collapsible></>);}
 
-          <style>{`
-            @keyframes curtainLeft { 0% { transform: translateX(-100%); } 20% { transform: translateX(0%); } 80% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
-            @keyframes curtainRight { 0% { transform: translateX(100%); } 20% { transform: translateX(0%); } 80% { transform: translateX(0%); } 100% { transform: translateX(100%); } }
-            @keyframes curtainText { 0% { opacity: 0; transform: scale(0.5); } 25% { opacity: 1; transform: scale(1.1); } 70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.8); } }
-            @keyframes resultReveal { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
-            @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-            @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-            @keyframes voteGlow { 0%, 100% { box-shadow: 0 0 12px 4px rgba(249,115,22,0.35), 0 2px 8px rgba(249,115,22,0.5); } 50% { box-shadow: 0 0 18px 6px rgba(249,115,22,0.5), 0 2px 12px rgba(249,115,22,0.65); } }
-            @keyframes tooltipFadeIn { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
-          `}</style>
-          {showThemePicker && <div onClick={() => setShowThemePicker(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9998, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)", padding: 16 }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: "#FEF5EC", borderRadius: 20, padding: isMobile ? "24px 16px" : "32px 28px", maxWidth: 520, width: "100%", cursor: "default", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", maxHeight: "90vh", overflowY: "auto" }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#1F2937", marginBottom: 4, textAlign: "center" }}>🎭 Changer le thème</div>
-              <div style={{ fontSize: 12, color: "#6B7280", marginBottom: 20, textAlign: "center" }}>Les feedbacks, votes et actions sont conservés.</div>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 12 }}>
-                {getTemplateList().map(t => (
-                  <div key={t.id} style={{ position: "relative" }}>
-                    <button onClick={() => changeTemplate(t.id)} style={{
-                      width: "100%", padding: "12px 14px", borderRadius: 12, cursor: "pointer",
-                      border: templateId === t.id ? "2.5px solid " + t.accent : "1.5px solid #E8C9A8",
-                      background: templateId === t.id ? (t.dark ? t.cardBg : t.accentLight || "#FFF7ED") : "#FFFAF5",
-                      textAlign: "left", transition: "all 0.2s",
-                      transform: templateId === t.id ? "scale(1.02)" : "scale(1)",
-                      boxShadow: templateId === t.id ? "0 4px 16px " + t.accent + "44" : "none",
-                    }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: templateId === t.id ? (t.dark ? t.accent : t.accentDark) : "#1F2937" }}>{t.name}</div>
-                        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                          {t._custom && <span style={{ fontSize: 9, background: "#F59E0B22", color: "#F59E0B", padding: "2px 6px", borderRadius: 4, fontWeight: 700 }}>CUSTOM</span>}
-                          {templateId === t.id && <span style={{ fontSize: 11, color: t.accent, fontWeight: 700 }}>Actif</span>}
-                        </div>
-                      </div>
-                      <div style={{ fontSize: 11, color: templateId === t.id ? (t.dark ? t.textSecondary : "#6B7280") : "#9CA3AF", marginTop: 2 }}>{t.desc}</div>
-                      <div style={{ fontSize: 16, marginTop: 4, letterSpacing: 2 }}>{t.preview}</div>
-                    </button>
-                    {t._custom && isAdmin && <button onClick={(e) => { e.stopPropagation(); if (confirm("Supprimer le thème custom \"" + t.name + "\" ?")) { if (db) db.ref("customTemplates/" + t.id).set(null); if (templateId === t.id) changeTemplate(getTemplateList().find(x => !x._custom)?.id || "backstage"); }}} style={{ position: "absolute", top: 6, right: 6, background: "rgba(239,68,68,0.1)", border: "none", borderRadius: 6, width: 22, height: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#EF4444" }}>✕</button>}
-                  </div>
-                ))}
-              </div>
-              {isAdmin && <button onClick={() => { setShowThemePicker(false); window.open("theme-editor.html", "_blank"); }} style={{ width: "100%", padding: "10px 0", borderRadius: 10, border: "1.5px dashed #D97706", background: "none", color: "#D97706", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 12, transition: "all 0.15s" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#FEF3C7"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "none"; }}>
-                ✨ Personnaliser un thème
-              </button>}
-              <button onClick={() => setShowThemePicker(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid #E8C9A8", background: "none", color: "#6B7280", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
-            </div>
-          </div>}
-          {zoomedImage && <div onClick={() => setZoomedImage(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)" }}><img src={zoomedImage} style={{ maxWidth: isMobile ? "95vw" : "80vw", maxHeight: "80vh", objectFit: zoomedImage === IMG_LOGO ? "cover" : "contain", borderRadius: zoomedImage === IMG_LOGO ? "50%" : 16, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", ...(zoomedImage === IMG_LOGO ? { width: isMobile ? "70vw" : "60vh", height: isMobile ? "70vw" : "60vh" } : {}) }} /></div>}
+// ============================
+// PREVIEW (with ROTI + Résumé)
+// ============================
+function Preview({t}){
+  const bg=s=>s&&s!=="none"?(s.startsWith("url(")?s:`url(${s})`):null;
+  return(
+  <div>
+    <div style={{fontSize:11,fontWeight:700,color:"#555",textTransform:"uppercase",letterSpacing:2,marginBottom:16}}>Aperçu Live</div>
+
+    {/* HEADER */}
+    <div className="preview-card" style={{position:"relative",minHeight:90,display:"flex",alignItems:"center",padding:"20px 24px",border:"1px solid rgba(255,255,255,0.12)",background:"#1A1A1A"}}>
+      {bg(t.headerImage)&&<div style={{position:"absolute",inset:0,backgroundImage:bg(t.headerImage),backgroundSize:"cover",backgroundPosition:"center",opacity:0.45,borderRadius:16}}/>}
+      <div style={{position:"absolute",inset:0,background:t.headerGradient,borderRadius:16}}/>
+      <div style={{position:"relative",zIndex:1}}><div style={{fontSize:22,fontWeight:800,color:t.accent,letterSpacing:2,textShadow:"0 1px 6px rgba(0,0,0,0.7)"}}>{t.appTitle}</div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)",marginTop:2,textShadow:"0 1px 3px rgba(0,0,0,0.5)"}}>{t.subtitle}</div></div>
+    </div>
+
+    {/* REGLES */}
+    <div className="preview-card" style={{position:"relative",padding:16}}>
+      {bg(t.rulesImage)&&<div style={{position:"absolute",inset:0,backgroundImage:bg(t.rulesImage),backgroundSize:"cover",opacity:0.3,borderRadius:16}}/>}
+      <div style={{position:"absolute",inset:0,background:t.rulesOverlayDesktop,borderRadius:16}}/>
+      <div style={{position:"relative",zIndex:1}}><div style={{fontSize:14,fontWeight:700,color:t.rulesColor,marginBottom:8}}><span style={{fontSize:20,marginRight:6}}>{t.rulesTitle}</span>{t.rulesName}</div>
+        {t.rulesItems.slice(0,3).map((r,i)=>(<div key={i} style={{display:"flex",gap:8,marginBottom:4,fontSize:11,color:t.textPrimary}}><span style={{color:t.rulesDotColor,fontWeight:800}}>●</span>{r}</div>))}
+        {t.rulesItems.length>3&&<div style={{fontSize:10,color:t.textMuted}}>+{t.rulesItems.length-3} autres...</div>}
+      </div>
+    </div>
+
+    {/* Ressenti */}
+    <div style={{background:t.cardBg,borderRadius:14,padding:14,marginTop:16,marginBottom:16,border:`1px solid ${t.cardBorder}`}}>
+      <div style={{fontSize:13,fontWeight:700,color:t.textPrimary,marginBottom:10}}>{t.vibeTitle}</div>
+      <div style={{display:"flex",gap:8}}>{t.vibeChecks.map(vc=>(<div key={vc.id} style={{flex:1,borderRadius:10,border:`2px solid ${vc.border}`,padding:10,textAlign:"center",background:t.dark?"rgba(255,255,255,0.05)":"#FFFAF5"}}>
+        <div style={{fontSize:11,fontWeight:700,color:t.dark?vc.border:vc.color,marginBottom:6,display:"flex",alignItems:"center",justifyContent:"center",gap:4}}>
+          {vc.image&&<div style={{width:22,height:22,borderRadius:"50%",overflow:"hidden",flexShrink:0}}><img src={vc.image} style={{width:"110%",height:"110%",objectFit:"cover",marginTop:"-5%",marginLeft:"-5%"}}/></div>}{vc.label}</div>
+        <div style={{display:"flex",justifyContent:"center",gap:4}}>{[1,2,3,4,5].map(n=>(<div key={n} style={{width:28,height:28,borderRadius:"50%",border:`1px solid ${t.inputBorder}`,background:n===4?vc.bg:t.cardBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,transform:n===4?"scale(1.15)":"scale(1)"}}>{t.ratingLabels[n]?.emoji}</div>))}</div>
+      </div>))}</div>
+    </div>
+
+    {/* COLONNES FEEDBACKS */}
+    <div style={{display:"grid",gridTemplateColumns:`repeat(${t.categories.length},1fr)`,gap:8,marginBottom:16}}>
+      {t.categories.map(cat=>{const col=t.columns[cat.id];return(<div key={cat.id} style={{background:t.cardBg,border:`2px solid ${col?.border||"#ccc"}`,borderRadius:12,padding:12,textAlign:"center"}}><div style={{fontSize:12,fontWeight:700,color:col?.color}}>{col?.title}</div><div style={{fontSize:10,color:t.textSecondary,marginTop:4}}>Feedbacks...</div></div>);})}
+    </div>
+
+    {/* ROTI + ACTIONS */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+      {/* ROTI */}
+      <div style={{background:t.cardBg,borderRadius:12,border:`2px solid ${t.roti.border}`,padding:12,textAlign:"center"}}>
+        <div style={{fontSize:12,fontWeight:700,color:t.dark?t.roti.border:t.roti.color,marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+          {t.roti.image&&<img src={t.roti.image} style={{width:20,height:20,objectFit:"contain"}}/>}
+          {t.roti.label}
         </div>
-      );
-    }
+        <div style={{display:"flex",justifyContent:"center",gap:4}}>
+          {[1,2,3,4,5].map(n=>(<div key={n} style={{width:26,height:26,borderRadius:"50%",border:`1px solid ${t.inputBorder}`,background:n===4?t.roti.bg:t.cardBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,transform:n===4?"scale(1.12)":"scale(1)"}}>{t.ratingLabels[n]?.emoji}</div>))}
+        </div>
+        <div style={{fontSize:32,marginTop:8}}>{t.ratingLabels[4]?.emoji}</div>
+        <div style={{fontSize:22,fontWeight:900,color:t.dark?t.roti.border:t.roti.color}}>4.0</div>
+        <div style={{fontSize:10,color:t.textSecondary}}>/ 5 — {t.ratingLabels[4]?.label}</div>
+      </div>
+      {/* ACTIONS */}
+      <div style={{background:t.cardBg,borderRadius:12,border:`2px solid ${t.accent}`,padding:12}}>
+        <div style={{fontSize:12,fontWeight:700,color:t.dark?t.accent:t.accentDark,marginBottom:8}}>{t.actionTitle} <span style={{fontSize:10,border:`1px solid ${t.accent}`,borderRadius:10,padding:"1px 8px",color:t.accent,fontWeight:600}}>1/3</span></div>
+        <div style={{background:t.accentLight,borderRadius:8,padding:"8px 10px",fontSize:11,color:t.textPrimary,border:`1px solid ${t.accent}40`}}>🎯 Exemple d'action</div>
+        <div style={{textAlign:"center",fontSize:10,color:t.accent,fontStyle:"italic",marginTop:10,opacity:0.6}}>{t.actionQuote}</div>
+      </div>
+    </div>
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<BackstageDebrief />);
-  </script>
+    {/* RÉSUMÉ */}
+    <div className="preview-card" style={{position:"relative",padding:16,marginBottom:16}}>
+      {bg(t.summaryImage)&&<div style={{position:"absolute",inset:0,backgroundImage:bg(t.summaryImage),backgroundSize:"cover",backgroundPosition:"center top",opacity:0.4,borderRadius:16}}/>}
+      <div style={{position:"absolute",inset:0,background:t.summaryOverlay,borderRadius:16}}/>
+      <div style={{position:"relative",zIndex:1,textAlign:"center"}}>
+        <div style={{fontSize:16,fontWeight:700,color:t.accent,marginBottom:12}}>{t.summaryTitle}</div>
+        <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:12}}>
+          {[{label:"Ambiance",emoji:t.ratingLabels[4]?.emoji,val:"4.2",color:t.vibeChecks[0]?.border},{label:"Satisfaction",emoji:t.ratingLabels[3]?.emoji,val:"3.8",color:t.vibeChecks[1]?.border},{label:"ROTI",emoji:t.ratingLabels[4]?.emoji,val:"4.0",color:t.roti.border}].map(v=>(
+            <div key={v.label} style={{background:"rgba(255,255,255,0.08)",borderRadius:10,padding:"8px 12px",border:`1px solid ${v.color}44`,minWidth:70}}>
+              <div style={{fontSize:18}}>{v.emoji}</div>
+              <div style={{fontSize:16,fontWeight:900,color:v.color}}>{v.val}</div>
+              <div style={{fontSize:9,color:"rgba(255,255,255,0.5)"}}>{v.label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",fontStyle:"italic"}}>{t.summaryPinHint}</div>
+      </div>
+    </div>
+
+    {/* OUTRO */}
+    <div className="preview-card" style={{position:"relative",padding:16}}>
+      {t.outroGifs?.high&&<div style={{position:"absolute",inset:0,backgroundImage:`url(${t.outroGifs.high})`,backgroundSize:"cover",backgroundPosition:"center",filter:"blur(0.5px)",opacity:0.6,borderRadius:16}}/>}
+      <div style={{position:"absolute",inset:0,background:t.summaryOverlay,borderRadius:16}}/>
+      <div style={{position:"relative",zIndex:1,textAlign:"center"}}><div style={{fontSize:14,fontWeight:700,color:t.accent,marginBottom:6}}>{t.outroTitle}</div><div style={{fontSize:24,marginBottom:4}}>{t.outro.high?.emoji}</div><div style={{fontSize:12,color:"#fff",fontStyle:"italic"}}>"{t.outro.high?.text}"</div></div>
+    </div>
+
+    {/* PALETTE */}
+    <div style={{marginTop:16,fontSize:11,fontWeight:700,color:"#555",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Palette</div>
+    <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{[t.accent,t.accentDark,t.accentLight,t.bodyBg,t.cardBg,t.textPrimary,t.textSecondary].map((c,i)=>(<div key={i} style={{width:28,height:28,borderRadius:6,background:c,border:"2px solid #333"}} title={c}/>))}</div>
+  </div>);
+}
+
+// ============================
+// MAIN APP
+// ============================
+// Deep merge: ensures all DEFAULT_TPL fields (including nested) are present when loading themes
+const deepMerge=(base,override)=>{const result={...base};for(const k of Object.keys(override)){if(override[k]&&typeof override[k]==="object"&&!Array.isArray(override[k])&&base[k]&&typeof base[k]==="object"&&!Array.isArray(base[k])){result[k]=deepMerge(base[k],override[k]);}else{result[k]=override[k];}}return result;};
+
+function App(){
+  const[user,setUser]=useState(null);const[authLoading,setAuthLoading]=useState(true);const[authError,setAuthError]=useState(null);
+  useEffect(()=>{if(!auth){setAuthLoading(false);return;}return auth.onAuthStateChanged(u=>{setUser(u);setAuthLoading(false);});},[]);
+  const signIn=async()=>{setAuthError(null);try{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({hd:"myunisoft.fr"});await auth.signInWithPopup(p);}catch(e){setAuthError(e.message);}};
+  const isAdmin=user&&ADMIN_EMAILS.includes(user.email);
+
+  const[template,setTemplate]=useState(()=>{try{const s=localStorage.getItem("theme-editor-draft");if(s){const parsed=JSON.parse(s);if(!parsed.sectionOrder)parsed.sectionOrder=[...DEFAULT_SECTION_ORDER];return deepMerge(DEFAULT_TPL,parsed);}}catch(e){}return{...DEFAULT_TPL};});
+  const[activeTab,setActiveTab]=useState("identite");
+  const[saveStatus,setSaveStatus]=useState(null);
+  const[customIds,setCustomIds]=useState([]);
+
+  useEffect(()=>{if(!db)return;const ref=db.ref("customTemplates");ref.on("value",s=>{const v=s.val();setCustomIds(v?Object.keys(v):[]);});return()=>ref.off("value");},[]);
+  useEffect(()=>{const t=setTimeout(()=>localStorage.setItem("theme-editor-draft",JSON.stringify(template)),500);return()=>clearTimeout(t);},[template]);
+
+  const set=useCallback((k,v)=>setTemplate(p=>({...p,[k]:v})),[]);
+
+  const loadBase=(id)=>{
+    if(id==="__blank"){setTemplate({...DEFAULT_TPL});return;}
+    const tpl=window.RETRO_TEMPLATES?.[id];
+    if(tpl){const c=JSON.parse(JSON.stringify(tpl));c.id=c.id+"-custom";c.name=c.name+" (Custom)";delete c._custom;if(!c.sectionOrder)c.sectionOrder=[...DEFAULT_SECTION_ORDER];setTemplate(deepMerge(DEFAULT_TPL,c));return;}
+    if(db)db.ref("customTemplates/"+id).once("value",s=>{if(s.val()){const v=deepMerge(DEFAULT_TPL,JSON.parse(JSON.stringify(s.val())));if(!v.sectionOrder)v.sectionOrder=[...DEFAULT_SECTION_ORDER];setTemplate(v);}});
+  };
+
+  const saveToFirebase=async()=>{if(!db||!template.id)return;setSaveStatus("saving");try{const d={...template};delete d._custom;await db.ref("customTemplates/"+template.id).set(d);setSaveStatus("saved");setTimeout(()=>setSaveStatus(null),3000);}catch(e){setSaveStatus("error");alert("Erreur : "+e.message);setTimeout(()=>setSaveStatus(null),3000);}};
+  const deleteFromFirebase=async()=>{if(!db||!customIds.includes(template.id))return;if(!confirm("Supprimer \""+template.name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+template.id).set(null);alert("Supprimé !");}catch(e){alert("Erreur : "+e.message);}};
+  const exportJS=()=>{const js="// "+template.name+"\n(function(){if(!window.RETRO_TEMPLATES)window.RETRO_TEMPLATES={};window.RETRO_TEMPLATES["+JSON.stringify(template.id)+"]="+JSON.stringify(template,null,2)+";})();\n";const b=new Blob([js],{type:"text/javascript"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=template.id+".js";a.click();};
+
+  // Tabs dans l'ordre de l'app (comme backstage.js)
+  const tabs=[
+    {id:"identite",label:"🏷️ Identité"},
+    {id:"couleurs",label:"🎨 Couleurs"},
+    {id:"header",label:"🔝 Entrée"},
+    {id:"regles",label:"📋 Règles"},
+    {id:"vibecheck",label:"🎤 Ressenti"},
+    {id:"colonnes",label:"📊 Colonnes"},
+    {id:"roti",label:"📈 ROTI"},
+    {id:"actions",label:"🎯 Actions"},
+    {id:"resume",label:"🏆 Résumé"},
+    {id:"outro",label:"🎬 Outro"},
+    {id:"ordre",label:"🔀 Ordre"},
+    {id:"markdown",label:"📝 Export"}
+  ];
+
+  if(authLoading)return<div className="login-screen"><div style={{color:"#666"}}>Chargement...</div></div>;
+  if(!user)return<div className="login-screen"><div className="login-card">
+    <div style={{fontSize:36,marginBottom:12}}>🎭</div><div style={{fontSize:20,fontWeight:800,color:"#F97316",marginBottom:4}}>Éditeur de Thème</div><div style={{fontSize:12,color:"#666",marginBottom:24}}>Connecte-toi pour créer des thèmes.</div>
+    <button onClick={signIn} disabled={authLoading} style={{padding:"12px 32px",borderRadius:10,border:"1px solid #333",background:"#1A1A1A",color:"#E5E5E5",fontSize:14,fontWeight:600,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:10,margin:"0 auto"}}>
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      {authLoading?"Connexion…":"Se connecter"}</button>
+    <div style={{fontSize:10,color:"#999",marginTop:16}}>Réservé aux admins MyUnisoft GI</div>
+    {authError&&<div style={{marginTop:12,fontSize:12,color:"#EF4444",background:"#7F1D1D22",borderRadius:8,padding:"8px 12px"}}>{authError}</div>}
+  </div></div>;
+  if(!isAdmin)return<div className="login-screen"><div className="login-card"><div style={{fontSize:36,marginBottom:12}}>🔒</div><div style={{fontSize:16,fontWeight:700,color:"#EF4444",marginBottom:8}}>Accès réservé aux admins</div><div style={{fontSize:12,color:"#666"}}>{user.email}</div><button onClick={()=>auth.signOut()} style={{marginTop:20,padding:"8px 20px",borderRadius:8,border:"1px solid #333",background:"none",color:"#aaa",cursor:"pointer",fontFamily:"inherit"}}>Se déconnecter</button></div></div>;
+
+  const isExisting=customIds.includes(template.id);
+
+  return(<div className="app"><div className="sidebar">
+    <div className="sidebar-header"><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><h1>🎭 Éditeur de Thème</h1><button onClick={()=>auth.signOut()} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,color:"#555"}} title="Se déconnecter">👋 {user.displayName?.split(" ")[0]}</button></div><p>Crée ton template, enregistre-le dans l'app.</p></div>
+    <div className="base-picker"><label style={{fontSize:11,fontWeight:600,color:"#888",display:"block",marginBottom:4}}>Partir d'un thème existant :</label>
+      <select onChange={e=>loadBase(e.target.value)} defaultValue=""><option value="" disabled>— Choisir une base —</option><option value="__blank">🆕 Template vierge</option>
+        <optgroup label="Thèmes officiels">{Object.values(window.RETRO_TEMPLATES||{}).filter(t=>!t._custom).map(t=><option key={t.id} value={t.id}>{t.preview} {t.name}</option>)}</optgroup>
+        {customIds.length>0&&<optgroup label="Thèmes custom">{customIds.map(id=><option key={id} value={id}>✨ {id}</option>)}</optgroup>}
+      </select></div>
+    <div className="tabs">{tabs.map(tab=><button key={tab.id} className={`tab ${activeTab===tab.id?"active":""}`} onClick={()=>setActiveTab(tab.id)}>{tab.label}</button>)}</div>
+    
+    <div className="section">
+      {activeTab==="identite"&&<TabIdentite t={template} set={set}/>}
+      {activeTab==="couleurs"&&<TabCouleurs t={template} set={set}/>}
+      {activeTab==="header"&&<TabHeader t={template} set={set}/>}
+      {activeTab==="regles"&&<TabRegles t={template} set={set}/>}
+      {activeTab==="vibecheck"&&<TabVibeCheck t={template} set={set}/>}
+      {activeTab==="colonnes"&&<TabColonnes t={template} set={set}/>}
+      {activeTab==="roti"&&<TabRoti t={template} set={set}/>}
+      {activeTab==="actions"&&<TabActions t={template} set={set}/>}
+      {activeTab==="resume"&&<TabResume t={template} set={set}/>}
+      {activeTab==="outro"&&<TabOutro t={template} set={set}/>}
+      {activeTab==="ordre"&&<TabOrdre t={template} set={set}/>}
+      {activeTab==="markdown"&&<TabMarkdown t={template} set={set}/>}
+    </div>
+    
+    <div className="status-bar"><span><span className="status-dot" style={{background:saveStatus==="saved"?"#10B981":saveStatus==="saving"?"#F59E0B":saveStatus==="error"?"#EF4444":"#555"}}/>{saveStatus==="saving"?"Enregistrement...":saveStatus==="saved"?"Enregistré ✓":saveStatus==="error"?"Erreur":isExisting?"Thème existant":"Non enregistré"}</span><span style={{color:"#444"}}>ID: {template.id}</span></div>
+    <div className="btn-bar"><button className="btn-secondary" onClick={exportJS} title="Télécharger .js">⬇️ .js</button>{isExisting&&<button className="btn-danger" onClick={deleteFromFirebase}>🗑️</button>}<button className="btn-primary" onClick={saveToFirebase} disabled={saveStatus==="saving"} style={{opacity:saveStatus==="saving"?0.6:1}}>{saveStatus==="saving"?"⏳...":isExisting?"💾 Mettre à jour":"🚀 Enregistrer dans l'app"}</button></div>
+  </div><div className="preview-panel"><Preview t={template}/></div></div>);
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
 </body>
 </html>
