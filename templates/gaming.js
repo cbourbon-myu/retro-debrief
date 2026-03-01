@@ -5,6 +5,8 @@
 (function () {
   window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
 
+  var ASSETS = "assets/gaming";
+
   window.RETRO_TEMPLATES["gaming"] = {
     id: "gaming",
     name: "🎮 Game Debrief",
@@ -12,9 +14,24 @@
     preview: "🏆💀🔧",
     dark: true,
 
-   // 👇 Ajouter ici — l'ordre par défaut
-    sectionOrder: ["rules", "vibecheck", "feedbacks", "feedbackInput", "roti", "summary", "outro"],
- 
+    sectionOrder: ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"],
+
+    // --- Emojis fallback (utilisés si pas d'image) ---
+    emojiLogo: "🎮",
+    emojiMeeting: "🕹️",
+    emojiStart: "🚀",
+
+    // --- Images (décommenter quand les fichiers sont dans assets/gaming/) ---
+    appLogo: null,
+    iconMeeting: null,
+    iconStart: null,
+    headerImage: 'url("' + ASSETS + '/titre.jpg")',
+    rulesImage: 'url("' + ASSETS + '/regles.jpg")',
+    summaryImage: 'url("' + ASSETS + '/resume.jpg")',
+    outroGifs: null,
+    // outroGifs: { high: ASSETS + "/msg3.gif", mid: ASSETS + "/msg2.gif", low: ASSETS + "/msg1.gif", none: null },
+
+    // --- Couleurs globales ---
     bodyBg: "#0f0f1a",
     cardBg: "#1a1a2e",
     cardBorder: "#2d2d5e",
@@ -28,21 +45,20 @@
     inputBg: "#16213e",
     progressBg: "#16213e",
 
+    // --- Overlays ---
     headerGradient: "linear-gradient(135deg, rgba(15,15,26,0.92) 0%, rgba(26,26,46,0.88) 40%, rgba(22,33,62,0.7) 100%)",
-    headerImage: "none",
-    rulesImage: "none",
-    summaryImage: "none",
     summaryOverlay: "linear-gradient(135deg, rgba(15,15,26,0.95) 0%, rgba(26,26,46,0.92) 50%, rgba(15,15,26,0.95) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(26,26,46,0.97) 0%, rgba(26,26,46,0.95) 40%, rgba(26,26,46,0.8) 60%, rgba(26,26,46,0.5) 80%, rgba(26,26,46,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(26,26,46,0.97) 0%, rgba(26,26,46,0.95) 50%, rgba(26,26,46,0.8) 70%, rgba(26,26,46,0.5) 100%)",
-    outroGifs: null,
 
+    // --- Login ---
     loginBg: "#0f0f1a",
     loginCardBg: "#1a1a2e",
     loginBtnBg: "#1a1a2e",
     loginBtnBorder: "#2d2d5e",
     loginBtnHover: "#16213e",
 
+    // --- Catégories ---
     categories: [
       { id: "rock", label: "🏆 Achievement", color: "#A16207", bg: "#1c1607", border: "#EAB308" },
       { id: "fausse", label: "💀 Game Over", color: "#991B1B", bg: "#1c0606", border: "#EF4444" },
@@ -54,6 +70,7 @@
       ameliorer: { title: "🔧 Patch Notes", color: "#0E7490", border: "#06B6D4" },
     },
 
+    // --- Votes ---
     ratingLabels: {
       1: { emoji: "💀", label: "Game Over" },
       2: { emoji: "💔", label: "Dégâts critiques" },
@@ -68,6 +85,7 @@
     roti: { id: "roti", label: "ROTI", color: "#059669", bg: "#0a1f14", border: "#10B981" },
     ratingCatLabels: { ambiance: "Ambiance du Lobby", satisfaction: "Score de Partie", roti: "ROTI" },
 
+    // --- Textes ---
     appTitle: "GAME DEBRIEF",
     subtitle: "Press START to retrospective • Cheat codes interdits • Respawn tous les 15 jours 🎮",
     rulesTitle: "🕹️",
@@ -101,6 +119,7 @@
       none: { text: "Partie en cours... Les stats arrivent bientôt. GG à toute l'équipe.", emoji: "🎮🏆" },
     },
 
+    // --- Export ---
     mdTitle: "🎮 Game Debrief — Sprint",
     mdSummary: "🏆 Tableau des scores",
     mdGlobal: "Stats de Partie",
