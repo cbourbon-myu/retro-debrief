@@ -22,6 +22,11 @@
 
    // 👇 Ajouter ici — l'ordre par défaut
     sectionOrder: ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"],
+
+    // --- Emojis fallback (utilisés si pas d'image) ---
+    emojiLogo: "🎸",
+    emojiMeeting: "📋",
+    emojiStart: "🚀",
  
     // --- Images de l'app ---
     appLogo: ASSETS + "/Batterie.png",
