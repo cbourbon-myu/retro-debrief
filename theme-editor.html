@@ -778,7 +778,7 @@ function App(){
   };
 
   const saveToFirebase=async()=>{if(!db||!template.id)return;setSaveStatus("saving");try{const d={...template};delete d._custom;await db.ref("customTemplates/"+template.id).set(d);setSaveStatus("saved");setTimeout(()=>setSaveStatus(null),3000);}catch(e){setSaveStatus("error");alert("Erreur : "+e.message);setTimeout(()=>setSaveStatus(null),3000);}};
-  const deleteFromFirebase=async()=>{if(!db||!customIds.includes(template.id))return;if(!confirm("Supprimer \""+template.name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+template.id).set(null);alert("Supprimé !");}catch(e){alert("Erreur : "+e.message);}};
+  const deleteFromFirebase=async()=>{if(!db||!customIds.includes(template.id))return;if(!confirm("Supprimer \""+template.name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+template.id).set(null);alert("Supprimé !");setTemplate(deepMerge(DEFAULT_TPL,{id:"custom-"+(Date.now()%10000),name:"🆕 Nouveau Thème",sectionOrder:[...DEFAULT_SECTION_ORDER]}));}catch(e){alert("Erreur : "+e.message);}};
   const exportJS=()=>{const js="// "+template.name+"\n(function(){if(!window.RETRO_TEMPLATES)window.RETRO_TEMPLATES={};window.RETRO_TEMPLATES["+JSON.stringify(template.id)+"]="+JSON.stringify(template,null,2)+";})();\n";const b=new Blob([js],{type:"text/javascript"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=template.id+".js";a.click();};
 
   // Tabs dans l'ordre de l'app (comme backstage.js)
