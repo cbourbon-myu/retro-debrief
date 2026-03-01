@@ -625,6 +625,18 @@ function Preview({t}){
       {t.categories.map(cat=>{const col=t.columns[cat.id];return(<div key={cat.id} style={{background:t.cardBg,border:`2px solid ${col?.border||"#ccc"}`,borderRadius:12,padding:12,textAlign:"center"}}><div style={{fontSize:12,fontWeight:700,color:col?.color}}>{col?.title}</div><div style={{fontSize:10,color:t.textSecondary,marginTop:4}}>Feedbacks...</div></div>);})}
     </div>
 
+    {/* SAISIE FEEDBACK */}
+    <div style={{background:t.cardBg,borderRadius:14,border:`1px solid ${t.cardBorder}`,padding:14,marginBottom:16}}>
+      <div style={{fontSize:13,fontWeight:700,color:t.textPrimary,marginBottom:10}}>{t.feedbackTitle}</div>
+      <div style={{display:"flex",gap:6,marginBottom:10}}>
+        {t.categories.map((cat,i)=>{const col=t.columns[cat.id];return(<div key={cat.id} style={{padding:"4px 10px",borderRadius:12,fontSize:10,fontWeight:i===0?700:500,border:i===0?`2px solid ${t.dark?col?.border:col?.color}`:`1.5px solid ${col?.border}`,background:col?.border,color:"#fff",opacity:i===0?1:0.55}}>{cat.label}</div>);})}
+      </div>
+      <div style={{display:"flex",gap:6}}>
+        <div style={{flex:1,padding:"8px 12px",borderRadius:10,border:`1px solid ${t.inputBorder}`,background:t.inputBg,fontSize:11,color:t.textMuted}}>Votre retour...</div>
+        <div style={{width:34,height:34,borderRadius:10,background:`linear-gradient(135deg, ${t.accent}, ${t.accentDark})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,color:t.dark?"#000":"#fff",fontWeight:700,flexShrink:0}}>+</div>
+      </div>
+    </div>
+
     {/* ROTI + ACTIONS */}
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
       {/* ROTI */}
