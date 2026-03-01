@@ -5,12 +5,30 @@
 (function () {
   window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
 
+  var ASSETS = "assets/kohlanta";
+
   window.RETRO_TEMPLATES["kohlanta"] = {
     id: "kohlanta",
     name: "🏝️ L'Aventure",
     desc: "Survivre au sprint",
     preview: "🔥🌧️🗺️",
     dark: true,
+
+    sectionOrder: ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"],
+
+    // --- Emojis fallback ---
+    emojiLogo: "🏝️",
+    emojiMeeting: "🔥",
+    emojiStart: "🗺️",
+
+    // --- Images ---
+    appLogo: null,
+    iconMeeting: null,
+    iconStart: null,
+    headerImage: 'url("' + ASSETS + '/titre.jpg")',
+    rulesImage: 'url("' + ASSETS + '/regles.jpg")',
+    summaryImage: 'url("' + ASSETS + '/resume.jpg")',
+    outroGifs: null,
 
     bodyBg: "#0f2918",
     cardBg: "#1a3a2a",
@@ -26,13 +44,9 @@
     progressBg: "#1a3a2a",
 
     headerGradient: "linear-gradient(135deg, rgba(15,41,24,0.92) 0%, rgba(20,50,30,0.88) 40%, rgba(30,60,20,0.7) 100%)",
-    headerImage: "none",
-    rulesImage: "none",
-    summaryImage: "none",
     summaryOverlay: "linear-gradient(135deg, rgba(15,41,24,0.95) 0%, rgba(26,58,42,0.92) 50%, rgba(15,41,24,0.95) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(26,58,42,0.97) 0%, rgba(26,58,42,0.95) 40%, rgba(26,58,42,0.8) 60%, rgba(26,58,42,0.5) 80%, rgba(26,58,42,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(26,58,42,0.97) 0%, rgba(26,58,42,0.95) 50%, rgba(26,58,42,0.8) 70%, rgba(26,58,42,0.5) 100%)",
-    outroGifs: null,
 
     loginBg: "#0f2918",
     loginCardBg: "#1a3a2a",
