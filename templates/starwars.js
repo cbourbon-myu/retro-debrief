@@ -5,12 +5,30 @@
 (function () {
   window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
 
+  var ASSETS = "assets/starwars";
+
   window.RETRO_TEMPLATES["starwars"] = {
     id: "starwars",
     name: "⚔️ Conseil Jedi",
     desc: "Dans une galaxie lointaine...",
     preview: "✨💀⚔️",
     dark: true,
+
+    sectionOrder: ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"],
+
+    // --- Emojis fallback ---
+    emojiLogo: "⚔️",
+    emojiMeeting: "🛸",
+    emojiStart: "🌌",
+
+    // --- Images ---
+    appLogo: null,
+    iconMeeting: null,
+    iconStart: null,
+    headerImage: 'url("' + ASSETS + '/titre.jpg")',
+    rulesImage: 'url("' + ASSETS + '/regles.jpg")',
+    summaryImage: 'url("' + ASSETS + '/resume.jpg")',
+    outroGifs: null,
 
     bodyBg: "#0a0e1a",
     cardBg: "#111827",
@@ -26,13 +44,9 @@
     progressBg: "#1F2937",
 
     headerGradient: "linear-gradient(135deg, rgba(5,5,20,0.92) 0%, rgba(10,15,40,0.88) 40%, rgba(20,10,50,0.7) 100%)",
-    headerImage: "none",
-    rulesImage: "none",
-    summaryImage: "none",
     summaryOverlay: "linear-gradient(135deg, rgba(5,5,20,0.95) 0%, rgba(10,15,40,0.92) 50%, rgba(5,5,20,0.95) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 40%, rgba(17,24,39,0.8) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 50%, rgba(17,24,39,0.8) 70%, rgba(17,24,39,0.5) 100%)",
-    outroGifs: null,
 
     loginBg: "#0a0e1a",
     loginCardBg: "#111827",
