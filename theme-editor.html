@@ -73,6 +73,22 @@
   .base-picker { padding: 12px 16px; border-bottom: 1px solid #2A2A2A; flex-shrink: 0; }
   .base-picker select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #333; background: #1A1A1A; color: #ccc; font-size: 12px; font-family: inherit; }
 
+  /* Custom themes list */
+  .custom-themes { padding: 10px 16px; border-bottom: 1px solid #2A2A2A; flex-shrink: 0; }
+  .custom-themes-title { font-size: 10px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+  .custom-themes-title span { background: #2A2A2A; color: #888; font-size: 10px; padding: 1px 7px; border-radius: 10px; font-weight: 600; }
+  .ct-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; background: #1A1A1A; border: 1px solid #2A2A2A; margin-bottom: 4px; cursor: pointer; transition: all 0.15s; }
+  .ct-item:hover { border-color: #444; background: #1E1E1E; }
+  .ct-item.active { border-color: #F97316; background: #261A0F; }
+  .ct-emoji { font-size: 14px; flex-shrink: 0; width: 28px; text-align: center; }
+  .ct-info { flex: 1; min-width: 0; }
+  .ct-name { font-size: 12px; font-weight: 600; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ct-id { font-size: 10px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ct-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .ct-btn { padding: 3px 6px; border-radius: 5px; border: 1px solid transparent; background: none; cursor: pointer; font-size: 12px; transition: all 0.15s; }
+  .ct-btn.open:hover { background: #261A0F; border-color: #F97316; }
+  .ct-btn.delete:hover { background: #1F0A0A; border-color: #EF4444; }
+
   /* Color Picker Popup */
   .cpk-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
   .cpk-popup { background: #1A1A1A; border: 1px solid #333; border-radius: 16px; padding: 20px; width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
@@ -680,8 +696,9 @@ function App(){
   const[activeTab,setActiveTab]=useState("identite");
   const[saveStatus,setSaveStatus]=useState(null);
   const[customIds,setCustomIds]=useState([]);
+  const[customThemes,setCustomThemes]=useState({});
 
-  useEffect(()=>{if(!db)return;const ref=db.ref("customTemplates");ref.on("value",s=>{const v=s.val();setCustomIds(v?Object.keys(v):[]);});return()=>ref.off("value");},[]);
+  useEffect(()=>{if(!db)return;const ref=db.ref("customTemplates");ref.on("value",s=>{const v=s.val();setCustomIds(v?Object.keys(v):[]);setCustomThemes(v||{});});return()=>ref.off("value");},[]);
   useEffect(()=>{const t=setTimeout(()=>localStorage.setItem("theme-editor-draft",JSON.stringify(template)),500);return()=>clearTimeout(t);},[template]);
 
   const set=useCallback((k,v)=>setTemplate(p=>({...p,[k]:v})),[]);
@@ -693,9 +710,16 @@ function App(){
     if(db)db.ref("customTemplates/"+id).once("value",s=>{if(s.val()){const v=deepMerge(DEFAULT_TPL,JSON.parse(JSON.stringify(s.val())));if(!v.sectionOrder)v.sectionOrder=[...DEFAULT_SECTION_ORDER];setTemplate(v);}});
   };
 
+  const openCustomTheme=(id)=>{
+    const data=customThemes[id];
+    if(data){const v=deepMerge(DEFAULT_TPL,JSON.parse(JSON.stringify(data)));if(!v.sectionOrder)v.sectionOrder=[...DEFAULT_SECTION_ORDER];v.id=id;setTemplate(v);setActiveTab("identite");if(baseRef.current)baseRef.current.value="";}
+  };
+
+  const deleteCustomTheme=async(id,name)=>{if(!db)return;if(!confirm("Supprimer \""+name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+id).set(null);if(template.id===id){setTemplate(JSON.parse(JSON.stringify(DEFAULT_TPL)));setActiveTab("identite");if(baseRef.current)baseRef.current.value="";}alert("Supprimé !");}catch(e){alert("Erreur : "+e.message);}};
+
   const saveToFirebase=async()=>{if(!db||!template.id)return;setSaveStatus("saving");try{const d={...template};delete d._custom;await db.ref("customTemplates/"+template.id).set(d);setSaveStatus("saved");setTimeout(()=>setSaveStatus(null),3000);}catch(e){setSaveStatus("error");alert("Erreur : "+e.message);setTimeout(()=>setSaveStatus(null),3000);}};
   const baseRef=useRef(null);
-  const deleteFromFirebase=async()=>{if(!db||!customIds.includes(template.id))return;if(!confirm("Supprimer \""+template.name+"\" de l'app ?"))return;try{await db.ref("customTemplates/"+template.id).set(null);setTemplate(JSON.parse(JSON.stringify(DEFAULT_TPL)));setActiveTab("identite");if(baseRef.current)baseRef.current.value="";alert("Supprimé !");}catch(e){alert("Erreur : "+e.message);}};
+  const deleteFromFirebase=async()=>{if(!customIds.includes(template.id))return;await deleteCustomTheme(template.id,template.name);};
   const exportJS=()=>{const js="// "+template.name+"\n(function(){if(!window.RETRO_TEMPLATES)window.RETRO_TEMPLATES={};window.RETRO_TEMPLATES["+JSON.stringify(template.id)+"]="+JSON.stringify(template,null,2)+";})();\n";const b=new Blob([js],{type:"text/javascript"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=template.id+".js";a.click();};
 
   // Tabs dans l'ordre de l'app (comme backstage.js)
@@ -734,6 +758,18 @@ function App(){
         <optgroup label="Thèmes officiels">{Object.values(window.RETRO_TEMPLATES||{}).filter(t=>!t._custom).map(t=><option key={t.id} value={t.id}>{t.preview} {t.name}</option>)}</optgroup>
         {customIds.length>0&&<optgroup label="Thèmes custom">{customIds.map(id=><option key={id} value={id}>✨ {id}</option>)}</optgroup>}
       </select></div>
+    {customIds.length>0&&<div className="custom-themes">
+      <div className="custom-themes-title">Mes thèmes enregistrés <span>{customIds.length}</span></div>
+      {customIds.map(id=>{const ct=customThemes[id];const name=ct?.name||id;const preview=ct?.preview||"✨";const isActive=template.id===id;return(
+        <div key={id} className={`ct-item${isActive?" active":""}`} onClick={()=>openCustomTheme(id)} title={"Ouvrir "+name}>
+          <div className="ct-emoji">{preview}</div>
+          <div className="ct-info"><div className="ct-name">{name}</div><div className="ct-id">{id}</div></div>
+          <div className="ct-actions">
+            <button className="ct-btn delete" onClick={e=>{e.stopPropagation();deleteCustomTheme(id,name);}} title="Supprimer">🗑️</button>
+          </div>
+        </div>
+      );})}
+    </div>}
     <div className="tabs">{tabs.map(tab=><button key={tab.id} className={`tab ${activeTab===tab.id?"active":""}`} onClick={()=>setActiveTab(tab.id)}>{tab.label}</button>)}</div>
     
     <div className="section">
