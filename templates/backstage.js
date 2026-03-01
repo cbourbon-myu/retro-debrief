@@ -21,7 +21,7 @@
     dark: false,
 
    // 👇 Ajouter ici — l'ordre par défaut
-    sectionOrder: ["rules", "vibecheck", "feedbacks", "feedbackInput", "roti", "summary", "outro"],
+    sectionOrder: ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"],
  
     // --- Images de l'app ---
     appLogo: ASSETS + "/Batterie.png",
