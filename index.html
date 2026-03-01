@@ -647,19 +647,19 @@
                   {/* ROTI */}
                   {(() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
                     <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center" }}>
-                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <img src={cat.image} onClick={() => setZoomedImage(cat.image)} style={{ objectFit: "contain", cursor: "pointer", ...(cat.imageStyle || { width: 30, height: 30 }) }} />}<span>{cat.label}</span></div>
+                      <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <img src={cat.image} onClick={() => setZoomedImage(cat.image)} style={{ objectFit: "contain", cursor: "pointer", ...(cat.imageStyle || { width: 30, height: 30 }) }} />}<span>{cat.label}</span></div>
                       <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
-                        {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
+                        {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + cat.color : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score].emoji}</button>))}
                       </div>
-                      {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
+                      {myScore && <div style={{ fontSize: 11.5, color: cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
                       {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
                       {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
                         <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.emoji}</div>
-                        <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
+                        <div style={{ fontSize: 38, fontWeight: 900, color: cat.color, lineHeight: 1 }}>{avg}</div>
                         <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
-                        <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: isDark ? cat.border : cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
+                        <div style={{ background: T.progressBg, borderRadius: 99, height: 8, margin: "0 8px 12px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: cat.color, width: (avg / 5 * 100) + "%", transition: "width 1s ease" }} /></div>
                         <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
-                        <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
+                        <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
                       </div>}
                     </div>); })()}
 
@@ -753,11 +753,12 @@
                   <div key="outro" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, minHeight: isMobile ? 140 : 180 }}>
                     {gifUrl && <div style={{ position: "absolute", inset: -4, backgroundImage: `url(${gifUrl})`, backgroundSize: T.outroGifZoom && T.outroGifZoom[outroKey] && T.outroGifZoom[outroKey] !== 100 ? `${T.outroGifZoom[outroKey]}%` : "cover", backgroundPosition: T.outroGifPos && T.outroGifPos[outroKey] ? T.outroGifPos[outroKey] : "center", filter: "blur(0.5px)", opacity: T.outroGifOpacity && T.outroGifOpacity[outroKey] != null ? T.outroGifOpacity[outroKey] : 0.75 }} />}
                     <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
-                    <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "20px 16px" : "28px 32px", textAlign: "left" }}>
+                    {(() => { const oSt = T.outroStyle && T.outroStyle[outroKey] ? T.outroStyle[outroKey] : {}; return (
+                    <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "20px 16px" : "28px 32px", textAlign: oSt.align || "left" }}>
                       <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 8, textAlign: "center" }}>{T.outroTitle}</div>
                       <div style={{ fontSize: isMobile ? 20 : 28, marginBottom: 8 }}>{msgData.emoji}</div>
-                      <div style={{ fontSize: isMobile ? 14 : 18, color: "#fff", fontStyle: "italic", lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>"{msgData.text}"</div>
-                    </div>
+                      <div style={{ fontSize: isMobile ? 14 : 18, color: "#fff", fontStyle: oSt.italic ? "italic" : "normal", fontWeight: oSt.bold ? 700 : 400, lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>"{msgData.text}"</div>
+                    </div>); })()}
                   </div>);
               })();
 
