@@ -751,7 +751,7 @@
                 const gifUrl = T.outroGifs ? T.outroGifs[outroKey] : null;
                 return (
                   <div key="outro" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, minHeight: isMobile ? 140 : 180 }}>
-                    {gifUrl && <div style={{ position: "absolute", inset: -4, backgroundImage: `url(${gifUrl})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(0.5px)", opacity: 0.75 }} />}
+                    {gifUrl && <div style={{ position: "absolute", inset: -4, backgroundImage: `url(${gifUrl})`, backgroundSize: T.outroGifZoom && T.outroGifZoom[outroKey] && T.outroGifZoom[outroKey] !== 100 ? `${T.outroGifZoom[outroKey]}%` : "cover", backgroundPosition: T.outroGifPos && T.outroGifPos[outroKey] ? T.outroGifPos[outroKey] : "center", filter: "blur(0.5px)", opacity: 0.75 }} />}
                     <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
                     <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "20px 16px" : "28px 32px", textAlign: "left" }}>
                       <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: T.accent, marginBottom: 8, textAlign: "center" }}>{T.outroTitle}</div>
