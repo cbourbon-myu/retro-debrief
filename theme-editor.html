@@ -11,7 +11,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -116,8 +115,6 @@
   .uf-btn { padding: 4px 8px; border-radius: 6px; border: 1px solid #333; background: #1A1A1A; color: #ccc; cursor: pointer; font-size: 11px; font-family: inherit; white-space: nowrap; transition: border-color 0.2s, background 0.2s; }
   .uf-btn:hover { border-color: #F97316; background: #261A0F; color: #F97316; }
   .uf-btn.danger:hover { border-color: #EF4444; background: #1F0A0A; color: #EF4444; }
-  .uf-progress { height: 3px; border-radius: 2px; background: #222; overflow: hidden; }
-  .uf-progress-bar { height: 100%; background: #F97316; transition: width 0.2s; }
 
   /* Collapsible sections */
   .collapse-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 4px 0; margin: 16px 0 0; user-select: none; transition: opacity 0.15s; }
@@ -136,8 +133,8 @@
 <script>
   var ADMIN_EMAILS = ["c.bourbon@myunisoft.fr", "m.gonzalez@myunisoft.fr"];
   var firebaseConfig = { apiKey: "AIzaSyBPH2KoTL5kYXT5c7obYidciDuElmr2C7Y", authDomain: "backstage-debrief.firebaseapp.com", databaseURL: "https://backstage-debrief-default-rtdb.europe-west1.firebasedatabase.app", projectId: "backstage-debrief", storageBucket: "backstage-debrief.firebasestorage.app", messagingSenderId: "313402258283", appId: "1:313402258283:web:5f6ce5828effa0a519d22e" };
-  var db = null, auth = null, storage = null;
-  try { firebase.initializeApp(firebaseConfig); db = firebase.database(); auth = firebase.auth(); storage = firebase.storage(); } catch(e) { console.warn("Firebase:", e); }
+  var db = null, auth = null;
+  try { firebase.initializeApp(firebaseConfig); db = firebase.database(); auth = firebase.auth(); } catch(e) { console.warn("Firebase:", e); }
   window.RETRO_TEMPLATES = window.RETRO_TEMPLATES || {};
 </script>
 <script src="templates/backstage.js"></script>
@@ -338,13 +335,9 @@ function CF({label,value,onChange,tooltip}) {
 }
 function TF({label,value,onChange,placeholder,multiline}){return(<div className="field"><label>{label}</label>{multiline?<textarea value={value||""} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>:<input type="text" value={value||""} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>}</div>);}
 // Context pour passer l'ID du thème aux composants ImageField
-const TemplateIdContext = React.createContext("custom-theme");
 
-// Composant image avec upload Firebase Storage + preview + delete
+// Composant image avec import local base64 + preview + delete
 function ImageField({label,value,onChange,cssUrl}){
-  const templateId = React.useContext(TemplateIdContext);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
   const fileRef = React.useRef(null);
 
   // Extraire l'URL brute si format css url("...")
@@ -354,33 +347,21 @@ function ImageField({label,value,onChange,cssUrl}){
     return value;
   },[value,cssUrl]);
 
-  const handleFile = async(e) => {
+  const handleFile = (e) => {
     const file = e.target.files?.[0];
-    if(!file || !storage) return;
-    setUploading(true); setProgress(0);
-    const ext = file.name.split(".").pop();
-    const name = Date.now()+"_"+file.name.replace(/[^a-zA-Z0-9._-]/g,"");
-    const path = "themes/"+templateId+"/"+name;
-    const ref = storage.ref(path);
-    const task = ref.put(file);
-    task.on("state_changed",
-      (snap)=> setProgress(Math.round((snap.bytesTransferred/snap.totalBytes)*100)),
-      (err)=> { alert("Erreur upload: "+err.message); setUploading(false); },
-      async()=> {
-        const url = await ref.getDownloadURL();
-        onChange(cssUrl ? 'url("'+url+'")' : url);
-        setUploading(false); setProgress(0);
-      }
-    );
+    if(!file) return;
+    // Limite 500 Ko pour ne pas alourdir la base
+    if(file.size > 500*1024){alert("Image trop lourde (max 500 Ko). Redimensionne-la ou compresse-la avant.");e.target.value="";return;}
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const b64 = ev.target.result;
+      onChange(cssUrl ? 'url("'+b64+'")' : b64);
+    };
+    reader.readAsDataURL(file);
     e.target.value = "";
   };
 
-  const handleDelete = async() => {
-    if(!rawUrl) return;
-    // Supprimer du Storage si c'est une URL Firebase
-    if(rawUrl.includes("firebasestorage.googleapis.com") || rawUrl.includes("firebasestorage.app")){
-      try{const ref=storage.refFromURL(rawUrl);await ref.delete();}catch(e){console.warn("Delete:",e);}
-    }
+  const handleDelete = () => {
     onChange(cssUrl ? "none" : "");
   };
 
@@ -389,12 +370,12 @@ function ImageField({label,value,onChange,cssUrl}){
       <label>{label}</label>
       <div className="uf-wrap">
         <div className="uf-row">
-          {rawUrl && rawUrl!=="none" && <img className="uf-preview" src={rawUrl} onError={e=>e.target.style.display="none"} alt=""/>}
-          <input type="text" value={value||""} onChange={e=>onChange(e.target.value)} placeholder={cssUrl ? 'url("...") ou none' : "https://... ou vide"}/>
-          <button className="uf-btn" onClick={()=>fileRef.current?.click()} title="Importer depuis le PC">📁</button>
+          {rawUrl && rawUrl!=="none" && !rawUrl.startsWith("data:") && <img className="uf-preview" src={rawUrl} onError={e=>e.target.style.display="none"} alt=""/>}
+          {rawUrl && rawUrl.startsWith("data:") && <img className="uf-preview" src={rawUrl} alt=""/>}
+          <input type="text" value={value && !value.startsWith("data:") && !(cssUrl && value.includes("data:")) ? value : (rawUrl.startsWith("data:") ? "📎 Image importée" : value||"")} onChange={e=>onChange(e.target.value)} placeholder={cssUrl ? 'url("...") ou none' : "https://... ou vide"} readOnly={rawUrl.startsWith("data:")}/>
+          <button className="uf-btn" onClick={()=>fileRef.current?.click()} title="Importer depuis le PC (max 500 Ko)">📁</button>
           {rawUrl && rawUrl!=="none" && <button className="uf-btn danger" onClick={handleDelete} title="Supprimer l'image">🗑️</button>}
         </div>
-        {uploading && <div className="uf-progress"><div className="uf-progress-bar" style={{width:progress+"%"}}/></div>}
         <input ref={fileRef} type="file" accept="image/*,.gif" style={{display:"none"}} onChange={handleFile}/>
       </div>
     </div>
@@ -753,7 +734,7 @@ function App(){
         {customIds.length>0&&<optgroup label="Thèmes custom">{customIds.map(id=><option key={id} value={id}>✨ {id}</option>)}</optgroup>}
       </select></div>
     <div className="tabs">{tabs.map(tab=><button key={tab.id} className={`tab ${activeTab===tab.id?"active":""}`} onClick={()=>setActiveTab(tab.id)}>{tab.label}</button>)}</div>
-    <TemplateIdContext.Provider value={template.id}>
+    
     <div className="section">
       {activeTab==="identite"&&<TabIdentite t={template} set={set}/>}
       {activeTab==="couleurs"&&<TabCouleurs t={template} set={set}/>}
@@ -768,7 +749,7 @@ function App(){
       {activeTab==="ordre"&&<TabOrdre t={template} set={set}/>}
       {activeTab==="markdown"&&<TabMarkdown t={template} set={set}/>}
     </div>
-    </TemplateIdContext.Provider>
+    
     <div className="status-bar"><span><span className="status-dot" style={{background:saveStatus==="saved"?"#10B981":saveStatus==="saving"?"#F59E0B":saveStatus==="error"?"#EF4444":"#555"}}/>{saveStatus==="saving"?"Enregistrement...":saveStatus==="saved"?"Enregistré ✓":saveStatus==="error"?"Erreur":isExisting?"Thème existant":"Non enregistré"}</span><span style={{color:"#444"}}>ID: {template.id}</span></div>
     <div className="btn-bar"><button className="btn-secondary" onClick={exportJS} title="Télécharger .js">⬇️ .js</button>{isExisting&&<button className="btn-danger" onClick={deleteFromFirebase}>🗑️</button>}<button className="btn-primary" onClick={saveToFirebase} disabled={saveStatus==="saving"} style={{opacity:saveStatus==="saving"?0.6:1}}>{saveStatus==="saving"?"⏳...":isExisting?"💾 Mettre à jour":"🚀 Enregistrer dans l'app"}</button></div>
   </div><div className="preview-panel"><Preview t={template}/></div></div>);
