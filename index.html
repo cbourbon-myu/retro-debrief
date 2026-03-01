@@ -429,12 +429,9 @@
       const voteSize = isMobile ? 42 : 52;
       const voteFontSize = isMobile ? 22 : 26;
       const isDark = T.dark;
-      const IMG_LOGO = T.appLogo || null;
-      const IMG_MEETING = T.iconMeeting || null;
-      const IMG_START = T.iconStart || null;
-      const EMOJI_MEETING = T.emojiMeeting || "📋";
-      const EMOJI_START = T.emojiStart || "🚀";
-      const EMOJI_LOGO = T.emojiLogo || "🎯";
+      const IMG_LOGO = T.appLogo || "assets/backstage/Batterie.png";
+      const IMG_MEETING = T.iconMeeting || "assets/backstage/reu.png";
+      const IMG_START = T.iconStart || "assets/backstage/fusee.gif";
       // Helper: garantit le format CSS url("...") pour les backgroundImage
       const bg = s => s && s !== "none" ? (s.startsWith("url(") || s.startsWith("data:") ? (s.startsWith("data:") ? `url("${s}")` : s) : `url("${s}")`) : null;
 
@@ -450,7 +447,7 @@
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.headerGradient }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: isMobile ? 17 : 34, fontWeight: 800, color: T.accent, letterSpacing: isMobile ? 1 : 2.5, display: "flex", alignItems: "center" }}>
-                {IMG_LOGO ? <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: "50%", objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} /> : <span style={{ fontSize: isMobile ? 32 : 52, marginRight: isMobile ? 8 : 12 }}>{EMOJI_LOGO}</span>}
+                <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: "50%", objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} />
                 {T.appTitle}
               </div>
             </div>
@@ -464,7 +461,7 @@
               {/* Présence */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowPresence(!showPresence); setShowUserMenu(false); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.4)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  {IMG_MEETING ? <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} /> : <span style={{ fontSize: 20 }}>{EMOJI_MEETING}</span>}
+                  <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} />
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{connectedUsers.length}</span>
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showPresence ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -477,7 +474,7 @@
               {/* Partager */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowIntegration(!showIntegration); setShowPresence(false); setShowUserMenu(false); }} className="no-print" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.55)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  {IMG_START ? <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} /> : <span style={{ fontSize: 16 }}>{EMOJI_START}</span>}
+                  <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} />
                   {!isMobile && <span style={{ fontSize: 12, fontWeight: 500 }}>Partager</span>}
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showIntegration ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -529,11 +526,11 @@
             <ConcertCurtain visible={!!activeCurtain} catLabel={activeCurtain ? T.ratingCatLabels[activeCurtain] : ""} />
 
             {/* ==================== SECTIONS DYNAMIQUES (basées sur T.sectionOrder) ==================== */}
-            {(() => { const _order = T.sectionOrder || ["regles", "ressenti", "retours", "saisie", "roti", "actions", "resume", "fin"]; const _rendered = new Set(); return _order.map(sectionId => { if (_rendered.has(sectionId)) return null; _rendered.add(sectionId);
+            {(() => { const A={regles:"rules",ressenti:"vibecheck",retours:"feedbacks",colonnes:"feedbacks",saisie:"feedbackInput",resume:"summary",fin:"outro"}; const REQUIRED=["rules","vibecheck","feedbacks","feedbackInput","roti","summary","outro"]; const seen=new Set(); const normalized=(T.sectionOrder||["rules","vibecheck","feedbacks","feedbackInput","roti","summary","outro"]).map(id=>A[id]||id).filter(id=>{if(id==="header"||id==="actions"||seen.has(id))return false;seen.add(id);return true;}); REQUIRED.forEach(id=>{if(!seen.has(id)){const idx=normalized.indexOf("summary");normalized.splice(idx>=0?idx:normalized.length,0,id);}}); return normalized; })().map(sectionId => {
 
-              // ---- RÈGLES ----
-              if (sectionId === "regles") return (
-              <div key="regles" style={{ borderRadius: 16, padding: 0, marginBottom: 20, position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
+              {/* ---- RÈGLES ---- */}
+              if (sectionId === "rules") return (
+              <div key="rules" style={{ borderRadius: 16, padding: 0, marginBottom: 20, position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
                 {bg(T.rulesImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.rulesImage), backgroundSize: "cover", backgroundPosition: "center", opacity: 0.5, borderRadius: 16 }} />}
                 <div style={{ position: "absolute", inset: 0, background: isMobile ? T.rulesOverlayMobile : T.rulesOverlayDesktop, borderRadius: 16 }} />
                 <div style={{ flex: 1, padding: isMobile ? "16px 16px 20px" : "0px 28px", zIndex: 1, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
@@ -561,9 +558,9 @@
                 </div>
               </div>);
 
-              // ---- RESSENTI ----
-              if (sectionId === "ressenti") return (
-              <div key="ressenti" style={{ marginBottom: 24 }}>
+              {/* ---- VIBE CHECK ---- */}
+              if (sectionId === "vibecheck") return (
+              <div key="vibecheck" style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/></svg>
                   {T.vibeTitle}
@@ -589,9 +586,9 @@
                 </div>
               </div>);
 
-              // ---- COLONNES RETOURS ----
-              if (sectionId === "retours") return (
-              <div key="retours" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
+              {/* ---- 3 COLONNES FEEDBACKS ---- */}
+              if (sectionId === "feedbacks") return (
+              <div key="feedbacks" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
                 {T.categories.map(cat => { const col = T.columns[cat.id]; const items = getFeedbacksByCategory(cat.id); return (
                   <div key={cat.id} style={{ background: T.cardBg, borderRadius: 16, border: "2px solid " + col.border, minHeight: 130, padding: isMobile ? "14px 12px" : "20px 18px" }}>
                     <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: isDark ? col.border : col.color, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
@@ -614,9 +611,9 @@
                   </div>); })}
               </div>);
 
-              // ---- SAISIE ----
-              if (sectionId === "saisie") return (
-              <div key="saisie" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: "1px solid " + T.cardBorder, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
+              {/* ---- FEEDBACK INPUT ---- */}
+              if (sectionId === "feedbackInput") return (
+              <div key="feedbackInput" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: "1px solid " + T.cardBorder, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12 }}>{T.feedbackTitle}</div>
                 <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
                   {T.categories.map(cat => (<button key={cat.id} onClick={() => setSelectedCat(cat.id)} style={{ padding: isMobile ? "5px 10px" : "5px 15px", borderRadius: 16, fontSize: isMobile ? 11 : 12.5, cursor: "pointer", fontWeight: selectedCat === cat.id ? 700 : 500, transition: "all 0.2s", border: selectedCat === cat.id ? "2px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + cat.border, background: cat.border, color: "#fff", opacity: selectedCat === cat.id ? 1 : 0.55 }}>{cat.label}</button>))}
@@ -627,15 +624,16 @@
                 </div>
               </div>);
 
-              // ---- ROTI + ACTIONS ----
-              if (sectionId === "roti" || sectionId === "actions") { _rendered.add("roti"); _rendered.add("actions"); const rotiFirst = _order.indexOf("roti") < _order.indexOf("actions") || !_order.includes("actions"); return (
-              <div key="roti-actions" style={{ marginBottom: 24 }}>
+              {/* ---- ROTI + ACTIONS ---- */}
+              if (sectionId === "roti") return (
+              <div key="roti" style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG2)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG2)" strokeWidth="2" strokeLinecap="round"/></svg>
                   {T.afterTitle}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, alignItems: "stretch" }}>
-                  {(() => { const rotiCard = (() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
+                  {/* ROTI */}
+                  {(() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
                     <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center" }}>
                       <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <img src={cat.image} onClick={() => setZoomedImage(cat.image)} style={{ objectFit: "contain", cursor: "pointer", ...(cat.imageStyle || { width: 30, height: 30 }) }} />}<span>{cat.label}</span></div>
                       <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
@@ -651,9 +649,9 @@
                         <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
                         <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
                       </div>}
-                    </div>); })();
+                    </div>); })()}
 
-                  const actionsCard = (
+                  {/* ACTIONS */}
                   <div style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + T.accent, padding: isMobile ? "14px 12px" : "20px 20px", display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                       <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: isDark ? T.accent : T.accentDark, display: "flex", alignItems: "center", gap: 8 }}>{T.actionTitle}</div>
@@ -668,7 +666,7 @@
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
                               : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
-                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>{IMG_MEETING ? <img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> : <span style={{ fontSize: 11 }}>{EMOJI_MEETING}</span>} {action.responsable}</div>}
+                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> {action.responsable}</div>}
                             </div>
                             <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
                           </div>))}
@@ -682,20 +680,17 @@
                       <button onClick={addAction} style={{ width: "100%", padding: "9px 0", borderRadius: 8, border: "none", background: "linear-gradient(135deg, " + T.accent + ", " + T.accentDark + ")", color: isDark ? "#000" : "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>+ Ajouter</button>
                     </div>}
                     <div style={{ textAlign: "center", fontSize: isMobile ? 10 : 11.5, color: T.accent, fontStyle: "italic", opacity: 0.65, marginTop: "auto", paddingTop: 10 }}>{T.actionQuote}</div>
-                  </div>);
-
-                  return rotiFirst ? <>{rotiCard}{actionsCard}</> : <>{actionsCard}{rotiCard}</>;
-                  })()}
+                  </div>
                 </div>
-              </div>); }
+              </div>);
 
-              // ---- RÉSUMÉ ----
-              if (sectionId === "resume") return (() => {
+              {/* ---- RÉSUMÉ ---- */}
+              if (sectionId === "summary") return (() => {
                 const pinnedFeedbacks = feedbacks.filter(f => f.pinned); const pinnedByCat = {}; T.categories.forEach(c => { pinnedByCat[c.id] = pinnedFeedbacks.filter(f => f.category === c.id); });
                 const avgAmbiance = getAvg("ambiance"); const avgSatisfaction = getAvg("satisfaction"); const avgRoti = getAvg("roti");
                 const hasContent = pinnedFeedbacks.length > 0 || actions.length > 0 || avgAmbiance || avgSatisfaction || avgRoti;
                 return (
-                  <div key="resume" style={{ borderRadius: 16, padding: 0, marginBottom: 24, position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
+                  <div key="summary" style={{ borderRadius: 16, padding: 0, marginBottom: 24, position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
                     {bg(T.summaryImage) && <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.summaryImage), backgroundSize: "cover", backgroundPosition: "center top", opacity: 0.45 }} />}
                     <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
                     <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "24px 16px" : "32px 28px" }}>
@@ -734,8 +729,8 @@
                   </div>);
               })();
 
-              // ---- MOT DE LA FIN ----
-              if (sectionId === "fin") return (() => {
+              {/* ---- OUTRO ---- */}
+              if (sectionId === "outro") return (() => {
                 const a1 = getAvg("ambiance"), a2 = getAvg("satisfaction"), a3 = getAvg("roti");
                 const vals = [a1, a2, a3].filter(v => v !== null).map(Number);
                 const globalAvg = vals.length === 3 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
@@ -743,7 +738,7 @@
                 const msgData = T.outro[outroKey];
                 const gifUrl = T.outroGifs ? T.outroGifs[outroKey] : null;
                 return (
-                  <div key="fin" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, minHeight: isMobile ? 140 : 180 }}>
+                  <div key="outro" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, minHeight: isMobile ? 140 : 180 }}>
                     {gifUrl && <div style={{ position: "absolute", inset: -4, backgroundImage: `url(${gifUrl})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(0.5px)", opacity: 0.75 }} />}
                     <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
                     <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "20px 16px" : "28px 32px", textAlign: "left" }}>
@@ -754,8 +749,8 @@
                   </div>);
               })();
 
-              return null;
-            }); })()}
+              return null; {/* Section inconnue → ignorée */}
+            })}
           </div>
 
           <style>{`
