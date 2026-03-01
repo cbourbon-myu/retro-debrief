@@ -20,6 +20,9 @@
     preview: "🎸🔇🎛️",
     dark: false,
 
+   // 👇 Ajouter ici — l'ordre par défaut
+    sectionOrder: ["rules", "vibecheck", "feedbacks", "feedbackInput", "roti", "summary", "outro"],
+ 
     // --- Images de l'app ---
     appLogo: ASSETS + "/Batterie.png",
     iconMeeting: ASSETS + "/reu.png",
