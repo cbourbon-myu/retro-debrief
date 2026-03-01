@@ -617,7 +617,7 @@ function TabMarkdown({t,set}){return(<><Collapsible title="Labels Markdown / Con
 // PREVIEW (with ROTI + Résumé)
 // ============================
 function Preview({t}){
-  const bg=s=>s&&s!=="none"?(s.startsWith("url(")?s:s.startsWith("data:image/")?`url("${s}")`:`url(${s})`):null;
+  const bg=s=>{if(!s||s==="none"||s==="")return null;if(s.startsWith("url("))return s;return `url("${s}")`;}
   const order = t.sectionOrder || [...DEFAULT_SECTION_ORDER];
 
   // --- Sub-render functions ---
