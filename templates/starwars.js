@@ -150,7 +150,7 @@
     roti: {
       id: "roti",
       label: "ROTI",
-      color: "#D97706", bg: "#1c1607", border: "#FBBF24",
+      color: "#991B1B", bg: "#1c1607", border: "#EF4444",
       image: ASSETS + "/vibe-roti.jpg",
     },
     ratingCatLabels: { ambiance: "Harmonie de la Force", satisfaction: "Puissance du Sabre", roti: "ROTI" },
@@ -182,7 +182,7 @@
     feedbackTitle: "🎙️ Transmission holographique",
     afterTitle: "Le Temple Jedi",
     actionImage: ASSETS + "/actionImage.jpg",
-    actionBorder: "#3B82F6",
+    actionBorder: "#FBBF24",
     actionTitle: "Prochaine mission",
     actionQuote: "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
     summaryTitle: "Archives du Conseil",
