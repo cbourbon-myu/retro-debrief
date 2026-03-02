@@ -61,14 +61,14 @@
     rulesImageOpacity: 1,
     rulesTitleImage: ASSETS + "/rulesTitleImage.jpg",
     summaryImage: 'url("' + ASSETS + '/resume.jpg")',
-    summaryImagePos: "0% 68%",
+    summaryImagePos: "50% 68%",
     summaryImageZoom: 50,
     summaryBlur: 0,
     summaryImageOpacity: 1,
     summaryTitleImage: ASSETS + "/summaryTitleImage.png",
     summaryOverlay: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.80) 40%, rgba(10,15,40,0.95) 100%)",
-    rulesOverlayDesktop: "linear-gradient(135deg, #140A32 0%, #140A32 40%, rgba(17,24,39,0.7) 60%, rgba(17,24,39,0.2) 80%, transparent 100%)",
-    rulesOverlayMobile: "linear-gradient(135deg, #140A32 0%, #140A32 50%, rgba(17,24,39,0.7) 70%, rgba(17,24,39,0.3) 100%)",
+    rulesOverlayDesktop: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.80) 40%, rgba(10,15,40,0.95) 100%)",
+    rulesOverlayMobile: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.80) 40%, rgba(10,15,40,0.95) 100%)",
     
     outroGifs: {
       high: null,
