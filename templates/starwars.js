@@ -67,8 +67,9 @@
     summaryImageOpacity: 1,
     summaryTitleImage: ASSETS + "/summaryTitleImage.png",
     summaryOverlay: "linear-gradient(to left, rgba(5,5,20,0.5) 0%, rgba(10,15,40,0.9) 50%, rgba(5,5,20,0.99) 100%)",
-    rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 40%, rgba(17,24,39,0.8) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
-    rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 50%, rgba(17,24,39,0.8) 70%, rgba(17,24,39,0.5) 100%)",
+    rulesOverlayDesktop: "linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(17,24,39,0.7) 60%, rgba(17,24,39,0.2) 80%, transparent 100%)",
+    rulesOverlayMobile: "linear-gradient(to bottom, #FFF6EE 0%, #FFF6EE 50%, rgba(17,24,39,0.7) 70%, rgba(17,24,39,0.3) 100%)",
+    
     outroGifs: {
       high: null,
       mid: null,
