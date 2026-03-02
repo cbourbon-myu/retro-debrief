@@ -53,7 +53,7 @@
     headerImagePos: "1% 48%",
     headerImageZoom: 50,
     headerBlur: 0,
-    headerImageOpacity: 0.1,
+    headerImageOpacity: 1,
     rulesImage: 'url("' + ASSETS + '/regles.jpg")',
     rulesImagePos: "100% 82%",
     rulesImageZoom: 50,
