@@ -50,8 +50,22 @@
     // --- Images & fonds ---
     headerGradient: "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
+    headerImagePos: "85% 85%",
+    headerImageZoom: null,
+    headerBlur: 0,
+    headerImageOpacity: 0.45,
     rulesImage: 'url("' + ASSETS + '/neon.jpg")',
+    rulesImagePos: "50% 50%",
+    rulesImageZoom: null,
+    rulesBlur: 0,
+    rulesImageOpacity: 0.5,
+    rulesTitleImage: null,
     summaryImage: 'url("' + ASSETS + '/concert.jpg")',
+    summaryImagePos: "50% 0%",
+    summaryImageZoom: null,
+    summaryBlur: 0,
+    summaryImageOpacity: 0.45,
+    summaryTitleImage: null,
     summaryOverlay: "linear-gradient(135deg, rgba(28,10,10,0.88) 0%, rgba(50,14,14,0.92) 50%, rgba(28,10,10,0.88) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(255,246,238,0.7) 60%, rgba(255,246,238,0.2) 80%, transparent 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, #FFF6EE 0%, #FFF6EE 50%, rgba(255,246,238,0.7) 70%, rgba(255,246,238,0.3) 100%)",
@@ -61,6 +75,32 @@
       low: ASSETS + "/msg1.gif",
       none: ASSETS + "/none.png",
     },
+    outroTitleImage: null,
+    outroGifPos: {
+      high: "center",
+      mid: "center",
+      low: "center",
+      none: "center"
+    },
+    outroGifZoom: {
+      high: null,
+      mid: null,
+      low: null,
+      none: null
+    },
+    outroGifOpacity: {
+      high: 0.75,
+      mid: 0.75,
+      low: 0.75,
+      none: 0.75
+    },
+    outroGifBlur: {
+      high: 0.5,
+      mid: 0.5,
+      low: 0.5,
+      none: 0.5
+    },
+    outroStyle: {},
 
     // --- Login (écran de connexion) ---
     loginBg: "#F8EBDB",
@@ -135,10 +175,15 @@
       quote: "\"Il est interdit de parler du GI Club.\"",
       author: "- Tyler Durden, probablement...",
       image: ASSETS + "/GIClub.png",
+      imageZoom: null,
+      imagePos: "50% 50%",
+      imageOpacity: 0.20,
     },
     vibeTitle: "Vibe check",
     feedbackTitle: "🫳 Drop the mic",
     afterTitle: "L'after",
+    actionImage: null,
+    actionBorder: null,
     actionTitle: "🎯 Setlist du prochain set",
     actionQuote: "\"On repart avec 2-3 actions concrètes. L'idée : être un peu meilleurs pour le prochain set.\" 🤘",
     summaryTitle: "🥁 Le Rappel",
