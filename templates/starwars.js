@@ -81,7 +81,7 @@
       high: "50% 50%",
       mid: "50% 50%",
       low: "50% 50%",
-      none: "0% 75%",
+      none: "50% 75%",
     },
     outroGifZoom: {
       high: 100,
