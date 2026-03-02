@@ -160,11 +160,11 @@
     vibeTitle: "Sondage de la Force",
     feedbackTitle: "🎙️ Transmission holographique",
     afterTitle: "Le Temple Jedi",
-    actionTitle: "🗺️ Prochaine mission",
+    actionTitle: "Prochaine mission",
     actionQuote: "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
-    summaryTitle: "📜 Archives du Conseil",
+    summaryTitle: "Archives du Conseil",
     summaryPinHint: "Épingle des retours avec 📌 pour construire les Archives",
-    outroTitle: "🌌 Générique de fin",
+    outroTitle: "Générique de fin",
 
     // --- Outro ---
     outro: {
