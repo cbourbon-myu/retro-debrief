@@ -48,7 +48,7 @@
     progressBg: "#1F2937",
 
     // --- Images & fonds ---
-    headerGradient: "linear-gradient(135deg, rgba(20,10,50,1) 0%, rgba(10,15,40,0.5) 40%, rgba(5,5,20,0) 100%)",
+    headerGradient: "linear-gradient(135deg, rgba(20,10,50,0.2) 0%, rgba(10,15,40,0.5) 40%, rgba(5,5,20,1) 100%)",
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
     headerImagePos: "1% 48%",
     headerImageZoom: 50,
