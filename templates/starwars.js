@@ -59,7 +59,7 @@
     summaryOverlay: "linear-gradient(135deg, rgba(5,5,20,0.95) 0%, rgba(10,15,40,0.92) 50%, rgba(5,5,20,0.95) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 40%, rgba(17,24,39,0.8) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 50%, rgba(17,24,39,0.8) 70%, rgba(17,24,39,0.5) 100%)",
-
+    
     // --- Login ---
     loginBg: "#0a0e1a",
     loginCardBg: "#111827",
