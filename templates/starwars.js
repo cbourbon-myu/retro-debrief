@@ -34,8 +34,8 @@
     iconStart: null,
 
     // --- Couleurs globales ---
-    bodyBg: "#243040",
-    cardBg: "#394C66",
+    bodyBg: "#0a0e1a",
+    cardBg: "#111827",
     cardBorder: "#1e3a5f",
     textPrimary: "#E5E7EB",
     textSecondary: "#9CA3AF",
@@ -44,8 +44,8 @@
     accentDark: "#D97706",
     accentLight: "#374151",
     inputBorder: "#374151",
-    inputBg: "#384A63",
-    progressBg: "#384A63",
+    inputBg: "#1F2937",
+    progressBg: "#1F2937",
 
     // --- Images & fonds ---
     headerGradient: "linear-gradient(135deg, rgba(20,10,50,1) 0%, rgba(10,15,40,0.5) 40%, rgba(5,5,20,0) 100%)",
