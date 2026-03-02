@@ -27,9 +27,11 @@
     iconStart: null,
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
     headerImagePos: "1% 48%",
+    imageZoom: 50,
     headerBlur: 0,
     rulesImage: 'url("' + ASSETS + '/regles.jpg")',
     rulesImagePos: "100% 82%",
+    imageZoom: 50,
     rulesBlur: 0,
     rulesTitleImage: ASSETS + "/rulesTitleImage.jpg",
     summaryImage: 'url("' + ASSETS + '/resume.jpg")',
@@ -127,9 +129,9 @@
     afterTitle: "Le Temple Jedi",
     actionTitle: "🗺️ Prochaine mission",
     actionQuote: "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
-    summaryTitle: "📜 Archives du Conseil",
+    summaryTitle: "Archives du Conseil",
     summaryPinHint: "Épingle des retours avec 📌 pour construire les Archives",
-    outroTitle: "🌌 Générique de fin",
+    outroTitle: "Générique de fin",
 
     // --- Outro ---
     outro: {
