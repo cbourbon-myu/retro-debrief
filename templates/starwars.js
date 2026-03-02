@@ -27,19 +27,52 @@
     iconStart: null,
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
     headerImagePos: "1% 48%",
-    imageZoom: 50,
+    headerImageZoom: 50,
     headerBlur: 0,
     rulesImage: 'url("' + ASSETS + '/regles.jpg")',
     rulesImagePos: "100% 82%",
-    imageZoom: 50,
+    rulesImageZoom: 50,
     rulesBlur: 0,
     rulesTitleImage: ASSETS + "/rulesTitleImage.jpg",
     summaryImage: 'url("' + ASSETS + '/resume.jpg")',
     summaryTitleImage: ASSETS + "/summaryTitleImage.png",
+    summaryImageZoom: 50,
     actionImage: ASSETS + "/actionImage.jpg",
+    actionBorder: "#3B82F6",
     outroTitleImage: ASSETS + "/outroTitleImage.png",
     outroGifs: {
       none: ASSETS + "/outroGif-none.jpg"
+    },
+    outroGifPos: {
+      none: "0% 75%",
+      low: "50% 50%",
+      mid: "50% 50%",
+      high: "50% 50%"
+    },
+    outroGifZoom: {
+      none: 50,
+      low: 100,
+      mid: 100,
+      high: 100
+    },
+    outroGifOpacity: {
+      none: 0.34,
+      low: 0.75,
+      mid: 0.75,
+      high: 0.75
+    },
+    outroGifBlur: {
+      none: 0,
+      low: 0,
+      mid: 0,
+      high: 0
+    },
+    outroStyle: {
+      none: {
+        bold: true,
+        align: "left",
+        italic: false
+      }
     },
 
     // --- Couleurs ---
@@ -61,7 +94,7 @@
     summaryOverlay: "linear-gradient(135deg, rgba(5,5,20,0.95) 0%, rgba(10,15,40,0.92) 50%, rgba(5,5,20,0.95) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 40%, rgba(17,24,39,0.8) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 50%, rgba(17,24,39,0.8) 70%, rgba(17,24,39,0.5) 100%)",
-    
+
     // --- Login ---
     loginBg: "#0a0e1a",
     loginCardBg: "#111827",
@@ -127,11 +160,11 @@
     vibeTitle: "Sondage de la Force",
     feedbackTitle: "🎙️ Transmission holographique",
     afterTitle: "Le Temple Jedi",
-    actionTitle: "Prochaine mission",
+    actionTitle: "🗺️ Prochaine mission",
     actionQuote: "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
-    summaryTitle: "Archives du Conseil",
+    summaryTitle: "📜 Archives du Conseil",
     summaryPinHint: "Épingle des retours avec 📌 pour construire les Archives",
-    outroTitle: "Générique de fin",
+    outroTitle: "🌌 Générique de fin",
 
     // --- Outro ---
     outro: {
