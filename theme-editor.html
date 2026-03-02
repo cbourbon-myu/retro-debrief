@@ -668,7 +668,7 @@ function Preview({t}){
       <div style={{display:"flex",gap:8}}>{t.vibeChecks.map(vc=>(<div key={vc.id} style={{flex:1,borderRadius:10,border:`2px solid ${vc.border}`,padding:10,textAlign:"center",background:t.dark?"rgba(255,255,255,0.05)":"#FFFAF5"}}>
         <div style={{fontSize:11,fontWeight:700,color:t.dark?vc.border:vc.color,marginBottom:6,display:"flex",alignItems:"center",justifyContent:"center",gap:4}}>
           {vc.image&&<div style={{width:22,height:22,borderRadius:"50%",overflow:"hidden",flexShrink:0}}><img src={vc.image} style={{width:"110%",height:"110%",objectFit:"cover",marginTop:"-5%",marginLeft:"-5%"}}/></div>}{vc.label}</div>
-        <div style={{display:"flex",justifyContent:"center",gap:4}}>{[1,2,3,4,5].map(n=>(<div key={n} style={{width:28,height:28,borderRadius:"50%",border:`1px solid ${t.inputBorder}`,background:n===4?vc.bg:t.cardBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,transform:n===4?"scale(1.15)":"scale(1)"}}>{t.ratingLabels[n]?.emoji}</div>))}</div>
+        <div style={{display:"flex",justifyContent:"center",gap:4}}>{[1,2,3,4,5].map(n=>(<div key={n} style={{width:28,height:28,borderRadius:"50%",border:`1px solid ${t.inputBorder}`,background:n===4?vc.bg:t.cardBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,transform:n===4?"scale(1.15)":"scale(1)",overflow:"hidden"}}>{t.ratingLabels[n]?.image ? <img src={t.ratingLabels[n].image} style={{width:"80%",height:"80%",objectFit:"cover",borderRadius:"50%"}} /> : t.ratingLabels[n]?.emoji}</div>))}</div>
       </div>))}</div>
     </div>
 
@@ -698,9 +698,9 @@ function Preview({t}){
           {t.roti.label}
         </div>
         <div style={{display:"flex",justifyContent:"center",gap:4}}>
-          {[1,2,3,4,5].map(n=>(<div key={n} style={{width:26,height:26,borderRadius:"50%",border:`1px solid ${t.inputBorder}`,background:n===4?t.roti.bg:t.cardBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,transform:n===4?"scale(1.12)":"scale(1)"}}>{t.ratingLabels[n]?.emoji}</div>))}
+          {[1,2,3,4,5].map(n=>(<div key={n} style={{width:26,height:26,borderRadius:"50%",border:`1px solid ${t.inputBorder}`,background:n===4?t.roti.bg:t.cardBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,transform:n===4?"scale(1.12)":"scale(1)",overflow:"hidden"}}>{t.ratingLabels[n]?.image ? <img src={t.ratingLabels[n].image} style={{width:"80%",height:"80%",objectFit:"cover",borderRadius:"50%"}} /> : t.ratingLabels[n]?.emoji}</div>))}
         </div>
-        <div style={{fontSize:32,marginTop:8}}>{t.ratingLabels[4]?.emoji}</div>
+        <div style={{fontSize:32,marginTop:8}}>{t.ratingLabels[4]?.image ? <img src={t.ratingLabels[4].image} style={{width:32,height:32,objectFit:"cover",borderRadius:"50%"}} /> : t.ratingLabels[4]?.emoji}</div>
         <div style={{fontSize:22,fontWeight:900,color:t.roti.color}}>4.0</div>
         <div style={{fontSize:10,color:t.textSecondary}}>/ 5 — {t.ratingLabels[4]?.label}</div>
       </div>
@@ -719,9 +719,9 @@ function Preview({t}){
       <div style={{position:"relative",zIndex:1,textAlign:"center"}}>
         <div style={{fontSize:16,fontWeight:700,color:t.accent,marginBottom:12,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>{t.summaryTitleImage && <div style={{width:26,height:26,borderRadius:"50%",overflow:"hidden",flexShrink:0}}><img src={t.summaryTitleImage} style={{width:"110%",height:"110%",objectFit:"cover",marginTop:"-5%",marginLeft:"-5%"}} /></div>}{t.summaryTitle}</div>
         <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:12}}>
-          {[{label:"Ambiance",emoji:t.ratingLabels[4]?.emoji,val:"4.2",color:t.vibeChecks[0]?.border},{label:"Satisfaction",emoji:t.ratingLabels[3]?.emoji,val:"3.8",color:t.vibeChecks[1]?.border},{label:"ROTI",emoji:t.ratingLabels[4]?.emoji,val:"4.0",color:t.roti.border}].map(v=>(
+          {[{label:"Ambiance",emoji:t.ratingLabels[4]?.emoji,image:t.ratingLabels[4]?.image,val:"4.2",color:t.vibeChecks[0]?.border},{label:"Satisfaction",emoji:t.ratingLabels[3]?.emoji,image:t.ratingLabels[3]?.image,val:"3.8",color:t.vibeChecks[1]?.border},{label:"ROTI",emoji:t.ratingLabels[4]?.emoji,image:t.ratingLabels[4]?.image,val:"4.0",color:t.roti.border}].map(v=>(
             <div key={v.label} style={{background:"rgba(255,255,255,0.08)",borderRadius:10,padding:"8px 12px",border:`1px solid ${v.color}44`,minWidth:70}}>
-              <div style={{fontSize:18}}>{v.emoji}</div>
+              <div style={{fontSize:18}}>{v.image ? <img src={v.image} style={{width:18,height:18,objectFit:"cover",borderRadius:"50%"}} /> : v.emoji}</div>
               <div style={{fontSize:16,fontWeight:900,color:v.color}}>{v.val}</div>
               <div style={{fontSize:9,color:"rgba(255,255,255,0.5)"}}>{v.label}</div>
             </div>
