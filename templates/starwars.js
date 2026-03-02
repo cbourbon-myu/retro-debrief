@@ -1,5 +1,5 @@
 // ============================================================
-// ⚔️ CONSEIL JEDI — Template Star Wars
+// ⚔️ CONSEIL JEDI — Template Star Wars (Custom merged)
 // ============================================================
 
 (function () {
@@ -21,15 +21,26 @@
     emojiMeeting: "🛸",
     emojiStart: "🌌",
 
-    // --- Images ---
-    appLogo: null,
+    // --- Images (fichiers dans assets/starwars/) ---
+    appLogo: ASSETS + "/appLogo.png",
     iconMeeting: null,
     iconStart: null,
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
+    headerImagePos: "1% 48%",
+    headerBlur: 0,
     rulesImage: 'url("' + ASSETS + '/regles.jpg")',
+    rulesImagePos: "100% 82%",
+    rulesBlur: 0,
+    rulesTitleImage: ASSETS + "/rulesTitleImage.jpg",
     summaryImage: 'url("' + ASSETS + '/resume.jpg")',
-    outroGifs: null,
+    summaryTitleImage: ASSETS + "/summaryTitleImage.png",
+    actionImage: ASSETS + "/actionImage.jpg",
+    outroTitleImage: ASSETS + "/outroTitleImage.png",
+    outroGifs: {
+      none: ASSETS + "/outroGif-none.jpg"
+    },
 
+    // --- Couleurs ---
     bodyBg: "#0a0e1a",
     cardBg: "#111827",
     cardBorder: "#1e3a5f",
@@ -38,22 +49,25 @@
     textMuted: "#6B7280",
     accent: "#FBBF24",
     accentDark: "#D97706",
-    accentLight: "#1c1607",
+    accentLight: "#374151",
     inputBorder: "#374151",
     inputBg: "#1F2937",
     progressBg: "#1F2937",
 
-    headerGradient: "linear-gradient(135deg, rgba(5,5,20,0.92) 0%, rgba(10,15,40,0.88) 40%, rgba(20,10,50,0.7) 100%)",
+    // --- Overlays & Gradients ---
+    headerGradient: "linear-gradient(135deg, rgba(20,10,50,1) 0%, rgba(10,15,40,0.5) 40%, rgba(5,5,20,0) 100%)",
     summaryOverlay: "linear-gradient(135deg, rgba(5,5,20,0.95) 0%, rgba(10,15,40,0.92) 50%, rgba(5,5,20,0.95) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 40%, rgba(17,24,39,0.8) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 50%, rgba(17,24,39,0.8) 70%, rgba(17,24,39,0.5) 100%)",
 
+    // --- Login ---
     loginBg: "#0a0e1a",
     loginCardBg: "#111827",
     loginBtnBg: "#111827",
     loginBtnBorder: "#374151",
     loginBtnHover: "#1F2937",
 
+    // --- Catégories ---
     categories: [
       { id: "rock", label: "✨ La Force", color: "#166534", bg: "#052e16", border: "#22C55E" },
       { id: "fausse", label: "💀 Côté Obscur", color: "#991B1B", bg: "#1c0606", border: "#EF4444" },
@@ -65,20 +79,24 @@
       ameliorer: { title: "⚔️ L'Académie Jedi", color: "#1E40AF", border: "#3B82F6" },
     },
 
+    // --- Ratings (avec images) ---
     ratingLabels: {
-      1: { emoji: "💀", label: "Piège Sith" },
-      2: { emoji: "🌑", label: "Perturbation" },
-      3: { emoji: "⚔️", label: "Padawan" },
-      4: { emoji: "🌟", label: "Chevalier Jedi" },
-      5: { emoji: "🌌", label: "Maître Jedi" },
+      1: { emoji: "💀", label: "Côté Obscur", image: ASSETS + "/rating-1-cote-obscur.jpg" },
+      2: { emoji: "🌑", label: "Piège Sith", image: ASSETS + "/rating-2-piege-sith.jpg" },
+      3: { emoji: "⚔️", label: "Padawan", image: ASSETS + "/rating-3-padawan.jpg" },
+      4: { emoji: "🌠", label: "Chevalier Jedi", image: ASSETS + "/rating-4-chevalier-jedi.jpg" },
+      5: { emoji: "☄️", label: "Maître Jedi", image: ASSETS + "/rating-5-maitre-jedi.jpg" },
     },
+
+    // --- Vibe Checks (avec images) ---
     vibeChecks: [
-      { id: "ambiance", label: "Harmonie de la Force", color: "#166534", bg: "#052e16", border: "#22C55E" },
-      { id: "satisfaction", label: "Puissance du Sabre", color: "#1E40AF", bg: "#0a1128", border: "#3B82F6" },
+      { id: "ambiance", label: "Harmonie de la Force", color: "#166534", bg: "#052e16", border: "#22C55E", image: ASSETS + "/vibe-ambiance.jpg" },
+      { id: "satisfaction", label: "Puissance du Sabre", color: "#1E40AF", bg: "#0a1128", border: "#3B82F6", image: ASSETS + "/vibe-satisfaction.jpg" },
     ],
-    roti: { id: "roti", label: "ROTI", color: "#D97706", bg: "#1c1607", border: "#FBBF24" },
+    roti: { id: "roti", label: "ROTI", color: "#D97706", bg: "#1c1607", border: "#FBBF24", image: ASSETS + "/vibe-roti.jpg" },
     ratingCatLabels: { ambiance: "Harmonie de la Force", satisfaction: "Puissance du Sabre", roti: "ROTI" },
 
+    // --- Textes ---
     appTitle: "CONSEIL JEDI",
     subtitle: "Il y a bien longtemps, dans un sprint lointain... • Que la Force soit avec le backlog 🌌",
     rulesTitle: "⚔️",
@@ -92,11 +110,18 @@
     ],
     rulesColor: "#FBBF24",
     rulesDotColor: "#3B82F6",
+
+    // --- Tooltip (avec image) ---
     tooltip: {
       title: "⚔️ Sagesse du Maître ⚔️",
       quote: "\"Fais-le, ou ne le fais pas. Il n'y a pas d'essai.\"",
       author: "- Yoda, Maître Jedi",
+      image: ASSETS + "/tooltip.jpg",
+      imageZoom: 100,
+      imagePos: "50% 50%",
     },
+
+    // --- Section titles ---
     vibeTitle: "Sondage de la Force",
     feedbackTitle: "🎙️ Transmission holographique",
     afterTitle: "Le Temple Jedi",
@@ -105,6 +130,8 @@
     summaryTitle: "📜 Archives du Conseil",
     summaryPinHint: "Épingle des retours avec 📌 pour construire les Archives",
     outroTitle: "🌌 Générique de fin",
+
+    // --- Outro ---
     outro: {
       high: { text: "La Force était puissante dans ce sprint. Le Conseil salue votre maîtrise, jeunes Jedi. Rendez-vous dans la prochaine galaxie.", emoji: "🌌⚔️" },
       mid: { text: "L'équilibre dans la Force a été maintenu. Continuez votre entraînement, Padawans. Le prochain sprint nous attend.", emoji: "⚔️✨" },
@@ -112,6 +139,7 @@
       none: { text: "Le Conseil Jedi est réuni. Que la Force soit avec nous pour les sprints à venir.", emoji: "⚔️🌟" },
     },
 
+    // --- Export MD ---
     mdTitle: "⚔️ Conseil Jedi — Sprint",
     mdSummary: "📜 Archives du Conseil",
     mdGlobal: "Sondage de la Force",
