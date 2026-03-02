@@ -34,8 +34,8 @@
     iconStart: null,
 
     // --- Couleurs globales ---
-    bodyBg: "#4A67BF",
-    cardBg: "#6F9DFF",
+    bodyBg: "#243040",
+    cardBg: "#394C66",
     cardBorder: "#1e3a5f",
     textPrimary: "#E5E7EB",
     textSecondary: "#9CA3AF",
