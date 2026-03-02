@@ -50,7 +50,7 @@
     // --- Images & fonds ---
     headerGradient: "linear-gradient(135deg, rgba(20,10,50,1) 0%, rgba(10,15,40,0.5) 40%, rgba(5,5,20,0) 100%)",
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
-    headerImagePos: "1% 48%",
+    headerImagePos: "50% 48%",
     headerImageZoom: 50,
     headerBlur: 0,
     headerImageOpacity: 1,
