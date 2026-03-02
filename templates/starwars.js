@@ -93,7 +93,7 @@
 
     // --- Overlays & Gradients ---
     headerGradient: "linear-gradient(135deg, rgba(20,10,50,1) 0%, rgba(10,15,40,0.5) 40%, rgba(5,5,20,0) 100%)",
-    summaryOverlay: "linear-gradient(135deg, rgba(5,5,20,0.95) 0%, rgba(10,15,40,0.92) 50%, rgba(5,5,20,0.95) 100%)",
+    summaryOverlay: "linear-gradient(to left, rgba(5,5,20,0.5) 0%, rgba(10,15,40,0.9) 50%, rgba(5,5,20,0.99) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 40%, rgba(17,24,39,0.8) 60%, rgba(17,24,39,0.5) 80%, rgba(17,24,39,0.3) 100%)",
     rulesOverlayMobile: "linear-gradient(to bottom, rgba(17,24,39,0.97) 0%, rgba(17,24,39,0.95) 50%, rgba(17,24,39,0.8) 70%, rgba(17,24,39,0.5) 100%)",
 
@@ -162,11 +162,11 @@
     vibeTitle: "Sondage de la Force",
     feedbackTitle: "🎙️ Transmission holographique",
     afterTitle: "Le Temple Jedi",
-    actionTitle: "Prochaine mission",
+    actionTitle: "🗺️ Prochaine mission",
     actionQuote: "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
-    summaryTitle: "Archives du Conseil",
+    summaryTitle: "📜 Archives du Conseil",
     summaryPinHint: "Épingle des retours avec 📌 pour construire les Archives",
-    outroTitle: "Générique de fin",
+    outroTitle: "🌌 Générique de fin",
 
     // --- Outro ---
     outro: {
