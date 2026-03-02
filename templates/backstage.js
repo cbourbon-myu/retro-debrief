@@ -64,7 +64,7 @@
     summaryImagePos: "50% 0%",
     summaryImageZoom: null,
     summaryBlur: 0,
-    summaryImageOpacity: 0.45,
+    summaryImageOpacity: 0.55,
     summaryTitleImage: null,
     summaryOverlay: "linear-gradient(135deg, rgba(28,10,10,0.88) 0%, rgba(50,14,14,0.92) 50%, rgba(28,10,10,0.88) 100%)",
     rulesOverlayDesktop: "linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(255,246,238,0.7) 60%, rgba(255,246,238,0.2) 80%, transparent 100%)",
@@ -89,10 +89,10 @@
       none: null
     },
     outroGifOpacity: {
-      high: 0.75,
-      mid: 0.75,
-      low: 0.75,
-      none: 0.75
+      high: 0.85,
+      mid: 0.85,
+      low: 0.85,
+      none: 0.85
     },
     outroGifBlur: {
       high: 0.5,
