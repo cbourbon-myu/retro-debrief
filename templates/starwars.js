@@ -37,6 +37,8 @@
     summaryImage: 'url("' + ASSETS + '/resume.jpg")',
     summaryTitleImage: ASSETS + "/summaryTitleImage.png",
     summaryImageZoom: 50,
+    summaryImagePos: "0% 68%",
+    summaryBlur: 0,
     actionImage: ASSETS + "/actionImage.jpg",
     actionBorder: "#3B82F6",
     outroTitleImage: ASSETS + "/outroTitleImage.png",
