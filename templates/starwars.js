@@ -48,12 +48,12 @@
     progressBg: "#1F2937",
 
     // --- Images & fonds ---
-    headerGradient: "linear-gradient(135deg, rgba(20,10,50,1) 0%, rgba(10,15,40,0.5) 40%, rgba(5,5,20,0) 100%)",
+    headerGradient: "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
     headerImagePos: "50% 48%",
     headerImageZoom: 50,
     headerBlur: 0,
-    headerImageOpacity: 1,
+    headerImageOpacity: 0.45,
     rulesImage: 'url("' + ASSETS + '/regles.jpg")',
     rulesImagePos: "100% 82%",
     rulesImageZoom: 50,
