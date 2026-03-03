@@ -446,7 +446,7 @@
       const IMG_START = T.iconStart || "assets/backstage/fusee.gif";
       // Helper: garantit le format CSS url("...") pour les backgroundImage
       const bg = s => s && s !== "none" ? (s.startsWith("url(") || s.startsWith("data:") ? (s.startsWith("data:") ? `url("${s}")` : s) : `url("${s}")`) : null;
-      const zoomFade = () => ({});
+      const zoomFade = (zoom, posStr) => { if (!zoom || zoom >= 100) return {}; const parts = (posStr || "50% 50%").split(/\s+/); const px = parseFloat(parts[0]) || 50; const py = parseFloat(parts[1] || parts[0]) || 50; const l = px*(100-zoom)/100, r = l+zoom, t = py*(100-zoom)/100, b = t+zoom, f = 4; const h = `linear-gradient(to right, transparent ${Math.max(0,l-f)}%, black ${l+f}%, black ${r-f}%, transparent ${Math.min(100,r+f)}%)`; const v = `linear-gradient(to bottom, transparent ${Math.max(0,t-f)}%, black ${t+f}%, black ${b-f}%, transparent ${Math.min(100,b+f)}%)`; return { WebkitMaskImage: h+", "+v, maskImage: h+", "+v, WebkitMaskComposite: "destination-in", maskComposite: "intersect" }; };
 
       // ╔══════════════════════════════════════════════════════╗
       // ║                      RENDER                          ║
