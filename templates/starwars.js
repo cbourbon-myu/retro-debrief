@@ -66,9 +66,9 @@
     summaryBlur: 0,
     summaryImageOpacity: 1,
     summaryTitleImage: ASSETS + "/summaryTitleImage.png",
-    summaryOverlay: "linear-gradient(to left, rgba(5,5,20,0.05) 0%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 100%)",
-    rulesOverlayDesktop: "linear-gradient(to left, rgba(5,5,20,0.05) 0%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 100%)",
-    rulesOverlayMobile: "linear-gradient(to left, rgba(5,5,20,0.05) 0%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 100%)",
+    summaryOverlay: "linear-gradient(to left, rgba(5,5,20,0) 0%, rgba(5,5,20,0.15) 15%, rgba(5,5,20,0.4) 30%, rgba(5,5,20,0.7) 42%, rgba(5,5,20,0.9) 52%, rgba(5,5,20,1) 62%, rgba(5,5,20,1) 100%)",
+    rulesOverlayDesktop: "linear-gradient(to left, rgba(5,5,20,0) 0%, rgba(5,5,20,0.15) 15%, rgba(5,5,20,0.4) 30%, rgba(5,5,20,0.7) 42%, rgba(5,5,20,0.9) 52%, rgba(5,5,20,1) 62%, rgba(5,5,20,1) 100%)",
+    rulesOverlayMobile: "linear-gradient(to bottom, rgba(5,5,20,0) 0%, rgba(5,5,20,0.15) 15%, rgba(5,5,20,0.4) 30%, rgba(5,5,20,0.7) 42%, rgba(5,5,20,0.9) 52%, rgba(5,5,20,1) 62%, rgba(5,5,20,1) 100%)",
     
     outroGifs: {
       high: null,
@@ -104,6 +104,7 @@
     outroStyle: {
       none: { bold: true, align: "left", italic: false },
     },
+    outroOverlay: "radial-gradient(ellipse at center, rgba(5,5,20,0.3) 0%, rgba(5,5,20,0.6) 40%, rgba(5,5,20,0.85) 70%, rgba(5,5,20,0.95) 100%)",
 
     // --- Login (écran de connexion) ---
     loginBg: "#0a0e1a",
