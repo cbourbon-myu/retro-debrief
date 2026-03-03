@@ -454,8 +454,8 @@
         <div style={{ minHeight: "100vh", zoom: isMobile ? 1 : 1.15 }}>
 
           {/* ==================== HEADER ==================== */}
-          <div style={{ position: "relative", zIndex: 10, padding: isMobile ? "16px 12px" : "32px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: isMobile ? 8 : 12, minHeight: isMobile ? 80 : 110, overflow: "hidden" }}>
-            {bg(T.headerImage) && <div style={{ position: "absolute", inset: -(T.headerBlur||0)*2, overflow: "hidden", backgroundImage: bg(T.headerImage), backgroundSize: T.headerImageZoom && T.headerImageZoom !== 100 ? `${T.headerImageZoom}%` : "cover", backgroundPosition: T.headerImagePos || "85% 85%", backgroundRepeat: "no-repeat", opacity: T.headerImageOpacity != null ? T.headerImageOpacity : 0.45, filter: T.headerBlur != null ? `blur(${T.headerBlur}px)` : undefined }} />}
+          <div style={{ position: "relative", zIndex: 10, padding: isMobile ? "16px 12px" : "32px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: isMobile ? 8 : 12, minHeight: isMobile ? 80 : 110 }}>
+            {bg(T.headerImage) && <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}><div style={{ position: "absolute", inset: -(T.headerBlur||0)*2, backgroundImage: bg(T.headerImage), backgroundSize: T.headerImageZoom && T.headerImageZoom !== 100 ? `${T.headerImageZoom}%` : "cover", backgroundPosition: T.headerImagePos || "85% 85%", backgroundRepeat: "no-repeat", opacity: T.headerImageOpacity != null ? T.headerImageOpacity : 0.45, filter: T.headerBlur != null ? `blur(${T.headerBlur}px)` : undefined }} /></div>}
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.headerGradient }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: isMobile ? 17 : 34, fontWeight: 800, color: T.accent, letterSpacing: isMobile ? 1 : 2.5, display: "flex", alignItems: "center" }}>
