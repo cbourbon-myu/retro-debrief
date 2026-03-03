@@ -95,10 +95,10 @@
       none: 0.85
     },
     outroGifBlur: {
-      high: 0.5,
-      mid: 0.5,
-      low: 0.5,
-      none: 0.5
+      high: 0,
+      mid: 0,
+      low: 0,
+      none: 0
     },
     outroStyle: {},
 
