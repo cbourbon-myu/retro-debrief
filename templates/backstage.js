@@ -89,10 +89,10 @@
       none: null
     },
     outroGifOpacity: {
-      high: 0.85,
-      mid: 0.85,
-      low: 0.85,
-      none: 0.85
+      high: 1,
+      mid: 1,
+      low: 1,
+      none: 1
     },
     outroGifBlur: {
       high: 0,
