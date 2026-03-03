@@ -182,7 +182,7 @@
       bannerColor: "#22C55E",
       // Titre
       titleColor: "#166534",
-      titleFont: "",
+      titleFont: "bold 16px sans-serif",
       // Citation
       quoteColor: "#FAFAF9",
       quoteFont: "",
