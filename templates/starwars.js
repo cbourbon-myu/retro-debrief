@@ -66,9 +66,9 @@
     summaryBlur: 0,
     summaryImageOpacity: 1,
     summaryTitleImage: ASSETS + "/summaryTitleImage.png",
-    summaryOverlay: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.80) 40%, rgba(10,15,40,0.95) 100%)",
-    rulesOverlayDesktop: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.80) 40%, rgba(10,15,40,0.95) 100%)",
-    rulesOverlayMobile: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.80) 40%, rgba(10,15,40,0.95) 100%)",
+    summaryOverlay: "linear-gradient(to left, rgba(5,5,20,0.05) 0%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 100%)",
+    rulesOverlayDesktop: "linear-gradient(to left, rgba(5,5,20,0.05) 0%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 100%)",
+    rulesOverlayMobile: "linear-gradient(to left, rgba(5,5,20,0.05) 0%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 100%)",
     
     outroGifs: {
       high: null,
