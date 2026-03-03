@@ -442,7 +442,7 @@ function PositionPicker({label,value,onChange,imageUrl,zoom,onZoom}){
       <div style={{display:"flex",flexDirection:"column",gap:4,flex:1}}>
         <div style={{display:"flex",alignItems:"center",gap:4}}><span style={{fontSize:10,color:"#888",width:14}}>X</span><input type="range" min="0" max="100" value={parsed.x} onChange={e=>setPos(parseInt(e.target.value),parsed.y)} style={{flex:1,accentColor:"#F97316"}}/><span style={{fontSize:10,color:"#aaa",width:30,textAlign:"right"}}>{Math.round(parsed.x)}%</span></div>
         <div style={{display:"flex",alignItems:"center",gap:4}}><span style={{fontSize:10,color:"#888",width:14}}>Y</span><input type="range" min="0" max="100" value={parsed.y} onChange={e=>setPos(parsed.x,parseInt(e.target.value))} style={{flex:1,accentColor:"#F97316"}}/><span style={{fontSize:10,color:"#aaa",width:30,textAlign:"right"}}>{Math.round(parsed.y)}%</span></div>
-        {onZoom&&<div style={{display:"flex",alignItems:"center",gap:4}}><span style={{fontSize:10,color:"#888",width:14}}>🔍</span><input type="range" min="50" max="300" value={zoomVal} onChange={e=>onZoom(parseInt(e.target.value))} style={{flex:1,accentColor:"#F97316"}}/><span style={{fontSize:10,color:"#aaa",width:30,textAlign:"right"}}>{zoomVal}%</span></div>}
+        {onZoom&&<div style={{display:"flex",alignItems:"center",gap:4}}><span style={{fontSize:10,color:"#888",width:14}}>🔍</span><input type="range" min="10" max="300" value={zoomVal} onChange={e=>onZoom(parseInt(e.target.value))} style={{flex:1,accentColor:"#F97316"}}/><span style={{fontSize:10,color:"#aaa",width:30,textAlign:"right"}}>{zoomVal}%</span></div>}
       </div>
     </div></div>
   );
@@ -648,14 +648,14 @@ function Preview({t}){
 
     {/* HEADER */}
     <div className="preview-card" style={{position:"relative",minHeight:90,display:"flex",alignItems:"center",padding:"20px 24px",border:"1px solid rgba(255,255,255,0.12)",background:"#1A1A1A"}}>
-      {bg(t.headerImage)&&<div style={{position:"absolute",inset:0,backgroundImage:bg(t.headerImage),backgroundSize:t.headerImageZoom&&t.headerImageZoom!==100?`${t.headerImageZoom}%`:"cover",backgroundPosition:t.headerImagePos||"85% 85%",opacity:t.headerImageOpacity!=null?t.headerImageOpacity:0.45,borderRadius:16,filter:t.headerBlur!=null?`blur(${t.headerBlur}px)`:undefined}}/>}
+      {bg(t.headerImage)&&<div style={{position:"absolute",inset:-(t.headerBlur||0)*2,backgroundImage:bg(t.headerImage),backgroundSize:t.headerImageZoom&&t.headerImageZoom!==100?`${t.headerImageZoom}%`:"cover",backgroundPosition:t.headerImagePos||"85% 85%",opacity:t.headerImageOpacity!=null?t.headerImageOpacity:0.45,filter:t.headerBlur!=null?`blur(${t.headerBlur}px)`:undefined}}/>}
       <div style={{position:"absolute",inset:0,background:t.headerGradient,borderRadius:16}}/>
       <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:12}}>{t.appLogo&&<img src={t.appLogo} style={{width:44,height:44,objectFit:"cover",borderRadius:"50%",border:"2px solid rgba(255,255,255,0.2)",boxShadow:"0 2px 8px rgba(0,0,0,0.4)"}} onError={e=>{e.target.style.display="none";}}/>}<div><div style={{fontSize:22,fontWeight:800,color:t.accent,letterSpacing:2,textShadow:"0 1px 6px rgba(0,0,0,0.7)"}}>{t.appTitle}</div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)",marginTop:2,textShadow:"0 1px 3px rgba(0,0,0,0.5)"}}>{t.subtitle}</div></div></div>
     </div>
 
     {/* REGLES */}
     <div className="preview-card" style={{position:"relative",padding:16}}>
-      {bg(t.rulesImage)&&<div style={{position:"absolute",inset:0,backgroundImage:bg(t.rulesImage),backgroundSize:t.rulesImageZoom&&t.rulesImageZoom!==100?`${t.rulesImageZoom}%`:"cover",backgroundPosition:t.rulesImagePos||"50% 50%",opacity:t.rulesImageOpacity!=null?t.rulesImageOpacity:0.5,borderRadius:16,filter:t.rulesBlur!=null?`blur(${t.rulesBlur}px)`:undefined}}/>}
+      {bg(t.rulesImage)&&<div style={{position:"absolute",inset:-(t.rulesBlur||0)*2,backgroundImage:bg(t.rulesImage),backgroundSize:t.rulesImageZoom&&t.rulesImageZoom!==100?`${t.rulesImageZoom}%`:"cover",backgroundPosition:t.rulesImagePos||"50% 50%",opacity:t.rulesImageOpacity!=null?t.rulesImageOpacity:0.5,filter:t.rulesBlur!=null?`blur(${t.rulesBlur}px)`:undefined}}/>}
       <div style={{position:"absolute",inset:0,background:t.rulesOverlayDesktop,borderRadius:16}}/>
       <div style={{position:"relative",zIndex:1}}><div style={{fontSize:14,fontWeight:700,color:t.rulesColor,marginBottom:8,display:"flex",alignItems:"center",gap:6}}>{t.rulesTitleImage ? <div style={{width:28,height:28,borderRadius:"50%",overflow:"hidden",flexShrink:0}}><img src={t.rulesTitleImage} style={{width:"110%",height:"110%",objectFit:"cover",marginTop:"-5%",marginLeft:"-5%"}} /></div> : <span style={{fontSize:20}}>{t.rulesTitle}</span>}{t.rulesName}</div>
         {t.rulesItems.slice(0,3).map((r,i)=>(<div key={i} style={{display:"flex",gap:8,marginBottom:4,fontSize:11,color:t.textPrimary}}><span style={{color:t.rulesDotColor,fontWeight:800}}>●</span>{r}</div>))}
@@ -728,7 +728,7 @@ function Preview({t}){
 
     {/* RÉSUMÉ */}
     <div className="preview-card" style={{position:"relative",padding:16,marginBottom:16}}>
-      {bg(t.summaryImage)&&<div style={{position:"absolute",inset:0,backgroundImage:bg(t.summaryImage),backgroundSize:t.summaryImageZoom&&t.summaryImageZoom!==100?`${t.summaryImageZoom}%`:"cover",backgroundPosition:t.summaryImagePos||"50% 0%",opacity:t.summaryImageOpacity!=null?t.summaryImageOpacity:0.45,borderRadius:16,filter:t.summaryBlur!=null?`blur(${t.summaryBlur}px)`:undefined}}/>}
+      {bg(t.summaryImage)&&<div style={{position:"absolute",inset:-(t.summaryBlur||0)*2,backgroundImage:bg(t.summaryImage),backgroundSize:t.summaryImageZoom&&t.summaryImageZoom!==100?`${t.summaryImageZoom}%`:"cover",backgroundPosition:t.summaryImagePos||"50% 0%",opacity:t.summaryImageOpacity!=null?t.summaryImageOpacity:0.45,filter:t.summaryBlur!=null?`blur(${t.summaryBlur}px)`:undefined}}/>}
       <div style={{position:"absolute",inset:0,background:t.summaryOverlay,borderRadius:16}}/>
       <div style={{position:"relative",zIndex:1,textAlign:"center"}}>
         <div style={{fontSize:16,fontWeight:700,color:t.accent,marginBottom:12,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>{t.summaryTitleImage && <div style={{width:26,height:26,borderRadius:"50%",overflow:"hidden",flexShrink:0}}><img src={t.summaryTitleImage} style={{width:"110%",height:"110%",objectFit:"cover",marginTop:"-5%",marginLeft:"-5%"}} /></div>}{t.summaryTitle}</div>
@@ -749,7 +749,7 @@ function Preview({t}){
     <div style={{fontSize:11,fontWeight:700,color:"#555",textTransform:"uppercase",letterSpacing:2,marginBottom:8,marginTop:4}}>🎬 Fin</div>
     {[{key:"none",label:"En attente"},{key:"low",label:"Basse"},{key:"mid",label:"Moyenne"},{key:"high",label:"Haute"}].map(({key,label})=>{const oSt=t.outroStyle?.[key]||{};const gif=t.outroGifs?.[key];return(
     <div key={key} className="preview-card" style={{position:"relative",padding:0,marginBottom:6,minHeight:60}}>
-      {gif&&<div style={{position:"absolute",inset:0,backgroundImage:`url(${gif})`,backgroundSize:t.outroGifZoom?.[key]&&t.outroGifZoom[key]!==100?`${t.outroGifZoom[key]}%`:"cover",backgroundPosition:t.outroGifPos?.[key]||"50% 50%",filter:`blur(${t.outroGifBlur?.[key]!=null?t.outroGifBlur[key]:0.5}px)`,opacity:t.outroGifOpacity?.[key]??0.75,borderRadius:16}}/>}
+      {gif&&<div style={{position:"absolute",inset:-Math.max(4,(t.outroGifBlur?.[key]!=null?t.outroGifBlur[key]:0.5)*2),backgroundImage:`url(${gif})`,backgroundSize:t.outroGifZoom?.[key]&&t.outroGifZoom[key]!==100?`${t.outroGifZoom[key]}%`:"cover",backgroundPosition:t.outroGifPos?.[key]||"50% 50%",filter:`blur(${t.outroGifBlur?.[key]!=null?t.outroGifBlur[key]:0.5}px)`,opacity:t.outroGifOpacity?.[key]??0.75}}/>}
       <div style={{position:"absolute",inset:0,background:t.summaryOverlay,borderRadius:16}}/>
       <div style={{position:"relative",zIndex:1,textAlign:oSt.align||"left",padding:"10px 14px"}}>
         <div style={{fontSize:9,fontWeight:600,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:1,marginBottom:4,textAlign:"left"}}>{label}</div>
