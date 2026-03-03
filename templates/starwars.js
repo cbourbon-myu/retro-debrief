@@ -61,7 +61,7 @@
     rulesImageOpacity: 1,
     rulesTitleImage: ASSETS + "/rulesTitleImage.jpg",
     summaryImage: 'url("' + ASSETS + '/resume.jpg")',
-    summaryImagePos: "50% 68%",
+    summaryImagePos: "100% 68%",
     summaryImageZoom: 75,
     summaryBlur: 0,
     summaryImageOpacity: 1,
@@ -78,10 +78,10 @@
     },
     outroTitleImage: ASSETS + "/outroTitleImage.png",
     outroGifPos: {
-      high: "50% 50%",
-      mid: "50% 50%",
-      low: "50% 50%",
-      none: "50% 75%",
+      high: "100% 50%",
+      mid: "100% 50%",
+      low: "100% 50%",
+      none: "1050% 75%",
     },
     outroGifZoom: {
       high: 50,
