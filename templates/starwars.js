@@ -170,7 +170,7 @@
       "Toujours en mouvement est l'avenir",
     ],
     rulesColor: "#FBBF24",
-    rulesDotColor: "#3B82F6",
+    rulesDotColor: "#22C55E",
     tooltip: {
       title: "⚔️ Sagesse du Maître ⚔️",
       quote: "\"Fais-le, ou ne le fais pas. Il n'y a pas d'essai.\"",
