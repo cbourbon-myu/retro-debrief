@@ -180,9 +180,9 @@
       imagePos: "50% 50%",
       imageOpacity: 0.20,
       // Bandeau haut
-      bannerColor: "#FBBF24",
+      bannerColor: "#22C55E",
       // Titre
-      titleColor: "#FBBF24",
+      titleColor: "#22C55E",
       titleFont: "",
       titleSize: 10,
       titleBold: true,
