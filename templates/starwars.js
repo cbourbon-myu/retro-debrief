@@ -48,7 +48,7 @@
     progressBg: "#1F2937",
 
     // --- Images & fonds ---
-    headerGradient: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.60) 40%, rgba(10,15,40,0.95) 100%)",
+    headerGradient: "linear-gradient(135deg, rgba(20,10,50,0.85) 0%, rgba(10,15,40,0.80) 40%, rgba(10,15,40,0.95) 100%)",
     headerImage: 'url("' + ASSETS + '/titre.jpg")',
     headerImagePos: "50% 48%",
     headerImageZoom: 50,
@@ -179,16 +179,28 @@
       imagePos: "50% 50%",
       imageOpacity: 0.20,
       // Bandeau haut
-      bannerColor: "#22C55E",
+      bannerColor: "#FBBF24",
       // Titre
-      titleColor: "#166534",
-      titleFont: "bold 16px sans-serif",
+      titleColor: "#FBBF24",
+      titleFont: "",
+      titleSize: 10,
+      titleBold: true,
+      titleItalic: false,
+      titleUnderline: false,
       // Citation
       quoteColor: "#FAFAF9",
       quoteFont: "",
+      quoteSize: 15,
+      quoteBold: true,
+      quoteItalic: false,
+      quoteUnderline: false,
       // Auteur
       authorColor: "rgba(255,255,255,0.25)",
       authorFont: "",
+      authorSize: 9,
+      authorBold: false,
+      authorItalic: true,
+      authorUnderline: false,
     },
     vibeTitle: "Sondage de la Force",
     feedbackTitle: "🎙️ Transmission holographique",
