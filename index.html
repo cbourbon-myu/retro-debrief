@@ -226,14 +226,16 @@
     function LoginScreen({ onSignIn, error, loading, T }) {
       const { isMobile } = useResponsive();
       const isDark = T?.dark;
-      const bgColor = T?.bodyBg || "#F8EBDB";
-      const cardBg = T?.cardBg || "#FEF5EC";
+      const bgColor = T?.loginBg || T?.bodyBg || "#F8EBDB";
+      const cardBg = T?.loginCardBg || T?.cardBg || "#FEF5EC";
       const accent = T?.accent || "#F97316";
       const accentDark = T?.accentDark || "#C2410C";
       const textPrimary = T?.textPrimary || "#1F2937";
       const textSecondary = T?.textSecondary || "#6B7280";
       const textMuted = T?.textMuted || "#9CA3AF";
-      const cardBorder = T?.cardBorder || "#E8C9A8";
+      const cardBorder = T?.loginBtnBorder || T?.cardBorder || "#E8C9A8";
+      const btnBg = T?.loginBtnBg || cardBg;
+      const btnHover = T?.loginBtnHover || accent;
       const logoSrc = T?.appLogo || "assets/backstage/Batterie.png";
       const title = T?.appTitle || "Backstage Debrief";
       const subtitle = T?.subtitle || "Rétro Sprint — MyUnisoft GI";
@@ -243,9 +245,9 @@
             {logoSrc && <img src={logoSrc} style={{ width: isMobile ? 90 : 120, height: isMobile ? 90 : 120, borderRadius: T?.appLogoCircle !== false ? "50%" : 12, marginBottom: 12, objectFit: "cover" }} />}
             <div style={{ fontSize: isMobile ? 22 : 26, fontWeight: 800, color: accent, marginBottom: 4, letterSpacing: 1 }}>{title}</div>
             <div style={{ fontSize: 13, color: textSecondary, marginBottom: 8 }}>{subtitle}</div>
-            <button onClick={onSignIn} disabled={loading} style={{ padding: "14px 40px", borderRadius: 12, border: "2px solid " + cardBorder, background: isDark ? "rgba(255,255,255,0.05)" : cardBg, color: textPrimary, fontSize: 15, fontWeight: 600, cursor: loading ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s", margin: "28px auto 0" }}
-              onMouseEnter={e => { if(!loading) { e.currentTarget.style.background = accent; e.currentTarget.style.color = "#fff"; }}}
-              onMouseLeave={e => { e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : cardBg; e.currentTarget.style.color = textPrimary; }}>
+            <button onClick={onSignIn} disabled={loading} style={{ padding: "14px 40px", borderRadius: 12, border: "2px solid " + cardBorder, background: isDark ? "rgba(255,255,255,0.05)" : btnBg, color: textPrimary, fontSize: 15, fontWeight: 600, cursor: loading ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s", margin: "28px auto 0" }}
+              onMouseEnter={e => { if(!loading) { e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.15)" : btnHover; e.currentTarget.style.color = "#fff"; }}}
+              onMouseLeave={e => { e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : btnBg; e.currentTarget.style.color = textPrimary; }}>
               <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
               {loading ? "Connexion…" : "Se connecter avec Google"}
             </button>
@@ -442,8 +444,11 @@
       const voteFontSize = isMobile ? 22 : 26;
       const isDark = T.dark;
       const IMG_LOGO = T.appLogo || "assets/backstage/Batterie.png";
+      const EMOJI_LOGO = T.emojiLogo || "🎸";
       const IMG_MEETING = T.iconMeeting || "assets/backstage/reu.png";
+      const EMOJI_MEETING = T.emojiMeeting || "📋";
       const IMG_START = T.iconStart || "assets/backstage/fusee.gif";
+      const EMOJI_START = T.emojiStart || "🚀";
       // Helper: garantit le format CSS url("...") pour les backgroundImage
       const bg = s => s && s !== "none" ? (s.startsWith("url(") || s.startsWith("data:") ? (s.startsWith("data:") ? `url("${s}")` : s) : `url("${s}")`) : null;
 
@@ -459,7 +464,7 @@
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: T.headerGradient }} />
             <div style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: isMobile ? 17 : 34, fontWeight: 800, color: T.accent, letterSpacing: isMobile ? 1 : 2.5, display: "flex", alignItems: "center" }}>
-                <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: T.appLogoCircle !== false ? "50%" : 12, objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} />
+                {T.appLogo ? <img src={IMG_LOGO} onClick={() => setZoomedImage(IMG_LOGO)} style={{ width: isMobile ? 44 : 72, height: isMobile ? 44 : 72, borderRadius: T.appLogoCircle !== false ? "50%" : 12, objectFit: "cover", marginRight: isMobile ? 8 : 12, cursor: "pointer" }} /> : <span style={{ fontSize: isMobile ? 30 : 48, marginRight: isMobile ? 8 : 12, lineHeight: 1 }}>{EMOJI_LOGO}</span>}
                 {T.appTitle}
               </div>
             </div>
@@ -473,7 +478,7 @@
               {/* Présence */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowPresence(!showPresence); setShowUserMenu(false); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.4)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} />
+                  {T.iconMeeting ? <img src={IMG_MEETING} style={{ width: 32, height: 32, objectFit: "contain" }} /> : <span style={{ fontSize: 22, lineHeight: 1 }}>{EMOJI_MEETING}</span>}
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{connectedUsers.length}</span>
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showPresence ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -486,7 +491,7 @@
               {/* Partager */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowIntegration(!showIntegration); setShowPresence(false); setShowUserMenu(false); }} className="no-print" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", border: "1.2px solid rgba(255,255,255,0.55)", borderRadius: 8, padding: "0 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
-                  <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} />
+                  {T.iconStart ? <img src={IMG_START} style={{ width: 22, height: 22, objectFit: "contain" }} /> : <span style={{ fontSize: 18, lineHeight: 1 }}>{EMOJI_START}</span>}
                   {!isMobile && <span style={{ fontSize: 12, fontWeight: 500 }}>Partager</span>}
                   <span style={{ fontSize: 9, opacity: 0.7, transition: "transform 0.2s", display: "inline-block", transform: showIntegration ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                 </button>
@@ -678,7 +683,7 @@
                             <div style={{ flex: 1, minWidth: 0 }}>
                               {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
                               : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
-                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> {action.responsable}</div>}
+                              {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>{T.iconMeeting ? <img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> : <span style={{ fontSize: 11, lineHeight: 1 }}>{EMOJI_MEETING}</span>} {action.responsable}</div>}
                             </div>
                             <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
                           </div>))}
@@ -706,7 +711,7 @@
                     {bg(T.summaryImage) && <div style={{ position: "absolute", inset: -(T.summaryBlur||0)*2, backgroundImage: bg(T.summaryImage), backgroundSize: T.summaryImageZoom && T.summaryImageZoom !== 100 ? `${T.summaryImageZoom}%` : "cover", backgroundPosition: T.summaryImagePos || "50% 0%", backgroundRepeat: "no-repeat", opacity: T.summaryImageOpacity != null ? T.summaryImageOpacity : 0.45, filter: T.summaryBlur != null ? `blur(${T.summaryBlur}px)` : undefined }} />}
                     <div style={{ position: "absolute", inset: 0, background: T.summaryOverlay }} />
                     <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "8px 16px" : "0px 28px" }}>
-                      <div style={{ fontSize: T.summaryTitleStyle?.size || (isMobile ? 18 : 22), fontWeight: T.summaryTitleStyle?.bold ? 900 : 700, fontStyle: T.summaryTitleStyle?.italic ? "italic" : "normal", textDecoration: T.summaryTitleStyle?.underline ? "underline" : "none", color: T.accent, marginBottom: 20, textAlign: T.summaryTitleStyle?.align || "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{T.summaryTitleImage && <div onClick={() => setZoomedImage(T.summaryTitleImage)} style={{ width: isMobile ? 38 : 34, height: isMobile ? 38 : 34, borderRadius: T.summaryTitleImageCircle !== false ? "50%" : 8, overflow: "hidden", flexShrink: 0, cursor: "pointer" }}><img src={T.summaryTitleImage} style={{ width: "110%", height: "110%", objectFit: "cover", marginTop: "-5%", marginLeft: "-5%" }} /></div>}{T.summaryTitle}</div>
+                      <div style={{ fontSize: T.summaryTitleStyle?.size || (isMobile ? 18 : 22), fontWeight: T.summaryTitleStyle?.bold ? 900 : 700, fontStyle: T.summaryTitleStyle?.italic ? "italic" : "normal", textDecoration: T.summaryTitleStyle?.underline ? "underline" : "none", color: T.accent, marginBottom: 20, textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{T.summaryTitleImage && <div onClick={() => setZoomedImage(T.summaryTitleImage)} style={{ width: isMobile ? 38 : 34, height: isMobile ? 38 : 34, borderRadius: T.summaryTitleImageCircle !== false ? "50%" : 8, overflow: "hidden", flexShrink: 0, cursor: "pointer" }}><img src={T.summaryTitleImage} style={{ width: "110%", height: "110%", objectFit: "cover", marginTop: "-5%", marginLeft: "-5%" }} /></div>}{T.summaryTitle}</div>
                       {!hasContent ? <div style={{ fontSize: isMobile ? 12 : 13.5, color: "rgba(255,255,255,0.5)", fontStyle: "italic", textAlign: "center" }}>{T.summaryPinHint}</div> : (
                         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                           {(avgAmbiance || avgSatisfaction || avgRoti) && <div>
