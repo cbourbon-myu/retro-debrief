@@ -789,28 +789,28 @@
             @keyframes tooltipFadeIn { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
           `}</style>
           {showThemePicker && <div onClick={() => setShowThemePicker(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9998, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)", padding: 16 }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: "#FEF5EC", borderRadius: 20, padding: isMobile ? "24px 16px" : "32px 28px", maxWidth: 520, width: "100%", cursor: "default", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", maxHeight: "90vh", overflowY: "auto" }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#1F2937", marginBottom: 4, textAlign: "center" }}>🎭 Changer le thème</div>
-              <div style={{ fontSize: 12, color: "#6B7280", marginBottom: 20, textAlign: "center" }}>Les feedbacks, votes et actions sont conservés.</div>
+            <div onClick={e => e.stopPropagation()} style={{ background: T.loginCardBg || T.cardBg, borderRadius: 20, padding: isMobile ? "24px 16px" : "32px 28px", maxWidth: 520, width: "100%", cursor: "default", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", maxHeight: "90vh", overflowY: "auto" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: T.textPrimary, marginBottom: 4, textAlign: "center" }}>🎭 Changer le thème</div>
+              <div style={{ fontSize: 12, color: T.textSecondary, marginBottom: 20, textAlign: "center" }}>Les feedbacks, votes et actions sont conservés.</div>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 12 }}>
                 {getTemplateList().map(t => (
                   <div key={t.id} style={{ position: "relative" }}>
                     <button onClick={() => changeTemplate(t.id)} style={{
                       width: "100%", padding: "12px 14px", borderRadius: 12, cursor: "pointer",
-                      border: templateId === t.id ? "2.5px solid " + t.accent : "1.5px solid #E8C9A8",
-                      background: templateId === t.id ? (t.dark ? t.cardBg : t.accentLight || "#FFF7ED") : "#FFFAF5",
+                      border: templateId === t.id ? "2.5px solid " + t.accent : "1.5px solid " + T.cardBorder,
+                      background: templateId === t.id ? (t.dark ? t.cardBg : t.accentLight || T.accentLight) : T.cardBg,
                       textAlign: "left", transition: "all 0.2s",
                       transform: templateId === t.id ? "scale(1.02)" : "scale(1)",
                       boxShadow: templateId === t.id ? "0 4px 16px " + t.accent + "44" : "none",
                     }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: templateId === t.id ? (t.dark ? t.accent : t.accentDark) : "#1F2937" }}>{t.name}</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: templateId === t.id ? (t.dark ? t.accent : t.accentDark) : T.textPrimary }}>{t.name}</div>
                         <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                           {t._custom && <span style={{ fontSize: 9, background: "#F59E0B22", color: "#F59E0B", padding: "2px 6px", borderRadius: 4, fontWeight: 700 }}>CUSTOM</span>}
                           {templateId === t.id && <span style={{ fontSize: 11, color: t.accent, fontWeight: 700 }}>Actif</span>}
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: templateId === t.id ? (t.dark ? t.textSecondary : "#6B7280") : "#9CA3AF", marginTop: 2 }}>{t.desc}</div>
+                      <div style={{ fontSize: 11, color: templateId === t.id ? (t.dark ? t.textSecondary : T.textSecondary) : T.textMuted, marginTop: 2 }}>{t.desc}</div>
                       <div style={{ fontSize: 16, marginTop: 4, letterSpacing: 2 }}>{t.preview}</div>
                     </button>
                     {t._custom && isAdmin && <button onClick={(e) => { e.stopPropagation(); if (confirm("Supprimer le thème custom \"" + t.name + "\" ?")) { if (db) db.ref("customTemplates/" + t.id).set(null); if (templateId === t.id) changeTemplate(getTemplateList().find(x => !x._custom)?.id || "backstage"); }}} style={{ position: "absolute", top: 6, right: 6, background: "rgba(239,68,68,0.1)", border: "none", borderRadius: 6, width: 22, height: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#EF4444" }}>✕</button>}
@@ -822,7 +822,7 @@
                 onMouseLeave={e => { e.currentTarget.style.background = "none"; }}>
                 ✨ Personnaliser un thème
               </button>}
-              <button onClick={() => setShowThemePicker(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid #E8C9A8", background: "none", color: "#6B7280", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
+              <button onClick={() => setShowThemePicker(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid " + T.cardBorder, background: "none", color: T.textSecondary, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
             </div>
           </div>}
           {zoomedImage && <div onClick={() => setZoomedImage(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)" }}><img src={zoomedImage} style={{ maxWidth: isMobile ? "95vw" : "80vw", maxHeight: "80vh", objectFit: zoomedImage === IMG_LOGO ? "cover" : "contain", borderRadius: zoomedImage === IMG_LOGO ? "50%" : 16, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", ...(zoomedImage === IMG_LOGO ? { width: isMobile ? "70vw" : "60vh", height: isMobile ? "70vw" : "60vh" } : {}) }} /></div>}
