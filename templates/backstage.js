@@ -10,7 +10,7 @@
   "name": "🎸 Backstage Debrief",
   "desc": "Rock & concert",
   "preview": "🎸🔇🎛️",
-  "dark": true,
+  "dark": false,
   "emojiLogo": "🎸",
   "emojiMeeting": "📋",
   "emojiStart": "🚀",
