@@ -429,20 +429,26 @@
         if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu.")) return;
         const key = sprintDateKey;
         if (!db || !key) return;
+        // Reset local state FIRST — UI reacts immediately
+        setSprintDateKey(null);
+        setCfgLoaded(false);
+        setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
+        // Then cleanup Firebase in background
         try {
           await db.ref("retro-" + key).set(null);
           await db.ref("config/sprintDate").set(null);
           await db.ref("config/templateId").set(null);
         } catch(e) { console.warn("deleteRetro:", e.message); }
-        setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-        await signOut();
+        // cfgLoaded will become true again via the listener → admin sees SprintDateScreen
       };
 
       const closeSession = async () => {
         if (!confirm("Clore cette session de rétro et se déconnecter ?\nLes données sont conservées.")) return;
-        try {
-          if (db) await db.ref("config/sprintDate").set(null);
-        } catch(e) { console.warn("closeSession:", e.message); }
+        // Reset local state FIRST
+        setSprintDateKey(null);
+        setCfgLoaded(false);
+        // Then Firebase + signOut
+        try { if (db) await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("closeSession:", e.message); }
         await signOut();
       };
 
