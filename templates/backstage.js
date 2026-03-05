@@ -5,6 +5,7 @@
 // Chaque valeur correspond au paramétrage d'origine.
 // ============================================================
 
+// 🎸 Backstage Debrief
 (function(){if(!window.RETRO_TEMPLATES)window.RETRO_TEMPLATES={};window.RETRO_TEMPLATES["backstage"]={
   "id": "backstage",
   "name": "🎸 Backstage Debrief",
@@ -249,6 +250,7 @@
   "summaryBorderWidth": 0,
   "summaryOverlay": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
   "summaryContentVAlign": "center",
+  "summaryContentHAlign": "center",
   "summaryPinHint": "Épingle des retours avec 📌 pour construire le résumé",
   "outroTitle": "Outro",
   "outroTitleStyle": {
