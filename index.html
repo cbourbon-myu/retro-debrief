@@ -444,18 +444,14 @@
         try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
         setDeletingRetro({ step: 4, total: 4, label: "C'est propre ! 🤘" });
         await wait(1000);
-        setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-        setDeletingRetro(null);
-        // sprintDateKey is already null via Firebase listener
-        // cfgLoaded is already true via Firebase listener
-        // → admin sees SprintDateScreen automatically
+        window.location.reload();
       };
 
       const closeSession = async () => {
         if (!confirm("Clore cette session de rétro et se déconnecter ?\nLes données sont conservées.")) return;
         try { if (db) await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("closeSession:", e.message); }
         await signOut();
-        // signOut triggers useEffect → cfgLoaded=false, sprintDateKey=null
+        window.location.reload();
       };
 
       const changeTemplate = async (newTplId) => {
