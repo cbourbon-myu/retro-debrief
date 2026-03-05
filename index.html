@@ -275,7 +275,8 @@
       const [cfgLoaded, setCfgLoaded] = useState(false);
 
       useEffect(() => {
-        if (!isAuthed || !db) return;
+        if (!isAuthed || !db) { setCfgLoaded(false); return; }
+        setCfgLoaded(false);
         const dateRef = db.ref("config/sprintDate");
         const tplRef = db.ref("config/templateId");
         dateRef.on("value", (snap) => { setSprintDateKey(snap.val() || null); });
@@ -427,17 +428,21 @@
         if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu.")) return;
         const key = sprintDateKey;
         if (!db || !key) return;
-        try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
-        try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("sprintDate:", e.message); }
-        try { await db.ref("config/templateId").set(null); } catch(e) { console.warn("templateId:", e.message); }
+        try {
+          await db.ref("retro-" + key).set(null);
+          await db.ref("config/sprintDate").set(null);
+          await db.ref("config/templateId").set(null);
+        } catch(e) { console.warn("deleteRetro:", e.message); }
         setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-        signOut();
+        await signOut();
       };
 
       const closeSession = async () => {
         if (!confirm("Clore cette session de rétro et se déconnecter ?\nLes données sont conservées.")) return;
-        if (db) { try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn(e.message); } }
-        signOut();
+        try {
+          if (db) await db.ref("config/sprintDate").set(null);
+        } catch(e) { console.warn("closeSession:", e.message); }
+        await signOut();
       };
 
       const changeTemplate = async (newTplId) => {
