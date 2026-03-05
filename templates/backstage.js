@@ -323,7 +323,7 @@
   "outroImageBlur": 0,
   "outroBorderColor": "transparent",
   "outroBorderWidth": 0,
-  "outroContentVAlign": "bottom",
+  "outroContentVAlign": "center",
   "outroOverlay": "",
   "mdTitle": "🥁 Rétro Sprint",
   "mdSummary": "🎸 Le Rappel",
@@ -345,7 +345,7 @@
     "high": {
       "align": "center",
       "bold": true,
-      "size": 18
+      "size": 16
     },
     "low": {
       "align": "center",
