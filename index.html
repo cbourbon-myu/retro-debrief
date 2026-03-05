@@ -20,6 +20,7 @@
     @media print { .no-print { display: none !important; } body { background: #fff; } }
     .vote-icon { transition: transform 0.3s ease, filter 0.3s ease !important; }
     .vote-icon:hover { transform: scale(1.3) rotate(-8deg) !important; filter: drop-shadow(0 2px 8px rgba(249,115,22,0.5)) !important; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     @media (max-width: 768px) { .hide-mobile { display: none !important; } }
     @media (min-width: 769px) { .hide-desktop { display: none !important; } }
   </style>
@@ -350,6 +351,7 @@
       const [zoomedImage, setZoomedImage] = useState(null);
       const [showPitTooltip, setShowPitTooltip] = useState(false);
       const [showThemePicker, setShowThemePicker] = useState(false);
+      const [deletingRetro, setDeletingRetro] = useState(null);
       const [confluenceStatus, setConfluenceStatus] = useState(null);
       const [confluenceUrl, setConfluenceUrl] = useState(null);
       const feedbackInputRef = useRef(null);
@@ -359,6 +361,7 @@
 
       // --- GUARD SCREENS ---
       if (!T) return <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ fontSize: 18, color: "#EF4444" }}>⚠️ Aucun template chargé. Vérifiez les fichiers templates/*.js</div></div>;
+      if (deletingRetro) return <div style={{ minHeight: "100vh", background: T.bodyBg || "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ textAlign: "center", maxWidth: 320, width: "100%" }}><div style={{ fontSize: 48, marginBottom: 16, animation: "pulse 1s ease-in-out infinite" }}>🥁</div><div style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary || "#1F2937", marginBottom: 12 }}>{deletingRetro.label}</div><div style={{ background: T.progressBg || "#F0DCC8", borderRadius: 8, height: 10, overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 8, background: `linear-gradient(90deg, ${T.accent || "#F97316"}, ${T.accentDark || "#EA580C"})`, width: Math.round(deletingRetro.step / deletingRetro.total * 100) + "%", transition: "width 0.4s ease" }} /></div><div style={{ fontSize: 11, color: T.textMuted || "#9CA3AF", marginTop: 8 }}>Étape {deletingRetro.step}/{deletingRetro.total}</div></div></div>;
       if (authLoading || (isAuthed && !cfgLoaded)) return <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ fontSize: 48 }}>🥁</div></div>;
       if (!isAuthed) return <LoginScreen onSignIn={signIn} error={authError} loading={authLoading} T={T} />;
       if (needsDateSetup) return <SprintDateScreen onSave={saveSprintDate} />;
@@ -429,17 +432,17 @@
         if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu.")) return;
         const key = sprintDateKey;
         if (!db || !key) return;
-        // Reset local state FIRST — UI reacts immediately
+        setDeletingRetro({ step: 1, total: 4, label: "Réinitialisation de la config…" });
+        try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("sprintDate:", e.message); }
+        setDeletingRetro({ step: 2, total: 4, label: "Suppression du thème…" });
+        try { await db.ref("config/templateId").set(null); } catch(e) { console.warn("templateId:", e.message); }
+        setDeletingRetro({ step: 3, total: 4, label: "Suppression des données…" });
+        try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
+        setDeletingRetro({ step: 4, total: 4, label: "C'est propre !" });
         setSprintDateKey(null);
         setCfgLoaded(false);
         setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-        // Then cleanup Firebase in background
-        try {
-          await db.ref("retro-" + key).set(null);
-          await db.ref("config/sprintDate").set(null);
-          await db.ref("config/templateId").set(null);
-        } catch(e) { console.warn("deleteRetro:", e.message); }
-        // cfgLoaded will become true again via the listener → admin sees SprintDateScreen
+        setTimeout(() => setDeletingRetro(null), 800);
       };
 
       const closeSession = async () => {
