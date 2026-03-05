@@ -186,29 +186,30 @@
       const { isMobile } = useResponsive();
       useTemplateRefresh();
       const templates = getTemplateList();
+      const sel = templates.find(t => t.id === selectedTemplate) || templates[0];
       return (
-        <div style={{ minHeight: "100vh", background: "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#FEF5EC", borderRadius: 24, padding: isMobile ? "28px 16px" : "48px 40px", maxWidth: 600, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(0,0,0,0.1)" }}>
-            <img src="assets/backstage/Batterie.png" style={{ width: 100, height: 100, borderRadius: T?.appLogoCircle !== false ? "50%" : 12, marginBottom: 12, objectFit: "cover" }} />
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#1F2937", marginBottom: 4 }}>Nouvelle Rétro !</div>
-            <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 20 }}>Configure la session : date et format de rétro.</div>
-            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1px solid #E8C9A8", fontSize: 15, marginBottom: 20, textAlign: "center" }} />
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#1F2937", marginBottom: 12, textAlign: "left" }}>🎭 Choisis le thème de la rétro :</div>
+        <div style={{ minHeight: "100vh", background: sel?.bodyBg || "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ background: sel?.loginCardBg || sel?.cardBg || "#FEF5EC", borderRadius: 24, padding: isMobile ? "28px 16px" : "48px 40px", maxWidth: 600, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(0,0,0,0.1)" }}>
+            {sel?.appLogo && <img src={sel.appLogo} style={{ width: 100, height: 100, borderRadius: sel?.appLogoCircle !== false ? "50%" : 12, marginBottom: 12, objectFit: "cover" }} />}
+            <div style={{ fontSize: 22, fontWeight: 800, color: sel?.textPrimary || "#1F2937", marginBottom: 4 }}>Nouvelle Rétro !</div>
+            <div style={{ fontSize: 13, color: sel?.textSecondary || "#6B7280", marginBottom: 20 }}>Configure la session : date et format de rétro.</div>
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1px solid " + (sel?.inputBorder || "#E8C9A8"), fontSize: 15, marginBottom: 20, textAlign: "center" }} />
+            <div style={{ fontSize: 13, fontWeight: 700, color: sel?.textPrimary || "#1F2937", marginBottom: 12, textAlign: "left" }}>🎭 Choisis le thème de la rétro :</div>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 12 }}>
               {templates.map(t => (
                 <button key={t.id} onClick={() => setSelectedTemplate(t.id)} style={{
                   padding: "12px 14px", borderRadius: 12, cursor: "pointer",
-                  border: selectedTemplate === t.id ? "2.5px solid " + t.accent : "1.5px solid #E8C9A8",
-                  background: selectedTemplate === t.id ? (t.dark ? t.cardBg : t.accentLight || "#FFF7ED") : "#FFFAF5",
+                  border: selectedTemplate === t.id ? "2.5px solid " + t.accent : "1.5px solid " + (sel?.cardBorder || "#E8C9A8"),
+                  background: selectedTemplate === t.id ? (t.dark ? t.cardBg : t.accentLight || sel?.accentLight || "#FFF7ED") : (sel?.cardBg || "#FFFAF5"),
                   textAlign: "left", transition: "all 0.2s",
                   transform: selectedTemplate === t.id ? "scale(1.02)" : "scale(1)",
                   boxShadow: selectedTemplate === t.id ? "0 4px 16px " + t.accent + "44" : "none",
                 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: selectedTemplate === t.id ? (t.dark ? t.accent : t.accentDark) : "#1F2937", marginBottom: 2 }}>{t.name}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: selectedTemplate === t.id ? (t.dark ? t.accent : t.accentDark) : (sel?.textPrimary || "#1F2937"), marginBottom: 2 }}>{t.name}</div>
                     {t._custom && <span style={{ fontSize: 9, background: "#F59E0B22", color: "#F59E0B", padding: "2px 6px", borderRadius: 4, fontWeight: 700 }}>CUSTOM</span>}
                   </div>
-                  <div style={{ fontSize: 11, color: selectedTemplate === t.id ? (t.dark ? t.textSecondary : "#6B7280") : "#9CA3AF" }}>{t.desc}</div>
+                  <div style={{ fontSize: 11, color: selectedTemplate === t.id ? (t.dark ? t.textSecondary : (sel?.textSecondary || "#6B7280")) : (sel?.textMuted || "#9CA3AF") }}>{t.desc}</div>
                   <div style={{ fontSize: 16, marginTop: 4, letterSpacing: 2 }}>{t.preview}</div>
                 </button>
               ))}
@@ -218,7 +219,7 @@
               onMouseLeave={e => { e.currentTarget.style.background = "none"; }}>
               ✨ Personnaliser un thème
             </button>
-            <button onClick={() => onSave(date, selectedTemplate)} style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #1c0a0a, #3b0f0f)", color: "#F97316", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>🤘 Lancer la rétro</button>
+            <button onClick={() => onSave(date, selectedTemplate)} style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: sel?.headerGradient || "linear-gradient(135deg, #1c0a0a, #3b0f0f)", color: sel?.accent || "#F97316", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>{sel?.emojiStart || "🚀"} Lancer la rétro</button>
           </div>
         </div>
       );
