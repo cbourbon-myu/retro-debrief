@@ -432,17 +432,22 @@
         if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu.")) return;
         const key = sprintDateKey;
         if (!db || !key) return;
+        const wait = ms => new Promise(r => setTimeout(r, ms));
         setDeletingRetro({ step: 1, total: 4, label: "Réinitialisation de la config…" });
+        await wait(300);
         try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("sprintDate:", e.message); }
         setDeletingRetro({ step: 2, total: 4, label: "Suppression du thème…" });
+        await wait(300);
         try { await db.ref("config/templateId").set(null); } catch(e) { console.warn("templateId:", e.message); }
         setDeletingRetro({ step: 3, total: 4, label: "Suppression des données…" });
+        await wait(300);
         try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
-        setDeletingRetro({ step: 4, total: 4, label: "C'est propre !" });
+        setDeletingRetro({ step: 4, total: 4, label: "C'est propre ! 🤘" });
+        await wait(1000);
         setSprintDateKey(null);
         setCfgLoaded(false);
         setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
-        setTimeout(() => setDeletingRetro(null), 800);
+        setDeletingRetro(null);
       };
 
       const closeSession = async () => {
