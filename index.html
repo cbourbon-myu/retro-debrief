@@ -424,13 +424,20 @@
       };
 
       const deleteRetro = async () => {
-        if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu. Tu reviendras à l'écran de configuration.")) return;
+        if (!confirm("Supprimer TOUTE la rétro du " + sprintDateLabel + " ? Feedbacks, votes, actions — tout sera perdu.")) return;
         const key = sprintDateKey;
         if (!db || !key) return;
         try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
         try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("sprintDate:", e.message); }
         try { await db.ref("config/templateId").set(null); } catch(e) { console.warn("templateId:", e.message); }
         setCurtainTriggered({}); setShowResults({}); setConfluenceUrl(null);
+        signOut();
+      };
+
+      const closeSession = async () => {
+        if (!confirm("Clore cette session de rétro et se déconnecter ?\nLes données sont conservées.")) return;
+        if (db) { try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn(e.message); } }
+        signOut();
       };
 
       const changeTemplate = async (newTplId) => {
@@ -524,6 +531,7 @@
                   {isAdmin && <>
                     <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontWeight: 700, padding: "8px 14px 4px", textTransform: "uppercase", letterSpacing: 1 }}>Admin</div>
                     <button onClick={() => { setShowThemePicker(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🎭 Changer le thème</button>
+                    <button onClick={() => { closeSession(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#10B981", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>✅ Clore la session</button>
                     <button onClick={() => { deleteRetro(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🗑️ Supprimer la rétro</button>
                     <div style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", margin: "4px 0" }} />
                   </>}
