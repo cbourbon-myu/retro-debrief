@@ -274,7 +274,7 @@
       const cardBorder = T?.loginBtnBorder || T?.cardBorder || "#E8C9A8";
       const btnBg = T?.loginBtnBg || cardBg;
       const btnHover = T?.loginBtnHover || accent;
-      const logoSrc = T?.appLogo || "assets/backstage/Batterie.png";
+      const logoSrc = T?.appLogo || "assets/backstage/site-logo.jpg";
       const title = T?.appTitle || "Backstage Debrief";
       const subtitle = T?.subtitle || "Rétro Sprint — MyUnisoft GI";
       return (
@@ -547,11 +547,11 @@
       const voteSize = isMobile ? 42 : 52;
       const voteFontSize = isMobile ? 22 : 26;
       const isDark = T.dark;
-      const IMG_LOGO = T.appLogo || "assets/backstage/Batterie.png";
+      const IMG_LOGO = T.appLogo || "assets/backstage/site-logo.jpg";
       const EMOJI_LOGO = T.emojiLogo || "🎸";
-      const IMG_MEETING = T.iconMeeting || "assets/backstage/reu.png";
+      const IMG_MEETING = T.iconMeeting || "assets/backstage/participant.jpg";
       const EMOJI_MEETING = T.emojiMeeting || "📋";
-      const IMG_START = T.iconStart || "assets/backstage/fusee.gif";
+      const IMG_START = T.iconStart || "assets/backstage/partager.jpg";
       const EMOJI_START = T.emojiStart || "🚀";
       // Helper: garantit le format CSS url("...") pour les backgroundImage
       const bg = s => s && s !== "none" ? (s.startsWith("url(") || s.startsWith("data:") ? (s.startsWith("data:") ? `url("${s}")` : s) : `url("${s}")`) : null;
@@ -673,7 +673,7 @@
                       {T.rulesName}
                       {showPitTooltip && <div style={{ position: "absolute", bottom: isMobile ? "auto" : "calc(100% + 14px)", top: isMobile ? "calc(100% + 10px)" : "auto", left: isMobile ? "-30px" : "-140px", minWidth: isMobile ? 300 : 480, padding: 0, zIndex: 200, animation: "tooltipFadeIn 0.3s ease", borderRadius: 12, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}>
                         <div style={{ background: "linear-gradient(135deg, #1a0a0a 0%, #2d1010 40%, #1a0505 100%)", padding: isMobile ? "18px 16px" : "24px 30px 44px 30px", position: "relative", overflow: "hidden" }}>
-                          <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.tooltip?.image) || "url('assets/backstage/GIClub.png')", backgroundSize: T.tooltip?.imageZoom && T.tooltip.imageZoom !== 100 ? `${T.tooltip.imageZoom}%` : "cover", backgroundPosition: T.tooltip?.imagePos || "50% 50%", backgroundRepeat: "no-repeat", opacity: T.tooltip?.imageOpacity != null ? T.tooltip.imageOpacity : 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
+                          <div style={{ position: "absolute", inset: 0, backgroundImage: bg(T.tooltip?.image) || "url('assets/backstage/regles-tooltip-image.jpg')", backgroundSize: T.tooltip?.imageZoom && T.tooltip.imageZoom !== 100 ? `${T.tooltip.imageZoom}%` : "cover", backgroundPosition: T.tooltip?.imagePos || "50% 50%", backgroundRepeat: "no-repeat", opacity: T.tooltip?.imageOpacity != null ? T.tooltip.imageOpacity : 0.20, filter: "blur(0.5px) grayscale(0.2)" }} />
                           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "linear-gradient(90deg, transparent, " + (T.tooltip?.bannerColor || "#DC2626") + ", " + (T.tooltip?.bannerColor || "#B91C1C") + ", transparent)" }} />
                           <div style={{ position: "relative", zIndex: 1 }}>
                             <div style={{ fontSize: T.tooltip?.titleSize || 10, fontWeight: T.tooltip?.titleBold !== false ? 800 : 400, letterSpacing: 3, textTransform: "uppercase", color: T.tooltip?.titleColor || "#DC2626", fontFamily: T.tooltip?.titleFont || "inherit", fontStyle: T.tooltip?.titleItalic ? "italic" : "normal", textDecoration: T.tooltip?.titleUnderline ? "underline" : "none", marginBottom: 20, textAlign: T.tooltip?.titleAlign || "center" }}>{T.tooltip.title}</div>
