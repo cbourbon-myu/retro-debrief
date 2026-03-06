@@ -125,7 +125,7 @@
       "color": "#92400E",
       "border": "#CA8A04",
       "borderWidth": 2,
-      "image": "",
+      "image": "assets/backstage/rock.jpg",
       "imageCircle": true
     },
     "fausse": {
@@ -133,7 +133,7 @@
       "color": "#9F1239",
       "border": "#E11D48",
       "borderWidth": 2,
-      "image": "",
+      "image": "assets/backstage/fausse.jpg",
       "imageCircle": true
     },
     "ameliorer": {
@@ -141,7 +141,7 @@
       "color": "#9A3412",
       "border": "#F97316",
       "borderWidth": 2,
-      "image": "",
+      "image": "assets/backstage/ameliorer.jpg",
       "imageCircle": true
     }
   },
@@ -257,7 +257,7 @@
   "summaryImageOpacity": 1,
   "summaryBorderColor": "transparent",
   "summaryBorderWidth": 0,
-  "summaryOverlay": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
+  "summaryOverlay": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
   "summaryContentVAlign": "center",
   "summaryContentHAlign": "center",
   "summaryPinHint": "Épingle des retours avec 📌 pour construire le résumé",
@@ -320,10 +320,10 @@
     "high": 0
   },
   "outroGifOverlay": {
-    "none": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
-    "low": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
-    "mid": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
-    "high": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)"
+    "none": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
+    "low": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
+    "mid": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
+    "high": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)"
   },
   "outroImage": "none",
   "outroImagePos": "50% 50%",
