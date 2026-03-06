@@ -183,17 +183,53 @@
     function SprintDateScreen({ onSave }) {
       const [date, setDate] = React.useState(new Date().toISOString().split("T")[0]);
       const [selectedTemplate, setSelectedTemplate] = React.useState(getTemplateList()[0]?.id || "backstage");
+      const [existingRetro, setExistingRetro] = React.useState(null); // null | "checking" | {fbCount,actCount,ratCount,participants} | false
       const { isMobile } = useResponsive();
       useTemplateRefresh();
       const templates = getTemplateList();
       const sel = templates.find(t => t.id === selectedTemplate) || templates[0];
+
+      // Vérifie si une rétro existe déjà pour la date sélectionnée
+      React.useEffect(() => {
+        if (!db || !date) { setExistingRetro(null); return; }
+        setExistingRetro("checking");
+        const ref = db.ref("retro-" + date);
+        ref.once("value").then(snap => {
+          const val = snap.val();
+          if (val && (val.feedbacks || val.actions || val.ratings)) {
+            const fbCount = val.feedbacks ? Object.keys(val.feedbacks).length : 0;
+            const actCount = val.actions ? Object.keys(val.actions).length : 0;
+            const ratCount = val.ratings ? Object.keys(val.ratings).length : 0;
+            const participants = new Set();
+            if (val.feedbacks) Object.values(val.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
+            if (val.ratings) Object.values(val.ratings).forEach(r => { if (r.author) participants.add(r.author); });
+            setExistingRetro({ fbCount, actCount, ratCount, participants: [...participants].sort() });
+          } else {
+            setExistingRetro(false);
+          }
+        }).catch(() => setExistingRetro(null));
+      }, [date]);
+
+      const hasExisting = existingRetro && existingRetro !== "checking" && existingRetro !== false;
       return (
         <div style={{ minHeight: "100vh", background: sel?.bodyBg || "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
           <div style={{ background: sel?.loginCardBg || sel?.cardBg || "#FEF5EC", borderRadius: 24, padding: isMobile ? "28px 16px" : "48px 40px", maxWidth: 600, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(0,0,0,0.1)" }}>
             {sel?.appLogo && <img src={sel.appLogo} style={{ width: 100, height: 100, borderRadius: sel?.appLogoCircle !== false ? "50%" : 12, marginBottom: 12, objectFit: "cover" }} />}
             <div style={{ fontSize: 22, fontWeight: 800, color: sel?.textPrimary || "#1F2937", marginBottom: 4 }}>Nouvelle Rétro !</div>
             <div style={{ fontSize: 13, color: sel?.textSecondary || "#6B7280", marginBottom: 20 }}>Configure la session : date et format de rétro.</div>
-            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1px solid " + (sel?.inputBorder || "#E8C9A8"), fontSize: 15, marginBottom: 20, textAlign: "center" }} />
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1px solid " + (hasExisting ? "#EF4444" : (sel?.inputBorder || "#E8C9A8")), fontSize: 15, marginBottom: hasExisting ? 0 : 20, textAlign: "center" }} />
+            {existingRetro === "checking" && <div style={{ fontSize: 12, color: sel?.textMuted || "#9CA3AF", marginBottom: 16, marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><span style={{ animation: "pulse 1s ease-in-out infinite" }}>🔍</span> Vérification…</div>}
+            {hasExisting && <div style={{ background: "#FEF2F2", border: "1.5px solid #FECACA", borderRadius: 12, padding: isMobile ? "12px 14px" : "14px 18px", marginBottom: 20, marginTop: 10, textAlign: "left" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 18 }}>⚠️</span>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>Une rétro existe déjà pour cette date !</div>
+              </div>
+              <div style={{ fontSize: 12, color: "#7F1D1D", lineHeight: 1.5, paddingLeft: 26 }}>
+                <span>Elle contient {existingRetro.fbCount} feedback{existingRetro.fbCount > 1 ? "s" : ""}, {existingRetro.actCount} action{existingRetro.actCount > 1 ? "s" : ""} et {existingRetro.ratCount} vote{existingRetro.ratCount > 1 ? "s" : ""}.</span>
+                {existingRetro.participants.length > 0 && <div style={{ marginTop: 4, fontSize: 11, color: "#991B1B" }}>👥 {existingRetro.participants.join(", ")}</div>}
+                <div style={{ marginTop: 6, fontSize: 11, color: "#B91C1C", fontStyle: "italic" }}>Choisis une autre date pour ne pas écraser ces données.</div>
+              </div>
+            </div>}
             <div style={{ fontSize: 13, fontWeight: 700, color: sel?.textPrimary || "#1F2937", marginBottom: 12, textAlign: "left" }}>🎭 Choisis le thème de la rétro :</div>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 12 }}>
               {templates.map(t => (
@@ -219,7 +255,7 @@
               onMouseLeave={e => { e.currentTarget.style.background = "none"; }}>
               ✨ Personnaliser un thème
             </button>
-            <button onClick={() => onSave(date, selectedTemplate)} style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: sel?.headerGradient || "linear-gradient(135deg, #1c0a0a, #3b0f0f)", color: sel?.accent || "#F97316", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>{sel?.emojiStart || "🚀"} Lancer la rétro</button>
+            <button onClick={() => !hasExisting && onSave(date, selectedTemplate)} disabled={hasExisting || existingRetro === "checking"} style={{ width: "100%", padding: "14px 0", borderRadius: 12, border: "none", background: hasExisting ? "#D1D5DB" : (sel?.headerGradient || "linear-gradient(135deg, #1c0a0a, #3b0f0f)"), color: hasExisting ? "#9CA3AF" : (sel?.accent || "#F97316"), fontSize: 15, fontWeight: 700, cursor: hasExisting || existingRetro === "checking" ? "not-allowed" : "pointer", opacity: existingRetro === "checking" ? 0.6 : 1, transition: "all 0.2s" }}>{hasExisting ? "🚫 Date déjà utilisée" : (sel?.emojiStart || "🚀") + " Lancer la rétro"}</button>
           </div>
         </div>
       );
@@ -296,9 +332,13 @@
       const needsDateSetup = isAdmin && cfgLoaded && sprintDateKey !== todayKey;
       const saveSprintDate = (date, tplId) => { if (db) { db.ref("config/sprintDate").set(date); db.ref("config/templateId").set(tplId || getTemplateList()[0]?.id); } };
 
-      const fb = useFirebase(`retro-${sprintDateKey || todayKey}/feedbacks`, [], isAuthed && cfgLoaded);
-      const act = useFirebase(`retro-${sprintDateKey || todayKey}/actions`, [], isAuthed && cfgLoaded);
-      const rat = useFirebase(`retro-${sprintDateKey || todayKey}/ratings`, [], isAuthed && cfgLoaded);
+      const [readOnlyRetroKey, setReadOnlyRetroKey] = useState(null);
+      const effectiveRetroKey = readOnlyRetroKey || sprintDateKey || todayKey;
+      const readOnlyDateLabel = readOnlyRetroKey ? new Date(readOnlyRetroKey + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : "";
+
+      const fb = useFirebase(`retro-${effectiveRetroKey}/feedbacks`, [], isAuthed && cfgLoaded);
+      const act = useFirebase(`retro-${effectiveRetroKey}/actions`, [], isAuthed && cfgLoaded);
+      const rat = useFirebase(`retro-${effectiveRetroKey}/ratings`, [], isAuthed && cfgLoaded);
       const feedbacks = fb.data; const actions = act.data; const ratingsRaw = rat.data;
 
       const getRatingsForCategory = (catId) => Array.isArray(ratingsRaw) ? ratingsRaw.filter(r => r.category === catId) : [];
@@ -355,6 +395,9 @@
       const [deletingRetro, setDeletingRetro] = useState(null);
       const [confluenceStatus, setConfluenceStatus] = useState(null);
       const [confluenceUrl, setConfluenceUrl] = useState(null);
+      const [showRetroArchive, setShowRetroArchive] = useState(false);
+      const [retroArchiveList, setRetroArchiveList] = useState([]);
+      const [archiveLoading, setArchiveLoading] = useState(false);
       const feedbackInputRef = useRef(null);
 
       useEffect(() => { const h = (e) => { if (!e.target.closest("[data-dropdown]")) { setShowPresence(false); setShowUserMenu(false); setShowIntegration(false); } }; document.addEventListener("click", h); return () => document.removeEventListener("click", h); }, []);
@@ -455,6 +498,45 @@
         window.location.reload();
       };
 
+      // --- ARCHIVES LECTURE SEULE ---
+      const loadRetroArchive = async () => {
+        if (!db) return;
+        setArchiveLoading(true);
+        try {
+          const snap = await db.ref("/").once("value");
+          const val = snap.val() || {};
+          const keys = Object.keys(val).filter(k => k.startsWith("retro-") && k !== `retro-${sprintDateKey}`);
+          const list = [];
+          for (const k of keys) {
+            const dateStr = k.replace("retro-", "");
+            const retroData = val[k];
+            const fbCount = retroData.feedbacks ? Object.keys(retroData.feedbacks).length : 0;
+            const actCount = retroData.actions ? Object.keys(retroData.actions).length : 0;
+            const ratCount = retroData.ratings ? Object.keys(retroData.ratings).length : 0;
+            const participants = new Set();
+            if (retroData.feedbacks) Object.values(retroData.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
+            if (retroData.ratings) Object.values(retroData.ratings).forEach(r => { if (r.author) participants.add(r.author); });
+            list.push({ dateKey: dateStr, fbCount, actCount, ratCount, participants: [...participants].sort(), label: new Date(dateStr + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) });
+          }
+          list.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+          setRetroArchiveList(list);
+        } catch(e) { console.error("Archive load error:", e); }
+        setArchiveLoading(false);
+      };
+
+      const openReadOnlyRetro = (dateKey) => {
+        setReadOnlyRetroKey(dateKey);
+        setShowRetroArchive(false);
+        setCurtainTriggered({}); setShowResults({});
+      };
+
+      const exitReadOnly = () => {
+        setReadOnlyRetroKey(null);
+        setCurtainTriggered({}); setShowResults({});
+      };
+
+      const isReadOnly = !!readOnlyRetroKey;
+
       const changeTemplate = async (newTplId) => {
         if (db) await db.ref("config/templateId").set(newTplId);
         setShowThemePicker(false);
@@ -533,7 +615,7 @@
                 </div>}
               </div>
               {/* Reset */}
-              {isAdmin && <button onClick={resetAll} className="no-print" style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(255,255,255,0.08)", border: "1.2px solid rgba(255,255,255,0.3)", borderRadius: 8, padding: "0 12px", height: 34, color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.7"}><img src="assets/trash.svg" style={{ width: 16, height: 16, objectFit: "contain", opacity: 0.7, transition: "opacity 0.2s" }} />{!isMobile && " Reset"}</button>}
+              {isAdmin && !isReadOnly && <button onClick={resetAll} className="no-print" style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(255,255,255,0.08)", border: "1.2px solid rgba(255,255,255,0.3)", borderRadius: 8, padding: "0 12px", height: 34, color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.7"}><img src="assets/trash.svg" style={{ width: 16, height: 16, objectFit: "contain", opacity: 0.7, transition: "opacity 0.2s" }} />{!isMobile && " Reset"}</button>}
               {/* Profil */}
               <div data-dropdown style={{ position: "relative" }}>
                 <button onClick={() => { setShowUserMenu(!showUserMenu); setShowPresence(false); setShowIntegration(false); }} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 8, padding: "0 12px 0 5px", cursor: "pointer", color: "#fff", fontFamily: "inherit", height: 34 }}>
@@ -546,6 +628,7 @@
                   {isAdmin && <>
                     <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontWeight: 700, padding: "8px 14px 4px", textTransform: "uppercase", letterSpacing: 1 }}>Admin</div>
                     <button onClick={() => { setShowThemePicker(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🎭 Changer le thème</button>
+                    <button onClick={() => { loadRetroArchive(); setShowRetroArchive(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#A78BFA", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>📂 Consulter une rétro passée</button>
                     <button onClick={() => { closeSession(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#10B981", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>✅ Clore la session</button>
                     <button onClick={() => { deleteRetro(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🗑️ Supprimer la rétro</button>
                     <div style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", margin: "4px 0" }} />
@@ -557,12 +640,22 @@
             {/* Sous-titre */}
             <div style={{ width: "100%", display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", position: "relative", zIndex: 0, marginTop: -4, gap: isMobile ? 2 : 0 }}>
               <div style={{ fontSize: isMobile ? 11 : 13, color: "#fff", opacity: 0.92 }}>{T.subtitle}</div>
-              <div style={{ fontSize: isMobile ? 9.5 : 10.5, color: "rgba(255,255,255,0.55)" }}><em>Mode collaboratif temps réel</em> — Sprint du {sprintDateLabel}</div>
+              <div style={{ fontSize: isMobile ? 9.5 : 10.5, color: "rgba(255,255,255,0.55)" }}><em>{isReadOnly ? "📂 Archive en lecture seule" : "Mode collaboratif temps réel"}</em> — Sprint du {isReadOnly ? readOnlyDateLabel : sprintDateLabel}</div>
             </div>
           </div>
 
           {/* ==================== MAIN CONTENT ==================== */}
           <div style={{ maxWidth: 1400, margin: "0 auto", padding: isMobile ? "16px 10px 32px" : "24px 20px 40px" }}>
+            {isReadOnly && <div style={{ background: "linear-gradient(135deg, #7C3AED, #6D28D9)", borderRadius: 12, padding: isMobile ? "12px 14px" : "14px 20px", marginBottom: 20, display: "flex", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", flexDirection: isMobile ? "column" : "row", gap: 10, boxShadow: "0 4px 16px rgba(124,58,237,0.3)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 22 }}>📂</span>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>Mode lecture seule — Rétro du {readOnlyDateLabel}</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>Consultation d'archive — aucune modification possible</div>
+                </div>
+              </div>
+              <button onClick={exitReadOnly} style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.15)", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", transition: "all 0.15s" }} onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.25)"; }} onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}>✕ Quitter l'archive</button>
+            </div>}
             <ConcertCurtain visible={!!activeCurtain} catLabel={activeCurtain ? T.ratingCatLabels[activeCurtain] : ""} />
 
             {/* ==================== SECTIONS DYNAMIQUES (basées sur T.sectionOrder) ==================== */}
@@ -606,15 +699,15 @@
                   {T.vibeTitle}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
-                  {T.vibeChecks.map(cat => { const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
+                  {T.vibeChecks.map(cat => { const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); const shouldShowResults = isReadOnly ? (voters.length > 0) : showResults[cat.id]; return (
                     <div key={cat.id} style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 10px" : "16px 14px", textAlign: "center" }}>
                       <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: isDark ? cat.border : cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>{cat.image && <div onClick={() => setZoomedImage(cat.image)} style={{ width: isMobile ? 34 : 30, height: isMobile ? 34 : 30, borderRadius: cat.imageCircle !== false ? "50%" : 8, overflow: "hidden", flexShrink: 0, cursor: "pointer" }}><img src={cat.image} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>}{cat.label}</div>
-                      <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12 }}>
+                      {!isReadOnly && <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12 }}>
                         {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, overflow: "hidden" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score]?.image ? <img src={T.ratingLabels[score].image} style={{width:"80%",height:"80%",objectFit:"cover",borderRadius:"50%"}} /> : T.ratingLabels[score].emoji}</button>))}
-                      </div>
-                      {myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore]?.image ? <img src={T.ratingLabels[myScore].image} style={{width:16,height:16,objectFit:"cover",borderRadius:"50%",verticalAlign:"middle",display:"inline-block"}} /> : T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
-                      {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
-                      {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
+                      </div>}
+                      {!isReadOnly && myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore]?.image ? <img src={T.ratingLabels[myScore].image} style={{width:16,height:16,objectFit:"cover",borderRadius:"50%",verticalAlign:"middle",display:"inline-block"}} /> : T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
+                      {!isReadOnly && !showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
+                      {shouldShowResults && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: isReadOnly ? "none" : "resultReveal 0.6s ease forwards", marginTop: 6 }}>
                         <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.image ? <img src={T.ratingLabels[Math.round(avg)].image} style={{width:48,height:48,objectFit:"cover",borderRadius:"50%"}} /> : T.ratingLabels[Math.round(avg)]?.emoji}</div>
                         <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
                         <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
@@ -622,6 +715,7 @@
                         <div style={{ fontSize: 10.5, color: T.textMuted, marginBottom: 8 }}>{voters.length} vote{voters.length > 1 ? "s" : ""}</div>
                         <div style={{ display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>{voters.map(v => (<span key={v.id} style={{ fontSize: 11, background: cat.bg, color: isDark ? cat.border : cat.color, borderRadius: 8, padding: "3px 8px", fontWeight: 600 }}>{T.ratingLabels[v.score]?.image ? <img src={T.ratingLabels[v.score].image} style={{width:14,height:14,objectFit:"cover",borderRadius:"50%",verticalAlign:"middle",display:"inline-block"}} /> : T.ratingLabels[v.score]?.emoji} {v.author}</span>))}</div>
                       </div>}
+                      {isReadOnly && voters.length === 0 && <div style={{ fontSize: 12, color: T.textMuted, padding: "12px 0" }}>Aucun vote enregistré</div>}
                     </div>); })}
                 </div>
               </div>);
@@ -640,10 +734,10 @@
                       {items.map(fbk => { const isOwner = fbk.authorUid === user?.uid; return (
                         <div key={fbk.id} style={{ background: cat.bg, borderRadius: 10, padding: "9px 11px", fontSize: 13, color: T.textPrimary, border: fbk.pinned ? "2px solid " + col.border : "1px solid " + col.border + "33", animation: "fadeIn 0.3s ease" }}>
                           <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                            {editingFeedback === fbk.id ? <input autoFocus defaultValue={fbk.text} onBlur={e => { fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }); setEditingFeedback(null); }} onKeyDown={e => e.key === "Enter" && (fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }), setEditingFeedback(null))} style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, fontFamily: "inherit", color: T.textPrimary }} />
-                            : <div style={{ flex: 1, cursor: isOwner ? "pointer" : "default" }} onClick={() => isOwner && setEditingFeedback(fbk.id)}>{fbk.text}</div>}
-                            {isAdmin && <button onClick={() => fb.updateItem(fbk.id, { pinned: !fbk.pinned })} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0, fontSize: 14, opacity: fbk.pinned ? 1 : 0.3, transition: "opacity 0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = "1"} onMouseLeave={e => e.currentTarget.style.opacity = fbk.pinned ? "1" : "0.3"}>📌</button>}
-                            {isOwner && <button onClick={() => fb.removeItem(fbk.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>}
+                            {!isReadOnly && editingFeedback === fbk.id ? <input autoFocus defaultValue={fbk.text} onBlur={e => { fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }); setEditingFeedback(null); }} onKeyDown={e => e.key === "Enter" && (fb.updateItem(fbk.id, { text: e.target.value.trim() || fbk.text }), setEditingFeedback(null))} style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, fontFamily: "inherit", color: T.textPrimary }} />
+                            : <div style={{ flex: 1, cursor: !isReadOnly && isOwner ? "pointer" : "default" }} onClick={() => !isReadOnly && isOwner && setEditingFeedback(fbk.id)}>{fbk.text}</div>}
+                            {!isReadOnly && isAdmin && <button onClick={() => fb.updateItem(fbk.id, { pinned: !fbk.pinned })} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0, fontSize: 14, opacity: fbk.pinned ? 1 : 0.3, transition: "opacity 0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = "1"} onMouseLeave={e => e.currentTarget.style.opacity = fbk.pinned ? "1" : "0.3"}>📌</button>}
+                            {!isReadOnly && isOwner && <button onClick={() => fb.removeItem(fbk.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>}
                           </div>
                           {(fbk.author || fbk.pinned) && <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>{fbk.author ? <div style={{ fontSize: 10.5, color: isDark ? col.border : col.color, opacity: 0.7 }}>— {fbk.author}</div> : <div />}{fbk.pinned && <div style={{ fontSize: 7, fontStyle: "italic", fontWeight: 700, color: col.border, letterSpacing: 0.5 }}>Épinglé</div>}</div>}
                         </div>); })}
@@ -652,7 +746,7 @@
               </div>);
 
               {/* ---- FEEDBACK INPUT ---- */}
-              if (sectionId === "feedbackInput") return (
+              if (sectionId === "feedbackInput") return isReadOnly ? null : (
               <div key="feedbackInput" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: `${T.cardBorderWidth||1}px solid ${T.cardBorder}`, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12 }}>{T.feedbackTitle}</div>
                 <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
@@ -673,15 +767,16 @@
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, alignItems: "stretch" }}>
                   {/* ROTI */}
-                  {(() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); return (
+                  {(() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); const shouldShowResults = isReadOnly ? (voters.length > 0) : showResults[cat.id]; return (
                     <div style={{ background: T.cardBg, borderRadius: 14, border: `${T.roti.borderWidth||2}px solid ${cat.border}`, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center" }}>
                       <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <div onClick={() => setZoomedImage(cat.image)} style={{ width: 30, height: 30, borderRadius: T.roti.imageCircle !== false ? "50%" : 8, overflow: "hidden", flexShrink: 0, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}><img src={cat.image} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>}<span>{cat.label}</span></div>
-                      <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
+                      {!isReadOnly && <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
                         {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + cat.color : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, overflow: "hidden" }} title={T.ratingLabels[score].label}>{T.ratingLabels[score]?.image ? <img src={T.ratingLabels[score].image} style={{width:"80%",height:"80%",objectFit:"cover",borderRadius:"50%"}} /> : T.ratingLabels[score].emoji}</button>))}
-                      </div>
-                      {myScore && <div style={{ fontSize: 11.5, color: cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore]?.image ? <img src={T.ratingLabels[myScore].image} style={{width:16,height:16,objectFit:"cover",borderRadius:"50%",verticalAlign:"middle",display:"inline-block"}} /> : T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
-                      {!showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
-                      {showResults[cat.id] && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: "resultReveal 0.6s ease forwards", marginTop: 6 }}>
+                      </div>}
+                      {!isReadOnly && myScore && <div style={{ fontSize: 11.5, color: cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {T.ratingLabels[myScore]?.image ? <img src={T.ratingLabels[myScore].image} style={{width:16,height:16,objectFit:"cover",borderRadius:"50%",verticalAlign:"middle",display:"inline-block"}} /> : T.ratingLabels[myScore].emoji} {T.ratingLabels[myScore].label}</div>}
+                      {!isReadOnly && !showResults[cat.id] && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
+                      {isReadOnly && voters.length === 0 && <div style={{ fontSize: 12, color: T.textMuted, padding: "12px 0" }}>Aucun vote enregistré</div>}
+                      {shouldShowResults && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: isReadOnly ? "none" : "resultReveal 0.6s ease forwards", marginTop: 6 }}>
                         <div style={{ fontSize: 48, marginBottom: 4 }}>{T.ratingLabels[Math.round(avg)]?.image ? <img src={T.ratingLabels[Math.round(avg)].image} style={{width:48,height:48,objectFit:"cover",borderRadius:"50%"}} /> : T.ratingLabels[Math.round(avg)]?.emoji}</div>
                         <div style={{ fontSize: 38, fontWeight: 900, color: cat.color, lineHeight: 1 }}>{avg}</div>
                         <div style={{ fontSize: 13, color: T.textSecondary, marginBottom: 10 }}>/ 5 — {T.ratingLabels[Math.round(avg)]?.label}</div>
@@ -702,16 +797,16 @@
                       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
                         {actions.map(action => (
                           <div key={action.id} style={{ background: T.accentLight, borderRadius: 10, padding: "9px 11px", display: "flex", alignItems: "center", gap: 9, border: "1px solid " + (T.actionBorder || T.accent) + "40", animation: "fadeIn 0.3s ease" }}>
-                            <input type="checkbox" checked={action.done || false} onChange={() => act.updateItem(action.id, { done: !action.done })} style={{ width: 16, height: 16, accentColor: T.accent, cursor: "pointer", flexShrink: 0 }} />
+                            <input type="checkbox" checked={action.done || false} onChange={() => !isReadOnly && act.updateItem(action.id, { done: !action.done })} style={{ width: 16, height: 16, accentColor: T.accent, cursor: isReadOnly ? "default" : "pointer", flexShrink: 0, pointerEvents: isReadOnly ? "none" : "auto" }} />
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              {editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
-                              : <div onClick={() => action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
+                              {!isReadOnly && editingAction === action.id ? <input autoFocus defaultValue={action.description} onBlur={e => { act.updateItem(action.id, { description: e.target.value }); setEditingAction(null); }} onKeyDown={e => e.key === "Enter" && (act.updateItem(action.id, { description: e.target.value }), setEditingAction(null))} style={{ width: "100%", border: "none", background: "transparent", fontSize: 12.5, fontFamily: "inherit", color: T.textPrimary }} />
+                              : <div onClick={() => !isReadOnly && action.authorUid === user?.uid && setEditingAction(action.id)} style={{ fontSize: 12.5, color: T.textPrimary, cursor: !isReadOnly && action.authorUid === user?.uid ? "pointer" : "default", textDecoration: action.done ? "line-through" : "none", opacity: action.done ? 0.5 : 1 }}>{action.description}</div>}
                               {action.responsable && <div style={{ fontSize: 10.5, color: T.accent, marginTop: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>{T.iconMeeting ? <img src={IMG_MEETING} style={{ width: 13, height: 13, objectFit: "contain" }} /> : <span style={{ fontSize: 11, lineHeight: 1 }}>{EMOJI_MEETING}</span>} {action.responsable}</div>}
                             </div>
-                            <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>
+                            {!isReadOnly && <button onClick={() => act.removeItem(action.id)} style={{ background: "none", border: "none", cursor: "pointer", display: action.authorUid === user?.uid ? "block" : "none", padding: "0 2px" }} onMouseEnter={e => e.currentTarget.querySelector("img").style.opacity = "1"} onMouseLeave={e => e.currentTarget.querySelector("img").style.opacity = "0.35"}><img src="assets/trash.svg" style={{ width: 13, height: 13, objectFit: "contain", opacity: 0.35, transition: "opacity 0.2s" }} /></button>}
                           </div>))}
                       </div>)}
-                    {actions.length < 3 && <div className="no-print">
+                    {!isReadOnly && actions.length < 3 && <div className="no-print">
                       <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 10, marginTop: 6 }} />
                       <div style={{ display: "flex", gap: 6, marginBottom: 6, flexDirection: "column" }}>
                         <input type="text" value={actionDesc} onChange={e => setActionDesc(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Description de l'action..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
@@ -846,6 +941,34 @@
                 ✨ Personnaliser un thème
               </button>}
               <button onClick={() => setShowThemePicker(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid " + T.cardBorder, background: "none", color: T.textSecondary, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
+            </div>
+          </div>}
+          {showRetroArchive && <div onClick={() => setShowRetroArchive(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9998, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)", padding: 16 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: T.loginCardBg || T.cardBg, borderRadius: 20, padding: isMobile ? "24px 16px" : "32px 28px", maxWidth: 560, width: "100%", cursor: "default", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", maxHeight: "90vh", overflowY: "auto" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: T.textPrimary, marginBottom: 4, textAlign: "center" }}>📂 Archives des rétros</div>
+              <div style={{ fontSize: 12, color: T.textSecondary, marginBottom: 20, textAlign: "center" }}>Ouvrir une rétro passée en lecture seule</div>
+              {archiveLoading && <div style={{ textAlign: "center", padding: "24px 0" }}><div style={{ fontSize: 32, marginBottom: 8, animation: "pulse 1s ease-in-out infinite" }}>🔍</div><div style={{ fontSize: 13, color: T.textMuted }}>Chargement des archives…</div></div>}
+              {!archiveLoading && retroArchiveList.length === 0 && <div style={{ textAlign: "center", padding: "24px 0" }}><div style={{ fontSize: 32, marginBottom: 8 }}>📭</div><div style={{ fontSize: 13, color: T.textMuted }}>Aucune rétro archivée trouvée</div></div>}
+              {!archiveLoading && retroArchiveList.length > 0 && <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                {retroArchiveList.map(r => (
+                  <button key={r.dateKey} onClick={() => openReadOnlyRetro(r.dateKey)} style={{ width: "100%", padding: "14px 16px", borderRadius: 12, cursor: "pointer", border: readOnlyRetroKey === r.dateKey ? "2.5px solid #7C3AED" : "1.5px solid " + (T.cardBorder || "#E8C9A8"), background: readOnlyRetroKey === r.dateKey ? (isDark ? "rgba(124,58,237,0.15)" : "#F5F3FF") : T.cardBg, textAlign: "left", transition: "all 0.2s" }}
+                    onMouseEnter={e => { if (readOnlyRetroKey !== r.dateKey) e.currentTarget.style.borderColor = "#A78BFA"; }}
+                    onMouseLeave={e => { if (readOnlyRetroKey !== r.dateKey) e.currentTarget.style.borderColor = T.cardBorder || "#E8C9A8"; }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: readOnlyRetroKey === r.dateKey ? "#7C3AED" : T.textPrimary }}>{r.label}</div>
+                      {readOnlyRetroKey === r.dateKey && <span style={{ fontSize: 9, background: "#7C3AED22", color: "#7C3AED", padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>EN COURS</span>}
+                    </div>
+                    <div style={{ display: "flex", gap: 12, fontSize: 11, color: T.textMuted, marginBottom: 4 }}>
+                      <span>💬 {r.fbCount} feedback{r.fbCount > 1 ? "s" : ""}</span>
+                      <span>🎯 {r.actCount} action{r.actCount > 1 ? "s" : ""}</span>
+                      <span>⭐ {r.ratCount} vote{r.ratCount > 1 ? "s" : ""}</span>
+                    </div>
+                    {r.participants.length > 0 && <div style={{ fontSize: 10, color: T.textMuted }}>👥 {r.participants.join(", ")}</div>}
+                  </button>
+                ))}
+              </div>}
+              {isReadOnly && <button onClick={() => { exitReadOnly(); setShowRetroArchive(false); }} style={{ width: "100%", padding: "10px 0", borderRadius: 10, border: "1.5px solid #7C3AED", background: "none", color: "#7C3AED", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 8 }}>↩ Revenir à la rétro en cours</button>}
+              <button onClick={() => setShowRetroArchive(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid " + (T.cardBorder || "#E8C9A8"), background: "none", color: T.textSecondary, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
             </div>
           </div>}
           {zoomedImage && <div onClick={() => setZoomedImage(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)" }}><img src={zoomedImage} style={{ maxWidth: isMobile ? "95vw" : "80vw", maxHeight: "80vh", objectFit: zoomedImage === IMG_LOGO ? "cover" : "contain", borderRadius: zoomedImage === IMG_LOGO ? "50%" : 16, boxShadow: "0 12px 40px rgba(0,0,0,0.5)", ...(zoomedImage === IMG_LOGO ? { width: isMobile ? "70vw" : "60vh", height: isMobile ? "70vw" : "60vh" } : {}) }} /></div>}
