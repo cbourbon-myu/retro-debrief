@@ -5,7 +5,6 @@
 // Chaque valeur correspond au paramétrage d'origine.
 // ============================================================
 
-// 🎸 Backstage Debrief
 (function(){if(!window.RETRO_TEMPLATES)window.RETRO_TEMPLATES={};window.RETRO_TEMPLATES["backstage"]={
   "id": "backstage",
   "name": "🎸 Backstage Debrief",
@@ -341,6 +340,8 @@
     "resume",
     "outro"
   ],
+  "actionBorder": "#F97316",
+  "headerImageZoom": 100,
   "outroStyle": {
     "high": {
       "align": "center",
@@ -362,5 +363,7 @@
       "bold": true,
       "size": 18
     }
-  }
+  },
+  "rulesImageZoom": 100,
+  "summaryImageZoom": 100
 };})();
