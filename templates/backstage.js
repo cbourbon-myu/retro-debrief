@@ -254,7 +254,7 @@
   "summaryImage": "url(\"assets/backstage/concert.jpg\")",
   "summaryImagePos": "50% 0%",
   "summaryBlur": 0,
-  "summaryImageOpacity": 1,
+  "summaryImageOpacity": 0.66,
   "summaryBorderColor": "transparent",
   "summaryBorderWidth": 0,
   "summaryOverlay": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
@@ -308,10 +308,10 @@
     "high": 100
   },
   "outroGifOpacity": {
-    "none": 1,
-    "low": 1,
-    "mid": 1,
-    "high": 1
+    "none": 0.45,
+    "low": 0.56,
+    "mid": 0.52,
+    "high": 0.66
   },
   "outroGifBlur": {
     "none": 0,
