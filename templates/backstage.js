@@ -124,22 +124,30 @@
       "title": "🎸 Ce qui a rocké",
       "color": "#92400E",
       "border": "#CA8A04",
-      "borderWidth": 2
+      "borderWidth": 2,
+      "image": "",
+      "imageCircle": true
     },
     "fausse": {
       "title": "🔇 Les fausses notes",
       "color": "#9F1239",
       "border": "#E11D48",
-      "borderWidth": 2
+      "borderWidth": 2,
+      "image": "",
+      "imageCircle": true
     },
     "ameliorer": {
       "title": "🎛️ Le soundcheck",
       "color": "#9A3412",
       "border": "#F97316",
-      "borderWidth": 2
+      "borderWidth": 2,
+      "image": "",
+      "imageCircle": true
     }
   },
   "vibeTitle": "Vibe check",
+  "vibeTitleImage": "assets/backstage/vibecheck.jpg",
+  "vibeTitleImageCircle": true,
   "vibeChecks": [
     {
       "bg": "#FFF1F2",
@@ -209,6 +217,8 @@
     "roti": "ROTI"
   },
   "feedbackTitle": "🫳 Drop the mic",
+  "feedbackTitleImage": "assets/backstage/colonnes.jpg",
+  "feedbackTitleImageCircle": true,
   "actionTitle": "Setlist du prochain set",
   "actionTitleStyle": {
     "bold": false,
