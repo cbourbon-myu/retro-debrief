@@ -13,7 +13,7 @@
   "loginBtnBg": "#111827",
   "loginBtnBorder": "#374151",
   "loginBtnHover": "#1F2937",
-  "appLogo": "assets/starwars/appLogo.png",
+  "appLogo": "assets/starwars/site-logo.jpg",
   "appLogoCircle": true,
   "iconMeeting": "",
   "iconStart": "",
@@ -39,12 +39,12 @@
   "headerBlur": 0,
   "headerImageOpacity": 1,
   "rulesTitle": "⚔️",
-  "rulesTitleImage": "assets/starwars/rulesTitleImage.jpg",
+  "rulesTitleImage": "assets/starwars/regles-logo.jpg",
   "rulesTitleImageCircle": true,
   "rulesName": "Le Code Jedi",
   "rulesColor": "#22C55E",
   "rulesDotColor": "#FBBF24",
-  "rulesImage": "url(\"assets/starwars/regles.jpg\")",
+  "rulesImage": "url(\"assets/starwars/regles-image.jpg\")",
   "rulesImagePos": "100% 84%",
   "rulesBlur": 0,
   "rulesImageOpacity": 1,
@@ -63,7 +63,7 @@
     "title": "⚔️ Sagesse du Maître ⚔️",
     "quote": "\"Fais-le, ou ne le fais pas. Il n'y a pas d'essai.\"",
     "author": "- Yoda, Maître Jedi",
-    "image": "assets/starwars/tooltip.jpg",
+    "image": "assets/starwars/regles-tooltip-image.jpg",
     "imageZoom": 100,
     "imagePos": "50% 50%",
     "imageOpacity": 0.36,
@@ -119,7 +119,7 @@
       "color": "#166534",
       "border": "#22C55E",
       "borderWidth": 2,
-      "image": "assets/starwars/rock.jpg",
+      "image": "assets/starwars/colonne-1-logo.jpg",
       "imageCircle": true
     },
     "fausse": {
@@ -127,7 +127,7 @@
       "color": "#991B1B",
       "border": "#EF4444",
       "borderWidth": 2,
-      "image": "assets/starwars/fausse.jpg",
+      "image": "assets/starwars/colonne-2-logo.jpg",
       "imageCircle": true
     },
     "ameliorer": {
@@ -135,12 +135,12 @@
       "color": "#1E40AF",
       "border": "#3B82F6",
       "borderWidth": 2,
-      "image": "assets/starwars/ameliorer.jpg",
+      "image": "assets/starwars/colonne-3-logo.jpg",
       "imageCircle": true
     }
   },
   "vibeTitle": "Sondage de la Force",
-  "vibeTitleImage": "assets/starwars/vibecheck.jpg",
+  "vibeTitleImage": "assets/starwars/ressenti-logo.jpg",
   "vibeTitleImageCircle": true,
   "vibeChecks": [
     {
@@ -148,7 +148,7 @@
       "border": "#22C55E",
       "color": "#166534",
       "id": "ambiance",
-      "image": "assets/starwars/vibe-ambiance.jpg",
+      "image": "assets/starwars/ressenti-1-logo.jpg",
       "imageStyle": {
         "height": 30,
         "width": 30
@@ -160,7 +160,7 @@
       "border": "#3B82F6",
       "color": "#1E40AF",
       "id": "satisfaction",
-      "image": "assets/starwars/vibe-satisfaction.jpg",
+      "image": "assets/starwars/ressenti-2-logo.jpg",
       "imageStyle": {
         "height": 30,
         "width": 30
@@ -175,7 +175,7 @@
     "bg": "#1c1607",
     "border": "#EF4444",
     "borderWidth": 2,
-    "image": "assets/starwars/vibe-roti.jpg",
+    "image": "assets/starwars/roti-logo.jpg",
     "imageStyle": null,
     "imageCircle": true
   },
@@ -183,27 +183,27 @@
     null,
     {
       "emoji": "💀",
-      "image": "assets/starwars/rating-1-cote-obscur.jpg",
+      "image": "assets/starwars/vote-1.jpg",
       "label": "Côté Obscur"
     },
     {
       "emoji": "🌑",
-      "image": "assets/starwars/rating-2-piege-sith.jpg",
+      "image": "assets/starwars/vote-2.jpg",
       "label": "Piège Sith"
     },
     {
       "emoji": "⚔️",
-      "image": "assets/starwars/rating-3-padawan.jpg",
+      "image": "assets/starwars/vote-3.jpg",
       "label": "Padawan"
     },
     {
       "emoji": "🌠",
-      "image": "assets/starwars/rating-4-chevalier-jedi.jpg",
+      "image": "assets/starwars/vote-4.jpg",
       "label": "Chevalier Jedi"
     },
     {
       "emoji": "☄️",
-      "image": "assets/starwars/rating-5-maitre-jedi.jpg",
+      "image": "assets/starwars/vote-5.jpg",
       "label": "Maître Jedi"
     }
   ],
@@ -213,7 +213,7 @@
     "roti": "ROTI"
   },
   "feedbackTitle": "Transmission holographique",
-  "feedbackTitleImage": "assets/starwars/colonnes.jpg",
+  "feedbackTitleImage": "assets/starwars/retours-logo.jpg",
   "feedbackTitleImageCircle": true,
   "actionTitle": "Prochaine mission",
   "actionTitleStyle": {
@@ -223,7 +223,7 @@
     "size": 16,
     "align": "left"
   },
-  "actionImage": "assets/starwars/actionImage.jpg",
+  "actionImage": "assets/starwars/actions-logo.jpg",
   "actionImageCircle": true,
   "actionQuoteColor": "",
   "actionQuote": "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
@@ -245,9 +245,9 @@
     "size": 22,
     "align": "center"
   },
-  "summaryTitleImage": "assets/starwars/summaryTitleImage.png",
+  "summaryTitleImage": "assets/starwars/resume-logo.jpg",
   "summaryTitleImageCircle": true,
-  "summaryImage": "url(\"assets/starwars/resume.jpg\")",
+  "summaryImage": "url(\"assets/starwars/resume-image.jpg\")",
   "summaryImagePos": "100% 69%",
   "summaryBlur": 0,
   "summaryImageOpacity": 1,
@@ -265,7 +265,7 @@
     "size": 22,
     "align": "center"
   },
-  "outroTitleImage": "assets/starwars/outroTitleImage.png",
+  "outroTitleImage": "assets/starwars/fin-logo.jpg",
   "outroTitleImageCircle": true,
   "outro": {
     "none": {
@@ -286,7 +286,7 @@
     }
   },
   "outroGifs": {
-    "none": "assets/starwars/outroGif-none.jpg",
+    "none": "assets/starwars/fin-aucun-image.jpg",
     "low": "",
     "mid": "",
     "high": ""
