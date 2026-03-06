@@ -1,11 +1,4 @@
-// ============================================================
-// ⚔️ CONSEIL JEDI — Template Star Wars (Custom merged)
-// ============================================================
-// Pour créer un nouveau template, copie ce fichier,
-// change l'id et adapte chaque propriété.
-// Le fichier s'enregistre tout seul au chargement.
-// ============================================================
-
+// ⚔️ Conseil Jedi
 (function(){if(!window.RETRO_TEMPLATES)window.RETRO_TEMPLATES={};window.RETRO_TEMPLATES["starwars"]={
   "id": "starwars",
   "name": "⚔️ Conseil Jedi",
@@ -125,22 +118,30 @@
       "title": "✨ Ce qui a activé la Force",
       "color": "#166534",
       "border": "#22C55E",
-      "borderWidth": 2
+      "borderWidth": 2,
+      "image": "assets/starwars/rock.jpg",
+      "imageCircle": true
     },
     "fausse": {
       "title": "💀 Le Côté Obscur",
       "color": "#991B1B",
       "border": "#EF4444",
-      "borderWidth": 2
+      "borderWidth": 2,
+      "image": "assets/starwars/fausse.jpg",
+      "imageCircle": true
     },
     "ameliorer": {
       "title": "⚔️ L'Académie Jedi",
       "color": "#1E40AF",
       "border": "#3B82F6",
-      "borderWidth": 2
+      "borderWidth": 2,
+      "image": "assets/starwars/ameliorer.jpg",
+      "imageCircle": true
     }
   },
   "vibeTitle": "Sondage de la Force",
+  "vibeTitleImage": "assets/starwars/vibecheck.jpg",
+  "vibeTitleImageCircle": true,
   "vibeChecks": [
     {
       "bg": "#052e16",
@@ -212,6 +213,8 @@
     "roti": "ROTI"
   },
   "feedbackTitle": "Transmission holographique",
+  "feedbackTitleImage": "assets/starwars/colonnes.jpg",
+  "feedbackTitleImageCircle": true,
   "actionTitle": "Prochaine mission",
   "actionTitleStyle": {
     "bold": false,
