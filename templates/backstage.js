@@ -244,7 +244,9 @@
     "align": "right"
   },
   "afterTitle": "L'after",
-  "summaryTitle": " Le Rappel",
+   afterTitleImage: "assets/backstage/after-logo.jpg",
+   afterTitleCircle: false,
+  "summaryTitle": "Le Rappel",
   "summaryTitleStyle": {
     "bold": false,
     "italic": false,
