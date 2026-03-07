@@ -42,26 +42,26 @@
   "progressBg": "#F0DCC8",
   "appTitle": "BACKSTAGE DEBRIEF",
   "subtitle": "Tous les 15 jours • Mardi 14h30-15h30 • Ce qui se dit en backstage reste en backstage 🤫",
-  "headerImage": "url(\"assets/backstage/titre.jpg\")",
-  "headerImagePos": "85% 85%",
-  "headerGradient": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
-  "headerBlur": 0,
-  "headerImageOpacity": 0.45,
-  "rulesTitle": "",
-  "rulesTitleImage": "assets/backstage/regles-logo.jpg",
-  "rulesTitleImageCircle": false,
-  "rulesName": "Règles du Pitt",
-  "rulesColor": "#78350F",
-  "rulesDotColor": "#E11D48",
-  "rulesImage": "url(\"assets/backstage/regles-image.jpg\")",
-  "rulesImagePos": "50% 50%",
-  "rulesBlur": 0,
-  "rulesImageOpacity": 0.5,
-  "rulesBorderColor": "transparent",
-  "rulesBorderWidth": 0,
-  "rulesOverlayMobile": "linear-gradient(to bottom, #FFF6EE 0%, #FFF6EE 50%, rgba(255,246,238,0.7) 70%, rgba(255,246,238,0.3) 100%)",
-  "rulesOverlayDesktop": "linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(255,246,238,0.7) 60%, rgba(255,246,238,0.2) 80%, transparent 100%)",
-  "rulesItems": [
+  "titreImage": "url(\"assets/backstage/titre.jpg\")",
+  "titreImagePos": "85% 85%",
+  "titreGradient": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
+  "titreBlur": 0,
+  "titreImageOpacity": 0.45,
+  "reglesTitle": "",
+  "reglesLogo": "assets/backstage/regles-logo.jpg",
+  "reglesLogoCircle": false,
+  "reglesName": "Règles du Pitt",
+  "reglesColor": "#78350F",
+  "reglesDotColor": "#E11D48",
+  "reglesImage": "url(\"assets/backstage/regles-image.jpg\")",
+  "reglesImagePos": "50% 50%",
+  "reglesBlur": 0,
+  "reglesImageOpacity": 0.5,
+  "reglesBorderColor": "transparent",
+  "reglesBorderWidth": 0,
+  "reglesOverlayMobile": "linear-gradient(to bottom, #FFF6EE 0%, #FFF6EE 50%, rgba(255,246,238,0.7) 70%, rgba(255,246,238,0.3) 100%)",
+  "reglesOverlayDesktop": "linear-gradient(to right, #FFF6EE 0%, #FFF6EE 40%, rgba(255,246,238,0.7) 60%, rgba(255,246,238,0.2) 80%, transparent 100%)",
+  "reglesItems": [
     "Respect mutuel",
     "Focus sur les process, pas les personnes",
     "Tout le monde participe",
@@ -148,10 +148,10 @@
       "imageCircle": false
     }
   },
-  "vibeTitle": "Vibe check",
-  "vibeTitleImage": "assets/backstage/ressenti-logo.jpg",
-  "vibeTitleImageCircle": false,
-  "vibeChecks": [
+  "ressentiTitle": "Vibe check",
+  "ressentiLogo": "assets/backstage/ressenti-logo.jpg",
+  "ressentiLogoCircle": false,
+  "ressentiChecks": [
     {
       "bg": "#FFF1F2",
       "border": "#E11D48",
@@ -224,24 +224,24 @@
     "satisfaction": "Satisfaction Travail",
     "roti": "ROTI"
   },
-  "feedbackTitle": "Drop the mic",
-  "feedbackTitleImage": "assets/backstage/retours-logo.jpg",
-  "feedbackTitleImageCircle": false,
-  "actionTitle": "Setlist du prochain set",
-  "actionTitleStyle": {
+  "retoursTitle": "Drop the mic",
+  "retoursLogo": "assets/backstage/retours-logo.jpg",
+  "retoursLogoCircle": false,
+  "actionsTitle": "Setlist du prochain set",
+  "actionsTitleStyle": {
     "bold": false,
     "italic": false,
     "underline": false,
     "size": 16,
     "align": "left"
   },
-  "actionImage": "assets/backstage/actions-logo.jpg",
-  "actionImageCircle": false,
-  "actionQuoteColor": "",
-  "actionQuote": "\"On repart avec 2-3 actions concrètes. L'idée : être un peu meilleurs pour le prochain set.\" 🤘",
-  "actionBorderWidth": 2,
-  "actionTitleColor": "",
-  "actionQuoteStyle": {
+  "actionsLogo": "assets/backstage/actions-logo.jpg",
+  "actionsLogoCircle": false,
+  "actionsQuoteColor": "",
+  "actionsQuote": "\"On repart avec 2-3 actions concrètes. L'idée : être un peu meilleurs pour le prochain set.\" 🤘",
+  "actionsBorderWidth": 2,
+  "actionsTitleColor": "",
+  "actionsQuoteStyle": {
     "bold": false,
     "italic": true,
     "underline": false,
@@ -249,39 +249,39 @@
     "align": "right"
   },
   "afterTitle": "L'after",
-  "afterTitleImage": "assets/backstage/after-logo.jpg",
-  "afterTitleCircle": false,
-  "summaryTitle": "Le Rappel",
-  "summaryTitleStyle": {
+  "afterLogo": "assets/backstage/after-logo.jpg",
+  "afterLogoCircle": false,
+  "resumeTitle": "Le Rappel",
+  "resumeTitleStyle": {
     "bold": false,
     "italic": false,
     "underline": false,
     "size": 22,
     "align": "center"
   },
-  "summaryTitleImage": "assets/backstage/resume-logo.jpg",
-  "summaryTitleImageCircle": false,
-  "summaryImage": "url(\"assets/backstage/resume-image.jpg\")",
-  "summaryImagePos": "50% 0%",
-  "summaryBlur": 0,
-  "summaryImageOpacity": 1,
-  "summaryBorderColor": "transparent",
-  "summaryBorderWidth": 0,
-  "summaryOverlay": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
-  "summaryContentVAlign": "center",
-  "summaryContentHAlign": "center",
-  "summaryPinHint": "Épingle des retours avec 📌 pour construire le résumé",
-  "outroTitle": "Outro",
-  "outroTitleStyle": {
+  "resumeLogo": "assets/backstage/resume-logo.jpg",
+  "resumeLogoCircle": false,
+  "resumeImage": "url(\"assets/backstage/resume-image.jpg\")",
+  "resumeImagePos": "50% 0%",
+  "resumeBlur": 0,
+  "resumeImageOpacity": 1,
+  "resumeBorderColor": "transparent",
+  "resumeBorderWidth": 0,
+  "resumeOverlay": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
+  "resumeContentVAlign": "center",
+  "resumeContentHAlign": "center",
+  "resumePinHint": "Épingle des retours avec 📌 pour construire le résumé",
+  "finTitle": "Outro",
+  "finTitleStyle": {
     "bold": false,
     "italic": false,
     "underline": false,
     "size": 22,
     "align": "center"
   },
-  "outroTitleImage": "assets/backstage/fin-logo.jpg",
-  "outroTitleImageCircle": false,
-  "outro": {
+  "finLogo": "assets/backstage/fin-logo.jpg",
+  "finLogoCircle": false,
+  "fin": {
     "none": {
       "text": "On accorde les guitares et on libère les chevaux... Préparez-vous, ça va secouer les fondations !",
       "emoji": ""
@@ -299,51 +299,51 @@
       "emoji": ""
     }
   },
-  "outroGifs": {
+  "finGifs": {
     "none": "assets/backstage/fin-aucun-image.jpg",
     "low": "assets/backstage/fin-bas-image.gif",
     "mid": "assets/backstage/fin-moyen-image.gif",
     "high": "assets/backstage/fin-haut-image.gif"
   },
-  "outroGifPos": {
+  "finGifPos": {
     "none": "center",
     "low": "center",
     "mid": "50% 60%",
     "high": "50% 78%"
   },
-  "outroGifZoom": {
+  "finGifZoom": {
     "none": 100,
     "low": 100,
     "mid": 100,
     "high": 100
   },
-  "outroGifOpacity": {
+  "finGifOpacity": {
     "none": 1,
     "low": 1,
     "mid": 1,
     "high": 1
   },
-  "outroGifBlur": {
+  "finGifBlur": {
     "none": 0,
     "low": 0,
     "mid": 0,
     "high": 0
   },
-  "outroGifOverlay": {
+  "finGifOverlay": {
     "none": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
     "low": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
     "mid": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)",
     "high": "linear-gradient(135deg, rgba(28,10,10,0.9) 0%, rgba(50,14,14,0.75) 50%, rgba(28,10,10,0.9) 100%)"
   },
-  "outroImage": "none",
-  "outroImagePos": "50% 50%",
-  "outroImageZoom": 100,
-  "outroImageOpacity": 0.45,
-  "outroImageBlur": 0,
-  "outroBorderColor": "transparent",
-  "outroBorderWidth": 0,
-  "outroContentVAlign": "center",
-  "outroOverlay": "",
+  "finImage": "none",
+  "finImagePos": "50% 50%",
+  "finImageZoom": 100,
+  "finImageOpacity": 0.45,
+  "finImageBlur": 0,
+  "finBorderColor": "transparent",
+  "finBorderWidth": 0,
+  "finContentVAlign": "center",
+  "finOverlay": "",
   "mdTitle": "🥁 Rétro Sprint",
   "mdSummary": "🎸 Le Rappel",
   "mdGlobal": "Ressenti global",
@@ -352,17 +352,17 @@
   "mdDetail": "📋 Détail de la rétro",
   "sectionOrder": [
     "regles",
-    "vibecheck",
+    "ressenti",
     "colonnes",
     "saisie",
     "roti",
     "actions",
     "resume",
-    "outro"
+    "fin"
   ],
-  "actionBorder": "#F97316",
-  "headerImageZoom": 100,
-  "outroStyle": {
+  "actionsBorder": "#F97316",
+  "titreImageZoom": 100,
+  "finStyle": {
     "high": {
       "align": "center",
       "bold": true,
@@ -384,6 +384,6 @@
       "size": 18
     }
   },
-  "rulesImageZoom": 100,
-  "summaryImageZoom": 100
+  "reglesImageZoom": 100,
+  "resumeImageZoom": 100
 };})();
