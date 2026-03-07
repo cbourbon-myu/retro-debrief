@@ -150,7 +150,7 @@
   },
   "vibeTitle": "Vibe check",
   "vibeTitleImage": "assets/backstage/ressenti-logo.jpg",
-  "vibeTitleImageCircle": true,
+  "vibeTitleImageCircle": false,
   "vibeChecks": [
     {
       "bg": "#FFF1F2",
