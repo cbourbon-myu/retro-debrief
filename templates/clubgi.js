@@ -1,7 +1,7 @@
 // ============================================================
 // 📺 CLUB GI — Template Rétro Années 80-2000
 // ============================================================
-// Inspiré du Club GI et de ses dessins animés cultes.
+// Inspiré du Club D et de ses dessins animés cultes.
 // Chaque valeur correspond au thème nostalgique des génériques et aventures.
 // ============================================================
 
@@ -15,6 +15,12 @@
   "emojiLogo": "📺",
   "emojiMeeting": "🎬",
   "emojiStart": "⚡",
+  "emojiRessenti": "⚡",
+  "emojiRetours": "🐦",
+  "emojiAfter": "🍿",
+  "emojiActions": "🗺️",
+  "emojiResume": "📺",
+  "emojiFin": "🎬",
   "loginBg": "#F0E6FF",
   "loginCardBg": "#FDF4FF",
   "loginBtnBg": "#FDF4FF",
