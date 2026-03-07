@@ -143,7 +143,7 @@
   },
   "ressentiTitle": "Sondage de la Force",
   "ressentiLogo": "assets/starwars/ressenti-logo.jpg",
-  "ressentiLogoCircle": true,
+  "ressentiLogoCircle": false,
   "ressentiChecks": [
     {
       "bg": "#052e16",
@@ -250,7 +250,7 @@
     "align": "center"
   },
   "resumeLogo": "assets/starwars/resume-logo.jpg",
-  "resumeLogoCircle": true,
+  "resumeLogoCircle": false,
   "resumeImage": "url(\"assets/starwars/resume-image.jpg\")",
   "resumeImagePos": "100% 69%",
   "resumeBlur": 0,
@@ -270,7 +270,7 @@
     "align": "center"
   },
   "finLogo": "assets/starwars/fin-logo.jpg",
-  "finLogoCircle": true,
+  "finLogoCircle": false,
   "fin": {
     "none": {
       "text": "Le Conseil Jedi est réuni. Que la Force soit avec nous pour les sprints à venir.",
