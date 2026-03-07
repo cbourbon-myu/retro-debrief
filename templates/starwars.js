@@ -37,6 +37,7 @@
   "subtitle": "Il y a bien longtemps, dans un sprint lointain... Que la Force soit avec le backlog",
   "titreImage": "url(\"assets/starwars/titre.jpg\")",
   "titreImagePos": "50% 47%",
+  "titreImageZoom": 50,
   "titreGradient": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(0,0,0,0.99) 20%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.99) 80%, rgba(10,12,16,1) 100%)",
   "titreBlur": 0,
   "titreImageOpacity": 1,
@@ -48,6 +49,7 @@
   "reglesDotColor": "#FBBF24",
   "reglesImage": "url(\"assets/starwars/regles-image.jpg\")",
   "reglesImagePos": "100% 84%",
+  "reglesImageZoom": 34,
   "reglesBlur": 0,
   "reglesImageOpacity": 1,
   "reglesBorderColor": "transparent",
@@ -253,6 +255,7 @@
   "resumeLogoCircle": false,
   "resumeImage": "url(\"assets/starwars/resume-image.jpg\")",
   "resumeImagePos": "100% 69%",
+  "resumeImageZoom": 50,
   "resumeBlur": 0,
   "resumeImageOpacity": 1,
   "resumeBorderColor": "transparent",
@@ -351,7 +354,6 @@
     "fin"
   ],
   "actionsBorder": "#FBBF24",
-  "titreImageZoom": 50,
   "finStyle": {
     "none": {
       "align": "left",
@@ -378,6 +380,5 @@
       "size": 18
     }
   },
-  "reglesImageZoom": 34,
-  "resumeImageZoom": 50
+
 };})();
