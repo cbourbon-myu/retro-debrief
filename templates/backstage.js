@@ -49,7 +49,7 @@
   "headerImageOpacity": 0.45,
   "rulesTitle": "",
   "rulesTitleImage": "assets/backstage/regles-logo.jpg",
-  "rulesTitleImageCircle": true,
+  "rulesTitleImageCircle": false,
   "rulesName": "Règles du Pitt",
   "rulesColor": "#78350F",
   "rulesDotColor": "#E11D48",
@@ -129,7 +129,7 @@
       "border": "#CA8A04",
       "borderWidth": 2,
       "image": "assets/backstage/colonne-1-logo.jpg",
-      "imageCircle": true
+      "imageCircle": false
     },
     "fausse": {
       "title": "🔇 Les fausses notes",
@@ -137,7 +137,7 @@
       "border": "#E11D48",
       "borderWidth": 2,
       "image": "assets/backstage/colonne-2-logo.jpg",
-      "imageCircle": true
+      "imageCircle": false
     },
     "ameliorer": {
       "title": "🎛️ Le soundcheck",
@@ -145,7 +145,7 @@
       "border": "#F97316",
       "borderWidth": 2,
       "image": "assets/backstage/colonne-3-logo.jpg",
-      "imageCircle": true
+      "imageCircle": false
     }
   },
   "vibeTitle": "Vibe check",
@@ -189,7 +189,7 @@
       "height": 30,
       "width": 30
     },
-    "imageCircle": true
+    "imageCircle": false
   },
   "ratingLabels": [
     null,
@@ -219,9 +219,9 @@
     "satisfaction": "Satisfaction Travail",
     "roti": "ROTI"
   },
-  "feedbackTitle": "🫳 Drop the mic",
+  "feedbackTitle": "Drop the mic",
   "feedbackTitleImage": "assets/backstage/retours-logo.jpg",
-  "feedbackTitleImageCircle": true,
+  "feedbackTitleImageCircle": false,
   "actionTitle": "Setlist du prochain set",
   "actionTitleStyle": {
     "bold": false,
@@ -231,7 +231,7 @@
     "align": "left"
   },
   "actionImage": "assets/backstage/actions-logo.jpg",
-  "actionImageCircle": true,
+  "actionImageCircle": false,
   "actionQuoteColor": "",
   "actionQuote": "\"On repart avec 2-3 actions concrètes. L'idée : être un peu meilleurs pour le prochain set.\" 🤘",
   "actionBorderWidth": 2,
@@ -253,7 +253,7 @@
     "align": "center"
   },
   "summaryTitleImage": "assets/backstage/resume-logo.jpg",
-  "summaryTitleImageCircle": true,
+  "summaryTitleImageCircle": false,
   "summaryImage": "url(\"assets/backstage/resume-image.jpg\")",
   "summaryImagePos": "50% 0%",
   "summaryBlur": 0,
@@ -273,7 +273,7 @@
     "align": "center"
   },
   "outroTitleImage": "assets/backstage/fin-logo.jpg",
-  "outroTitleImageCircle": true,
+  "outroTitleImageCircle": false,
   "outro": {
     "none": {
       "text": "On accorde les guitares et on libère les chevaux... Préparez-vous, ça va secouer les fondations !",
