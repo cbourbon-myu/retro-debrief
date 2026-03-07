@@ -378,6 +378,6 @@
       "size": 18
     }
   },
-  "reglesImageZoom": 48,
+  "reglesImageZoom": 34,
   "resumeImageZoom": 50
 };})();
