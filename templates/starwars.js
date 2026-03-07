@@ -34,7 +34,7 @@
   "textMuted": "#6B7280",
   "progressBg": "#1F2937",
   "appTitle": "CONSEIL JEDI",
-  "subtitle": "Il y a bien longtemps, dans un sprint lointain... • Que la Force soit avec le backlog 🌌",
+  "subtitle": "Il y a bien longtemps, dans un sprint lointain... Que la Force soit avec le backlog",
   "titreImage": "url(\"assets/starwars/titre.jpg\")",
   "titreImagePos": "50% 47%",
   "titreGradient": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(0,0,0,0.99) 20%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.99) 80%, rgba(10,12,16,1) 100%)",
