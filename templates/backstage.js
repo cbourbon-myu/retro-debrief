@@ -44,6 +44,7 @@
   "subtitle": "Tous les 15 jours • Mardi 14h30-15h30 • Ce qui se dit en backstage reste en backstage 🤫",
   "titreImage": "url(\"assets/backstage/titre.jpg\")",
   "titreImagePos": "85% 85%",
+   "titreImageZoom": 100,
   "titreGradient": "linear-gradient(135deg, rgba(28,10,10,0.85) 0%, rgba(59,15,15,0.80) 40%, rgba(120,30,20,0.45) 100%)",
   "titreBlur": 0,
   "titreImageOpacity": 0.45,
@@ -55,6 +56,7 @@
   "reglesDotColor": "#E11D48",
   "reglesImage": "url(\"assets/backstage/regles-image.jpg\")",
   "reglesImagePos": "50% 50%",
+  "reglesImageZoom": 100,
   "reglesBlur": 0,
   "reglesImageOpacity": 0.5,
   "reglesBorderColor": "transparent",
@@ -263,6 +265,7 @@
   "resumeLogoCircle": false,
   "resumeImage": "url(\"assets/backstage/resume-image.jpg\")",
   "resumeImagePos": "50% 0%",
+  "resumeImageZoom": 100,
   "resumeBlur": 0,
   "resumeImageOpacity": 1,
   "resumeBorderColor": "transparent",
@@ -361,7 +364,6 @@
     "fin"
   ],
   "actionsBorder": "#F97316",
-  "titreImageZoom": 100,
   "finStyle": {
     "high": {
       "align": "center",
@@ -384,6 +386,5 @@
       "size": 18
     }
   },
-  "reglesImageZoom": 100,
-  "resumeImageZoom": 100
+  
 };})();
