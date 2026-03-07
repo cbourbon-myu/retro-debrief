@@ -1,7 +1,7 @@
 // ============================================================
 // 📺 CLUB GI — Template Rétro Années 80-2000
 // ============================================================
-// Inspiré du Club D et de ses dessins animés cultes.
+// Inspiré du Club GI et de ses dessins animés cultes.
 // Chaque valeur correspond au thème nostalgique des génériques et aventures.
 // ============================================================
 
@@ -16,8 +16,8 @@
   "emojiMeeting": "🎬",
   "emojiStart": "⚡",
   "emojiRessenti": "⚡",
-  "emojiRetours": "🐦",
-  "emojiAfter": "🍿",
+  "emojiRetours": "📬",
+  "emojiAfter": "⚽",
   "emojiActions": "🗺️",
   "emojiResume": "📺",
   "emojiFin": "🎬",
@@ -47,7 +47,7 @@
   "textMuted": "#9F8EC0",
   "progressBg": "#E9D5FF",
   "appTitle": "CLUB GI",
-  "subtitle": "Tous les 15 jours • L'aventure continue, prêts pour le prochain épisode ! 📺✨",
+  "subtitle": "Tous les 15 jours • Entre le Mississippi, les toits de Tokyo et les terrains de foot ! 📺✨",
   "titreImage": "url(\"assets/clubgi/titre.jpg\")",
   "titreImagePos": "50% 50%",
   "titreImageZoom": 100,
@@ -57,7 +57,7 @@
   "reglesTitle": "",
   "reglesLogo": "assets/clubgi/regles-logo.jpg",
   "reglesLogoCircle": false,
-  "reglesName": "Le Code des Héros",
+  "reglesName": "Les Règles du Club",
   "reglesColor": "#7C3AED",
   "reglesDotColor": "#EC4899",
   "reglesImage": "url(\"assets/clubgi/regles-image.jpg\")",
@@ -70,16 +70,16 @@
   "reglesOverlayMobile": "linear-gradient(to bottom, #F0E6FF 0%, #F0E6FF 50%, rgba(240,230,255,0.7) 70%, rgba(240,230,255,0.3) 100%)",
   "reglesOverlayDesktop": "linear-gradient(to right, #F0E6FF 0%, #F0E6FF 40%, rgba(240,230,255,0.7) 60%, rgba(240,230,255,0.2) 80%, transparent 100%)",
   "reglesItems": [
-    "Sous le soleil exactement, on respecte chaque membre de l'équipage",
-    "Comme Olive et Tom, on vise le ballon, pas le joueur",
-    "Chaque chevalier du zodiaque apporte sa cosmo-énergie",
-    "Ce qui se dit à bord de l'Atlantis reste à bord",
-    "Tel Goldorak, on identifie la menace et on passe à l'attaque !"
+    "Comme Tom et Huck sur le radeau, on respecte chaque membre de l'équipage",
+    "Comme Olive et Tom sur le terrain, on vise le ballon, pas le joueur",
+    "Chaque membre du Club apporte son talent, comme les Cat's Eyes en mission",
+    "Ce qui se dit au Club reste au Club, comme les secrets des Cat's Eyes",
+    "Tel Olivier Atton, on identifie l'ouverture et on fonce au but !"
   ],
   "tooltip": {
-    "title": "⚡ Sagesse d'Albator ⚡",
-    "quote": "\"La liberté ne se négocie pas. Elle se vit, ou elle n'existe pas.\"",
-    "author": "- Albator, Capitaine de l'Atlantis",
+    "title": "⚡ Sagesse de Tom Sawyer ⚡",
+    "quote": "\"La vie c'est comme le Mississippi, faut se laisser porter par le courant.\"",
+    "author": "- Tom Sawyer, aventurier du Mississippi",
     "image": "assets/clubgi/regles-tooltip-image.jpg",
     "imageZoom": 100,
     "imagePos": "50% 50%",
@@ -113,26 +113,26 @@
       "border": "#A855F7",
       "color": "#6B21A8",
       "id": "rock",
-      "label": "⚡ Météore Pégase"
+      "label": "⚡ Tir de l'Aigle"
     },
     {
       "bg": "#FFF1F2",
       "border": "#EC4899",
       "color": "#9D174D",
       "id": "fausse",
-      "label": "💥 Fulguro-raté"
+      "label": "💥 Carton rouge"
     },
     {
       "bg": "#EFF6FF",
       "border": "#3B82F6",
       "color": "#1D4ED8",
       "id": "ameliorer",
-      "label": "🌈 Transformation !"
+      "label": "🌈 Mi-temps"
     }
   ],
   "columns": {
     "rock": {
-      "title": "⚡ Ce qui a rocké comme un Météore Pégase",
+      "title": "⚡ Les Tirs de l'Aigle du sprint",
       "color": "#6B21A8",
       "border": "#A855F7",
       "borderWidth": 2,
@@ -140,7 +140,7 @@
       "imageCircle": false
     },
     "fausse": {
-      "title": "💥 Les Fulguro-ratés du sprint",
+      "title": "💥 Les Cartons rouges du sprint",
       "color": "#9D174D",
       "border": "#EC4899",
       "borderWidth": 2,
@@ -148,7 +148,7 @@
       "imageCircle": false
     },
     "ameliorer": {
-      "title": "🌈 Les transformations à venir",
+      "title": "🌈 La Mi-temps : ce qu'on ajuste",
       "color": "#1D4ED8",
       "border": "#3B82F6",
       "borderWidth": 2,
@@ -156,7 +156,7 @@
       "imageCircle": false
     }
   },
-  "ressentiTitle": "Le Sondage des Héros",
+  "ressentiTitle": "Le Sondage du Club",
   "ressentiLogo": "assets/clubgi/ressenti-logo.jpg",
   "ressentiLogoCircle": false,
   "ressentiChecks": [
@@ -170,7 +170,7 @@
         "height": 30,
         "width": 30
       },
-      "label": "Ambiance de l'équipage"
+      "label": "Ambiance du Club"
     },
     {
       "bg": "#FFF7ED",
@@ -182,7 +182,7 @@
         "height": 30,
         "width": 30
       },
-      "label": "Niveau de cosmo-énergie"
+      "label": "Esprit d'équipe"
     }
   ],
   "roti": {
@@ -203,39 +203,39 @@
     null,
     {
       "emoji": "💀",
-      "label": "Aspiré par un trou noir",
+      "label": "Hors-jeu total",
       "image": "assets/clubgi/vote-1.jpg"
     },
     {
       "emoji": "😤",
-      "label": "Soldat de Véga",
+      "label": "Tacle dangereux",
       "image": "assets/clubgi/vote-2.jpg"
     },
     {
       "emoji": "⚔️",
-      "label": "Apprenti chevalier",
+      "label": "Apprenti ailier",
       "image": "assets/clubgi/vote-3.jpg"
     },
     {
       "emoji": "⚡",
-      "label": "Chevalier de Bronze",
+      "label": "Milieu de terrain",
       "image": "assets/clubgi/vote-4.jpg"
     },
     {
       "emoji": "🌟",
-      "label": "Chevalier d'Or",
+      "label": "Ballon d'Or",
       "image": "assets/clubgi/vote-5.jpg"
     }
   ],
   "ratingCatLabels": {
-    "ambiance": "Ambiance de l'équipage",
-    "satisfaction": "Niveau de cosmo-énergie",
+    "ambiance": "Ambiance du Club",
+    "satisfaction": "Esprit d'équipe",
     "roti": "ROTI"
   },
-  "retoursTitle": "Les Pigeons Voyageurs",
+  "retoursTitle": "Le Courrier du Club",
   "retoursLogo": "assets/clubgi/retours-logo.jpg",
   "retoursLogoCircle": false,
-  "actionsTitle": "Prochaine quête de l'équipage",
+  "actionsTitle": "Prochaine mission du Club",
   "actionsTitleStyle": {
     "bold": false,
     "italic": false,
@@ -246,7 +246,7 @@
   "actionsLogo": "assets/clubgi/actions-logo.jpg",
   "actionsLogoCircle": false,
   "actionsQuoteColor": "",
-  "actionsQuote": "\"L'important c'est pas la chute... c'est l'atterrissage ! On y retourne !\" ⚡",
+  "actionsQuote": "\"Il n'y a pas de défaite, il n'y a que des leçons. Allez, on remonte sur le terrain !\" ⚽",
   "actionsBorderWidth": 2,
   "actionsTitleColor": "",
   "actionsQuoteStyle": {
@@ -256,10 +256,10 @@
     "size": 11,
     "align": "right"
   },
-  "afterTitle": "L'Entracte",
+  "afterTitle": "La Récré",
   "afterLogo": "assets/clubgi/after-logo.jpg",
   "afterLogoCircle": false,
-  "resumeTitle": "Les Archives de l'Atlantis",
+  "resumeTitle": "Le Best-Of du Club",
   "resumeTitleStyle": {
     "bold": false,
     "italic": false,
@@ -279,7 +279,7 @@
   "resumeOverlay": "linear-gradient(135deg, rgba(88,28,135,0.9) 0%, rgba(126,34,206,0.8) 50%, rgba(88,28,135,0.9) 100%)",
   "resumeContentVAlign": "center",
   "resumeContentHAlign": "center",
-  "resumePinHint": "Épingle des retours avec 📌 pour construire les Archives",
+  "resumePinHint": "Épingle des retours avec 📌 pour le Best-Of",
   "finTitle": "Générique de fin",
   "finTitleStyle": {
     "bold": false,
@@ -292,20 +292,20 @@
   "finLogoCircle": false,
   "fin": {
     "none": {
-      "text": "L'équipage est au complet, installez-vous sur le pont... L'épisode va bientôt commencer !",
+      "text": "Installez-vous, le générique commence ! Tom descend le Mississippi, les Cat's Eyes préparent leur coup, Olive chausse ses crampons...",
       "emoji": "📺🍿"
     },
     "low": {
-      "text": "Tel Tom Sawyer sur le Mississippi, on a dérivé un peu... Mais le prochain épisode sera un arc majeur. Rendez-vous dans 15 jours !",
-      "emoji": "🚣😅"
+      "text": "On a pris un carton rouge comme Olive face à la Toho... Mais on revient avec la tactique secrète de Mark Landers dans 15 jours !",
+      "emoji": "⚽😅"
     },
     "mid": {
-      "text": "Bel épisode ! Olive et Tom seraient fiers de cette passe décisive. On se retrouve dans 15 jours pour marquer le but !",
-      "emoji": "⚽⚡"
+      "text": "Bel épisode ! Tom Sawyer serait fier de cette aventure. Les Cat's Eyes applaudissent depuis les toits. Rendez-vous dans 15 jours !",
+      "emoji": "🐱✨"
     },
     "high": {
-      "text": "Épisode LÉGENDAIRE ! L'armure d'or brille sur tout l'équipage ! Goldorak est fier de vous. Rendez-vous dans 15 jours !",
-      "emoji": "🌟⚡"
+      "text": "Épisode LÉGENDAIRE ! Un Tir de l'Aigle en pleine lucarne ! Les Cat's Eyes lèvent leur verre et Tom Sawyer danse sur le radeau. À dans 15 jours !",
+      "emoji": "⚽🌟"
     }
   },
   "finGifs": {
@@ -354,10 +354,10 @@
   "finContentVAlign": "center",
   "finOverlay": "linear-gradient(135deg, rgba(88,28,135,0.9) 0%, rgba(126,34,206,0.8) 50%, rgba(88,28,135,0.9) 100%)",
   "mdTitle": "📺 Club GI — Sprint",
-  "mdSummary": "🌟 Archives de l'Atlantis",
-  "mdGlobal": "Sondage des Héros",
+  "mdSummary": "🌟 Best-Of du Club",
+  "mdGlobal": "Sondage du Club",
   "mdPinned": "📌 Moments cultes",
-  "mdActions": "⚡ Quêtes du prochain épisode",
+  "mdActions": "⚡ Objectifs du prochain épisode",
   "mdDetail": "📋 Détail de l'épisode",
   "sectionOrder": [
     "regles",
