@@ -23,7 +23,7 @@
   "appLogo": "assets/backstage/site-logo.jpg",
   "appLogoCircle": true,
   "iconMeeting": "assets/backstage/participant.jpg",
-  "iconStart": "assets/backstage/partager.jpg",
+  "iconStart": "assets/backstage/partager.gif",
   "accent": "#F97316",
   "accentDark": "#EA580C",
   "accentLight": "#FFF7ED",
