@@ -237,6 +237,8 @@
     "align": "center"
   },
   "afterTitle": "Le Temple Jedi",
+  "afterTitleImage": "assets/starwars/after-logo.jpg",
+  "afterTitleCircle": false,
   "summaryTitle": "Archives du Conseil",
   "summaryTitleStyle": {
     "bold": false,
