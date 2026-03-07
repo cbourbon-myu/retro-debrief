@@ -195,23 +195,28 @@
     null,
     {
       "emoji": "💀",
-      "label": "Silence de mort"
+      "label": "Silence de mort",
+      "image": "assets/backstage/vote-1.jpg"
     },
     {
       "emoji": "🎵",
-      "label": "Fausse note"
+      "label": "Fausse note",
+      "image": "assets/backstage/vote-2.jpg"
     },
     {
       "emoji": "🎸",
-      "label": "En rodage"
+      "label": "En rodage",
+      "image": "assets/backstage/vote-3.jpg"
     },
     {
       "emoji": "🤘",
-      "label": "Ça groove !"
+      "label": "Ça groove !",
+      "image": "assets/backstage/vote-4.jpg"
     },
     {
       "emoji": "⭐",
-      "label": "Épique !"
+      "label": "Épique !",
+      "image": "assets/backstage/vote-5.jpg"
     }
   ],
   "ratingCatLabels": {
