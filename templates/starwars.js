@@ -33,26 +33,26 @@
   "progressBg": "#1F2937",
   "appTitle": "CONSEIL JEDI",
   "subtitle": "Il y a bien longtemps, dans un sprint lointain... • Que la Force soit avec le backlog 🌌",
-  "headerImage": "url(\"assets/starwars/titre.jpg\")",
-  "headerImagePos": "50% 47%",
-  "headerGradient": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(0,0,0,0.99) 20%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.99) 80%, rgba(10,12,16,1) 100%)",
-  "headerBlur": 0,
-  "headerImageOpacity": 1,
-  "rulesTitle": "⚔️",
-  "rulesTitleImage": "assets/starwars/regles-logo.jpg",
-  "rulesTitleImageCircle": true,
-  "rulesName": "Le Code Jedi",
-  "rulesColor": "#22C55E",
-  "rulesDotColor": "#FBBF24",
-  "rulesImage": "url(\"assets/starwars/regles-image.jpg\")",
-  "rulesImagePos": "100% 84%",
-  "rulesBlur": 0,
-  "rulesImageOpacity": 1,
-  "rulesBorderColor": "transparent",
-  "rulesBorderWidth": 0,
-  "rulesOverlayMobile": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(10,12,16,1) 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.1) 70%, rgba(10,12,16,0) 100%)",
-  "rulesOverlayDesktop": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(10,12,16,1) 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.1) 70%, rgba(10,12,16,0) 100%)",
-  "rulesItems": [
+  "titreImage": "url(\"assets/starwars/titre.jpg\")",
+  "titreImagePos": "50% 47%",
+  "titreGradient": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(0,0,0,0.99) 20%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.99) 80%, rgba(10,12,16,1) 100%)",
+  "titreBlur": 0,
+  "titreImageOpacity": 1,
+  "reglesTitle": "⚔️",
+  "reglesLogo": "assets/starwars/regles-logo.jpg",
+  "reglesLogoCircle": true,
+  "reglesName": "Le Code Jedi",
+  "reglesColor": "#22C55E",
+  "reglesDotColor": "#FBBF24",
+  "reglesImage": "url(\"assets/starwars/regles-image.jpg\")",
+  "reglesImagePos": "100% 84%",
+  "reglesBlur": 0,
+  "reglesImageOpacity": 1,
+  "reglesBorderColor": "transparent",
+  "reglesBorderWidth": 0,
+  "reglesOverlayMobile": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(10,12,16,1) 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.1) 70%, rgba(10,12,16,0) 100%)",
+  "reglesOverlayDesktop": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(10,12,16,1) 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.1) 70%, rgba(10,12,16,0) 100%)",
+  "reglesItems": [
     "Il n'y a pas d'émotion, il y a la paix (et le respect)",
     "Focus sur la mission, pas sur l'individu",
     "Chaque voix compte au Conseil",
@@ -139,10 +139,10 @@
       "imageCircle": true
     }
   },
-  "vibeTitle": "Sondage de la Force",
-  "vibeTitleImage": "assets/starwars/ressenti-logo.jpg",
-  "vibeTitleImageCircle": true,
-  "vibeChecks": [
+  "ressentiTitle": "Sondage de la Force",
+  "ressentiLogo": "assets/starwars/ressenti-logo.jpg",
+  "ressentiLogoCircle": true,
+  "ressentiChecks": [
     {
       "bg": "#052e16",
       "border": "#22C55E",
@@ -212,24 +212,24 @@
     "satisfaction": "Puissance du Sabre",
     "roti": "ROTI"
   },
-  "feedbackTitle": "Transmission holographique",
-  "feedbackTitleImage": "assets/starwars/retours-logo.jpg",
-  "feedbackTitleImageCircle": true,
-  "actionTitle": "Prochaine mission",
-  "actionTitleStyle": {
+  "retoursTitle": "Transmission holographique",
+  "retoursLogo": "assets/starwars/retours-logo.jpg",
+  "retoursLogoCircle": true,
+  "actionsTitle": "Prochaine mission",
+  "actionsTitleStyle": {
     "bold": false,
     "italic": false,
     "underline": false,
     "size": 16,
     "align": "left"
   },
-  "actionImage": "assets/starwars/actions-logo.jpg",
-  "actionImageCircle": true,
-  "actionQuoteColor": "",
-  "actionQuote": "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
-  "actionBorderWidth": 2,
-  "actionTitleColor": "",
-  "actionQuoteStyle": {
+  "actionsLogo": "assets/starwars/actions-logo.jpg",
+  "actionsLogoCircle": true,
+  "actionsQuoteColor": "",
+  "actionsQuote": "\"Toujours par deux ils vont. Ni plus, ni moins. Le maître et l'apprenti.\" ⚔️",
+  "actionsBorderWidth": 2,
+  "actionsTitleColor": "",
+  "actionsQuoteStyle": {
     "bold": false,
     "italic": true,
     "underline": false,
@@ -237,39 +237,39 @@
     "align": "center"
   },
   "afterTitle": "Le Temple Jedi",
-  "afterTitleImage": "assets/starwars/after-logo.jpg",
-  "afterTitleCircle": false,
-  "summaryTitle": "Archives du Conseil",
-  "summaryTitleStyle": {
+  "afterLogo": "assets/starwars/after-logo.jpg",
+  "afterLogoCircle": false,
+  "resumeTitle": "Archives du Conseil",
+  "resumeTitleStyle": {
     "bold": false,
     "italic": false,
     "underline": false,
     "size": 22,
     "align": "center"
   },
-  "summaryTitleImage": "assets/starwars/resume-logo.jpg",
-  "summaryTitleImageCircle": true,
-  "summaryImage": "url(\"assets/starwars/resume-image.jpg\")",
-  "summaryImagePos": "100% 69%",
-  "summaryBlur": 0,
-  "summaryImageOpacity": 1,
-  "summaryBorderColor": "transparent",
-  "summaryBorderWidth": 0,
-  "summaryOverlay": "linear-gradient(to left, rgba(5,5,20,0) 0%, rgba(5,5,20,0.15) 15%, rgba(5,5,20,0.5) 30%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 60%, rgba(5,5,20,1) 100%)",
-  "summaryContentVAlign": "center",
-  "summaryContentHAlign": "center",
-  "summaryPinHint": "Épingle des retours avec 📌 pour construire les Archives",
-  "outroTitle": "Générique de fin",
-  "outroTitleStyle": {
+  "resumeLogo": "assets/starwars/resume-logo.jpg",
+  "resumeLogoCircle": true,
+  "resumeImage": "url(\"assets/starwars/resume-image.jpg\")",
+  "resumeImagePos": "100% 69%",
+  "resumeBlur": 0,
+  "resumeImageOpacity": 1,
+  "resumeBorderColor": "transparent",
+  "resumeBorderWidth": 0,
+  "resumeOverlay": "linear-gradient(to left, rgba(5,5,20,0) 0%, rgba(5,5,20,0.15) 15%, rgba(5,5,20,0.5) 30%, rgba(5,5,20,1) 50%, rgba(5,5,20,1) 60%, rgba(5,5,20,1) 100%)",
+  "resumeContentVAlign": "center",
+  "resumeContentHAlign": "center",
+  "resumePinHint": "Épingle des retours avec 📌 pour construire les Archives",
+  "finTitle": "Générique de fin",
+  "finTitleStyle": {
     "bold": false,
     "italic": false,
     "underline": false,
     "size": 22,
     "align": "center"
   },
-  "outroTitleImage": "assets/starwars/fin-logo.jpg",
-  "outroTitleImageCircle": true,
-  "outro": {
+  "finLogo": "assets/starwars/fin-logo.jpg",
+  "finLogoCircle": true,
+  "fin": {
     "none": {
       "text": "Le Conseil Jedi est réuni. Que la Force soit avec nous pour les sprints à venir.",
       "emoji": "⚔️🌟"
@@ -287,51 +287,51 @@
       "emoji": "🌌⚔️"
     }
   },
-  "outroGifs": {
+  "finGifs": {
     "none": "assets/starwars/fin-aucun-image.jpg",
     "low": "",
     "mid": "",
     "high": ""
   },
-  "outroGifPos": {
+  "finGifPos": {
     "none": "72% 62%",
     "low": "100% 50%",
     "mid": "100% 50%",
     "high": "100% 50%"
   },
-  "outroGifZoom": {
+  "finGifZoom": {
     "none": 51,
     "low": 50,
     "mid": 50,
     "high": 50
   },
-  "outroGifOpacity": {
+  "finGifOpacity": {
     "none": 1,
     "low": 1,
     "mid": 1,
     "high": 1
   },
-  "outroGifBlur": {
+  "finGifBlur": {
     "none": 0,
     "low": 0,
     "mid": 0,
     "high": 0
   },
-  "outroGifOverlay": {
+  "finGifOverlay": {
     "none": "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 95%, rgba(0,0,0,1) 100%)",
     "low": "",
     "mid": "",
     "high": ""
   },
-  "outroImage": "none",
-  "outroImagePos": "50% 50%",
-  "outroImageZoom": 100,
-  "outroImageOpacity": 1,
-  "outroImageBlur": 0,
-  "outroBorderColor": "transparent",
-  "outroBorderWidth": 0,
-  "outroContentVAlign": "center",
-  "outroOverlay": "radial-gradient(ellipse at center, rgba(5,5,20,0.3) 0%, rgba(5,5,20,0.6) 40%, rgba(5,5,20,0.85) 70%, rgba(5,5,20,0.95) 100%)",
+  "finImage": "none",
+  "finImagePos": "50% 50%",
+  "finImageZoom": 100,
+  "finImageOpacity": 1,
+  "finImageBlur": 0,
+  "finBorderColor": "transparent",
+  "finBorderWidth": 0,
+  "finContentVAlign": "center",
+  "finOverlay": "radial-gradient(ellipse at center, rgba(5,5,20,0.3) 0%, rgba(5,5,20,0.6) 40%, rgba(5,5,20,0.85) 70%, rgba(5,5,20,0.95) 100%)",
   "mdTitle": "⚔️ Conseil Jedi — Sprint",
   "mdSummary": "📜 Archives du Conseil",
   "mdGlobal": "Sondage de la Force",
@@ -340,17 +340,17 @@
   "mdDetail": "📋 Détail du Conseil",
   "sectionOrder": [
     "regles",
-    "vibecheck",
+    "ressenti",
     "colonnes",
     "saisie",
     "roti",
     "actions",
     "resume",
-    "outro"
+    "fin"
   ],
-  "actionBorder": "#FBBF24",
-  "headerImageZoom": 50,
-  "outroStyle": {
+  "actionsBorder": "#FBBF24",
+  "titreImageZoom": 50,
+  "finStyle": {
     "none": {
       "align": "left",
       "bold": true,
@@ -376,6 +376,6 @@
       "size": 18
     }
   },
-  "rulesImageZoom": 34,
-  "summaryImageZoom": 50
+  "reglesImageZoom": 34,
+  "resumeImageZoom": 50
 };})();
