@@ -52,8 +52,8 @@
   "reglesImageOpacity": 1,
   "reglesBorderColor": "transparent",
   "reglesBorderWidth": 0,
-  "reglesOverlayMobile": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(10,12,16,1) 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.1) 70%, rgba(10,12,16,0) 100%)",
-  "reglesOverlayDesktop": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 36%, rgba(10,12,16,0) 100%)",
+  "reglesOverlayMobile": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(0,0,0,1) 36%, rgba(0,0,0,1) 45%, rgba(10,12,16,0) 100%)",
+  "reglesOverlayDesktop": "linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(0,0,0,1) 36%, rgba(0,0,0,1) 45%, rgba(10,12,16,0) 100%)",
   "reglesItems": [
     "Il n'y a pas d'émotion, il y a la paix (et le respect)",
     "Focus sur la mission, pas sur l'individu",
@@ -378,6 +378,6 @@
       "size": 18
     }
   },
-  "reglesImageZoom": 54,
+  "reglesImageZoom": 48,
   "resumeImageZoom": 50
 };})();
