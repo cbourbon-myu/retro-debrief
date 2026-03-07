@@ -381,9 +381,9 @@
       const getAvg = (catId) => { const items = getRatingsForCategory(catId); if (!items.length) return null; return (items.reduce((s, r) => s + r.score, 0) / items.length).toFixed(1); };
 
       const [selectedCat, setSelectedCat] = useState("rock");
-      const [feedbackText, setFeedbackText] = useState("");
-      const [actionDesc, setActionDesc] = useState("");
-      const [actionResp, setActionResp] = useState("");
+      const [retourText, setRetourText] = useState("");
+      const [actionsDesc, setActionsDesc] = useState("");
+      const [actionsResp, setActionsResp] = useState("");
       const [editingFeedback, setEditingFeedback] = useState(null);
       const [editingAction, setEditingAction] = useState(null);
       const [showPresence, setShowPresence] = useState(false);
@@ -398,7 +398,7 @@
       const [showRetroArchive, setShowRetroArchive] = useState(false);
       const [retroArchiveList, setRetroArchiveList] = useState([]);
       const [archiveLoading, setArchiveLoading] = useState(false);
-      const feedbackInputRef = useRef(null);
+      const retourInputRef = useRef(null);
 
       useEffect(() => { const h = (e) => { if (!e.target.closest("[data-dropdown]")) { setShowPresence(false); setShowUserMenu(false); setShowIntegration(false); } }; document.addEventListener("click", h); return () => document.removeEventListener("click", h); }, []);
       useEffect(() => { if (!isAuthed || !db || !sprintDateKey) return; const ref = db.ref(`retro-${sprintDateKey}/confluenceUrl`); ref.on("value", (snap) => { setConfluenceUrl(snap.val() || null); }); return () => ref.off("value"); }, [isAuthed, sprintDateKey]);
@@ -412,8 +412,8 @@
       if (!sprintDateKey) return <div style={{ minHeight: "100vh", background: T.bodyBg, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}><div style={{ textAlign: "center", color: T.textSecondary, fontSize: 15 }}><div style={{ fontSize: 40, marginBottom: 12 }}>⏳</div>En attente de la configuration du sprint par l'animateur…<button onClick={signOut} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, margin: "24px auto 0", padding: "10px 24px", borderRadius: 10, border: "1.5px solid " + (T.cardBorder || "#E8C9A8"), background: "none", color: T.textMuted, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Se déconnecter</button></div></div>;
 
       const overallStatus = [fb.status, act.status].includes("error") ? "error" : [fb.status, act.status].includes("saving") ? "saving" : [fb.status, act.status].includes("connecting") ? "connecting" : "synced";
-      const addFeedback = () => { if (!feedbackText.trim()) return; fb.pushItem({ id: Date.now(), category: selectedCat, text: feedbackText.trim(), author: userName, authorUid: user.uid }); setFeedbackText(""); feedbackInputRef.current?.focus(); };
-      const addAction = () => { if (!actionDesc.trim() || actions.length >= 3) return; act.pushItem({ id: Date.now(), description: actionDesc.trim(), responsable: actionResp.trim(), done: false, authorUid: user.uid }); setActionDesc(""); setActionResp(""); };
+      const addRetour = () => { if (!retourText.trim()) return; fb.pushItem({ id: Date.now(), category: selectedCat, text: retourText.trim(), author: userName, authorUid: user.uid }); setRetourText(""); retourInputRef.current?.focus(); };
+      const addActions = () => { if (!actionsDesc.trim() || actions.length >= 3) return; act.pushItem({ id: Date.now(), description: actionsDesc.trim(), responsable: actionsResp.trim(), done: false, authorUid: user.uid }); setActionsDesc(""); setActionsResp(""); };
 
       const CONFLUENCE_FUNCTION_URL = "https://clinquant-strudel-f17230.netlify.app/.netlify/functions/export-confluence";
 
@@ -659,11 +659,11 @@
             <ConcertCurtain visible={!!activeCurtain} catLabel={activeCurtain ? T.ratingCatLabels[activeCurtain] : ""} />
 
             {/* ==================== SECTIONS DYNAMIQUES (basées sur T.sectionOrder) ==================== */}
-            {(() => { const A={regles:"rules",ressenti:"vibecheck",retours:"feedbacks",colonnes:"feedbacks",saisie:"feedbackInput",resume:"summary",fin:"outro"}; const seen=new Set(); const normalized=(T.sectionOrder||["rules","vibecheck","feedbacks","feedbackInput","roti","summary","outro"]).map(id=>A[id]||id).filter(id=>{if(id==="header"||id==="actions"||seen.has(id))return false;seen.add(id);return true;}); if(!seen.has("feedbackInput")){const ri=normalized.indexOf("roti");normalized.splice(ri>=0?ri:normalized.length,0,"feedbackInput");} if(!seen.has("feedbacks")){const fi=normalized.indexOf("feedbackInput");normalized.splice(fi>=0?fi:normalized.length,0,"feedbacks");} ["rules","vibecheck","roti","summary","outro"].forEach(id=>{if(!seen.has(id)&&!normalized.includes(id)){const si=normalized.indexOf("summary");normalized.splice(si>=0?si:normalized.length,0,id);}}); return normalized; })().map(sectionId => {
+            {(() => { const A={retours:"colonnes"}; const seen=new Set(); const normalized=(T.sectionOrder||["regles","ressenti","colonnes","saisie","roti","resume","fin"]).map(id=>A[id]||id).filter(id=>{if(id==="header"||id==="actions"||seen.has(id))return false;seen.add(id);return true;}); if(!seen.has("saisie")){const ri=normalized.indexOf("roti");normalized.splice(ri>=0?ri:normalized.length,0,"saisie");} if(!seen.has("colonnes")){const fi=normalized.indexOf("saisie");normalized.splice(fi>=0?fi:normalized.length,0,"colonnes");} ["regles","ressenti","roti","resume","fin"].forEach(id=>{if(!seen.has(id)&&!normalized.includes(id)){const si=normalized.indexOf("resume");normalized.splice(si>=0?si:normalized.length,0,id);}}); return normalized; })().map(sectionId => {
 
               {/* ---- RÈGLES ---- */}
-              if (sectionId === "rules") return (
-              <div key="rules" style={{ borderRadius: 16, padding: 0, marginBottom: 20, border: T.reglesBorderWidth > 0 ? `${T.reglesBorderWidth}px solid ${T.reglesBorderColor||"transparent"}` : "none", position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
+              if (sectionId === "regles") return (
+              <div key="regles" style={{ borderRadius: 16, padding: 0, marginBottom: 20, border: T.reglesBorderWidth > 0 ? `${T.reglesBorderWidth}px solid ${T.reglesBorderColor||"transparent"}` : "none", position: "relative", zIndex: showPitTooltip ? 20 : "auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "stretch", minHeight: isMobile ? "auto" : 220 }}>
                 {bg(T.reglesImage) && <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden" }}><div style={{ position: "absolute", inset: -(T.reglesBlur||0)*2, backgroundImage: bg(T.reglesImage), backgroundSize: T.reglesImageZoom && T.reglesImageZoom !== 100 ? `${T.reglesImageZoom}%` : "cover", backgroundPosition: T.reglesImagePos || "50% 50%", backgroundRepeat: "no-repeat", opacity: T.reglesImageOpacity != null ? T.reglesImageOpacity : 0.5, filter: T.reglesBlur != null ? `blur(${T.reglesBlur}px)` : undefined }} /></div>}
                 <div style={{ position: "absolute", inset: 0, background: isMobile ? T.reglesOverlayMobile : T.reglesOverlayDesktop, borderRadius: 16 }} />
                 <div style={{ flex: 1, padding: isMobile ? "8px 16px 20px" : "0px 28px", zIndex: 1, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
@@ -692,8 +692,8 @@
               </div>);
 
               {/* ---- VIBE CHECK ---- */}
-              if (sectionId === "vibecheck") return (
-              <div key="vibecheck" style={{ marginBottom: 24 }}>
+              if (sectionId === "ressenti") return (
+              <div key="ressenti" style={{ marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
                   {T.ressentiLogo ? <div onClick={() => setZoomedImage(T.ressentiLogo)} style={{ width: isMobile ? 34 : 30, height: isMobile ? 34 : 30, borderRadius: T.ressentiLogoCircle !== false ? "50%" : 8, overflow: "hidden", flexShrink: 0, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}><img src={T.ressentiLogo} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div> : <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFD700"/><stop offset="50%" stopColor="#FFA500"/><stop offset="100%" stopColor="#B8860B"/></linearGradient></defs><rect x="9" y="2" width="6" height="11" rx="3" fill="url(#gG)" stroke="#B8860B" strokeWidth="0.5"/><path d="M5 11a7 7 0 0 0 14 0" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round" fill="none"/><line x1="12" y1="18" x2="12" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/><line x1="9" y1="21" x2="15" y2="21" stroke="url(#gG)" strokeWidth="2" strokeLinecap="round"/></svg>}
                   {T.ressentiTitle}
@@ -721,8 +721,8 @@
               </div>);
 
               {/* ---- 3 COLONNES FEEDBACKS ---- */}
-              if (sectionId === "feedbacks") return (
-              <div key="feedbacks" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
+              if (sectionId === "colonnes") return (
+              <div key="colonnes" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr", gap: isMobile ? 12 : 18, marginBottom: 24 }}>
                 {T.categories.map(cat => { const col = T.columns[cat.id]; const items = getFeedbacksByCategory(cat.id); return (
                   <div key={cat.id} style={{ background: T.cardBg, borderRadius: 16, border: `${col.borderWidth||2}px solid ${col.border}`, minHeight: 130, padding: isMobile ? "14px 12px" : "20px 18px" }}>
                     <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: isDark ? col.border : col.color, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
@@ -746,15 +746,15 @@
               </div>);
 
               {/* ---- FEEDBACK INPUT ---- */}
-              if (sectionId === "feedbackInput") return isReadOnly ? null : (
-              <div key="feedbackInput" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: `${T.cardBorderWidth||1}px solid ${T.cardBorder}`, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
+              if (sectionId === "saisie") return isReadOnly ? null : (
+              <div key="saisie" className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: `${T.cardBorderWidth||1}px solid ${T.cardBorder}`, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>{T.retoursLogo && <div onClick={() => setZoomedImage(T.retoursLogo)} style={{ width: isMobile ? 34 : 30, height: isMobile ? 34 : 30, borderRadius: T.retoursLogoCircle !== false ? "50%" : 8, overflow: "hidden", flexShrink: 0, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}><img src={T.retoursLogo} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>}{T.retoursTitle}</div>
                 <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
                   {T.categories.map(cat => { const col = T.columns[cat.id]; const isActive = selectedCat === cat.id; return (<button key={cat.id} onClick={() => setSelectedCat(cat.id)} style={{ padding: isMobile ? "5px 10px" : "5px 15px", borderRadius: 16, fontSize: isMobile ? 11 : 12.5, cursor: "pointer", fontWeight: isActive ? 700 : 500, transition: "all 0.2s", border: isActive ? "2px solid " + (cat.btnBorderActive || cat.btnActive || col?.color) : "1.5px solid " + (cat.btnBorderInactive || cat.btnInactive || col?.border), background: isActive ? (cat.btnActive || col?.color) : (cat.btnInactive || cat.bg || col?.border || "transparent"), color: isActive ? (cat.btnTextActive || "#fff") : (cat.btnTextInactive || col?.color || "#fff"), opacity: isActive ? 1 : 0.7 }}>{cat.label}</button>); })}
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <input ref={feedbackInputRef} type="text" value={feedbackText} onChange={e => setFeedbackText(e.target.value)} onKeyDown={e => e.key === "Enter" && addFeedback()} placeholder="Votre retour..." style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: `${T.inputBorderWidth||1}px solid ${T.inputBorder}`, fontSize: 13.5, background: T.inputBg, color: T.textPrimary, minWidth: 0 }} onFocus={e => e.target.style.borderColor = T.categories.find(c => c.id === selectedCat).border} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                  <button onClick={addFeedback} style={{ width: 42, height: 42, borderRadius: 10, border: "none", background: T.accent, color: isDark ? "#000" : "#fff", fontSize: 22, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>+</button>
+                  <input ref={retourInputRef} type="text" value={retourText} onChange={e => setRetourText(e.target.value)} onKeyDown={e => e.key === "Enter" && addRetour()} placeholder="Votre retour..." style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: `${T.inputBorderWidth||1}px solid ${T.inputBorder}`, fontSize: 13.5, background: T.inputBg, color: T.textPrimary, minWidth: 0 }} onFocus={e => e.target.style.borderColor = T.categories.find(c => c.id === selectedCat).border} onBlur={e => e.target.style.borderColor = T.inputBorder} />
+                  <button onClick={addRetour} style={{ width: 42, height: 42, borderRadius: 10, border: "none", background: T.accent, color: isDark ? "#000" : "#fff", fontSize: 22, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>+</button>
                 </div>
               </div>);
 
@@ -809,10 +809,10 @@
                     {!isReadOnly && actions.length < 3 && <div className="no-print">
                       <div style={{ borderTop: "1px solid " + T.accent + "33", marginBottom: 10, marginTop: 6 }} />
                       <div style={{ display: "flex", gap: 6, marginBottom: 6, flexDirection: "column" }}>
-                        <input type="text" value={actionDesc} onChange={e => setActionDesc(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Description de l'action..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
-                        <input type="text" value={actionResp} onChange={e => setActionResp(e.target.value)} onKeyDown={e => e.key === "Enter" && addAction()} placeholder="Responsable..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
+                        <input type="text" value={actionsDesc} onChange={e => setActionsDesc(e.target.value)} onKeyDown={e => e.key === "Enter" && addActions()} placeholder="Description de l'action..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
+                        <input type="text" value={actionsResp} onChange={e => setActionsResp(e.target.value)} onKeyDown={e => e.key === "Enter" && addActions()} placeholder="Responsable..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid " + T.inputBorder, fontSize: 12, background: T.inputBg, color: T.textPrimary }} onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.inputBorder} />
                       </div>
-                      <button onClick={addAction} style={{ width: "100%", padding: "9px 0", borderRadius: 8, border: "none", background: "linear-gradient(135deg, " + T.accent + ", " + T.accentDark + ")", color: isDark ? "#000" : "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>+ Ajouter</button>
+                      <button onClick={addActions} style={{ width: "100%", padding: "9px 0", borderRadius: 8, border: "none", background: "linear-gradient(135deg, " + T.accent + ", " + T.accentDark + ")", color: isDark ? "#000" : "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>+ Ajouter</button>
                     </div>}
                     <div style={{ textAlign: "center", fontSize: isMobile ? 10 : 11.5, color: T.accent, fontStyle: "italic", opacity: 0.8, marginTop: "auto", paddingTop: 10, fontSize: T.actionsQuoteStyle?.size || 11, color: T.actionsQuoteColor || T.accent, fontStyle: T.actionsQuoteStyle?.italic !== false ? "italic" : "normal", fontWeight: T.actionsQuoteStyle?.bold ? 700 : 400, textDecoration: T.actionsQuoteStyle?.underline ? "underline" : "none", textAlign: T.actionsQuoteStyle?.align || "center" }}>{T.actionsQuote}</div>
                   </div>
@@ -820,12 +820,12 @@
               </div>);
 
               {/* ---- RÉSUMÉ ---- */}
-              if (sectionId === "summary") return (() => {
+              if (sectionId === "resume") return (() => {
                 const pinnedFeedbacks = feedbacks.filter(f => f.pinned); const pinnedByCat = {}; T.categories.forEach(c => { pinnedByCat[c.id] = pinnedFeedbacks.filter(f => f.category === c.id); });
                 const avgAmbiance = getAvg("ambiance"); const avgSatisfaction = getAvg("satisfaction"); const avgRoti = getAvg("roti");
                 const hasContent = pinnedFeedbacks.length > 0 || actions.length > 0 || avgAmbiance || avgSatisfaction || avgRoti;
                 return (
-                  <div key="summary" style={{ borderRadius: 16, padding: 0, marginBottom: 24, border: T.resumeBorderWidth > 0 ? `${T.resumeBorderWidth}px solid ${T.resumeBorderColor||"transparent"}` : "none", position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
+                  <div key="resume" style={{ borderRadius: 16, padding: 0, marginBottom: 24, border: T.resumeBorderWidth > 0 ? `${T.resumeBorderWidth}px solid ${T.resumeBorderColor||"transparent"}` : "none", position: "relative", overflow: "hidden", minHeight: isMobile ? 120 : 180 }}>
                     {bg(T.resumeImage) && <div style={{ position: "absolute", inset: -(T.resumeBlur||0)*2, backgroundImage: bg(T.resumeImage), backgroundSize: T.resumeImageZoom && T.resumeImageZoom !== 100 ? `${T.resumeImageZoom}%` : "cover", backgroundPosition: T.resumeImagePos || "50% 0%", backgroundRepeat: "no-repeat", opacity: T.resumeImageOpacity != null ? T.resumeImageOpacity : 0.45, filter: T.resumeBlur != null ? `blur(${T.resumeBlur}px)` : undefined }} />}
                     <div style={{ position: "absolute", inset: 0, background: T.resumeOverlay }} />
                     <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "8px 16px 16px" : "0px 28px 20px", display: "flex", flexDirection: "column", minHeight: isMobile ? 120 : 180 }}>
@@ -866,8 +866,8 @@
                   </div>);
               })();
 
-              {/* ---- OUTRO ---- */}
-              if (sectionId === "outro") return (() => {
+              {/* ---- FIN ---- */}
+              if (sectionId === "fin") return (() => {
                 const a1 = getAvg("ambiance"), a2 = getAvg("satisfaction"), a3 = getAvg("roti");
                 const vals = [a1, a2, a3].filter(v => v !== null).map(Number);
                 const globalAvg = vals.length === 3 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
@@ -875,7 +875,7 @@
                 const msgData = T.fin[finKey];
                 const gifUrl = T.finGifs ? T.finGifs[finKey] : null;
                 return (
-                  <div key="outro" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, border: T.finBorderWidth > 0 ? `${T.finBorderWidth}px solid ${T.finBorderColor||"transparent"}` : "none", minHeight: isMobile ? 140 : 180 }}>
+                  <div key="fin" style={{ borderRadius: 16, position: "relative", overflow: "hidden", marginBottom: 16, border: T.finBorderWidth > 0 ? `${T.finBorderWidth}px solid ${T.finBorderColor||"transparent"}` : "none", minHeight: isMobile ? 140 : 180 }}>
                     {bg(T.finImage) && <div style={{ position: "absolute", inset: 0, overflow: "hidden", borderRadius: 16 }}><div style={{ position: "absolute", inset: -(T.finImageBlur||0)*2, backgroundImage: bg(T.finImage), backgroundSize: T.finImageZoom && T.finImageZoom !== 100 ? `${T.finImageZoom}%` : "cover", backgroundPosition: T.finImagePos || "50% 50%", backgroundRepeat: "no-repeat", opacity: T.finImageOpacity != null ? T.finImageOpacity : 0.45, filter: T.finImageBlur != null ? `blur(${T.finImageBlur}px)` : undefined }} /></div>}
                     {gifUrl && <div style={{ position: "absolute", inset: -Math.max(4, (T.finGifBlur && T.finGifBlur[finKey] != null ? T.finGifBlur[finKey] : 0.5)*2), backgroundImage: `url(${gifUrl})`, backgroundSize: T.finGifZoom && T.finGifZoom[finKey] && T.finGifZoom[finKey] !== 100 ? `${T.finGifZoom[finKey]}%` : "cover", backgroundPosition: T.finGifPos && T.finGifPos[finKey] ? T.finGifPos[finKey] : "center", backgroundRepeat: "no-repeat", filter: `blur(${T.finGifBlur && T.finGifBlur[finKey] != null ? T.finGifBlur[finKey] : 0.5}px)`, opacity: T.finGifOpacity && T.finGifOpacity[finKey] != null ? T.finGifOpacity[finKey] : 0.75 }} />}
                     <div style={{ position: "absolute", inset: 0, background: (T.finGifOverlay && T.finGifOverlay[finKey]) || T.finOverlay || T.resumeOverlay }} />
