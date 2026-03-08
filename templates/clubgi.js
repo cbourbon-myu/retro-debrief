@@ -11,70 +11,70 @@
   "name": "📺 Club GI",
   "desc": "Rétro dessins animés 80-2000",
   "preview": "📺🌈⚡",
-  "dark": false,
+  "dark": true,
   "emojiLogo": "📺",
-  "emojiMeeting": "🎬",
-  "emojiStart": "⚡",
-  "emojiRessenti": "⚡",
+  "emojiMeeting": "👥",
+  "emojiStart": "▶️",
+  "emojiRessenti": "🎭",
   "emojiRetours": "📬",
   "emojiAfter": "⚽",
   "emojiActions": "🗺️",
-  "emojiResume": "📺",
-  "emojiFin": "🎬",
-  "loginBg": "#F0E6FF",
-  "loginCardBg": "#FDF4FF",
-  "loginBtnBg": "#FDF4FF",
-  "loginBtnBorder": "#D8B4FE",
-  "loginBtnHover": "#E9D5FF",
+  "emojiResume": "🏆",
+  "emojiFin": "📼",
+  "loginBg": "#0F0A1A",
+  "loginCardBg": "#1A1128",
+  "loginBtnBg": "#1A1128",
+  "loginBtnBorder": "#4C1D95",
+  "loginBtnHover": "#2E1065",
   "appLogo": "assets/clubgi/site-logo.jpg",
   "appLogoCircle": true,
   "iconMeeting": "assets/clubgi/participant.jpg",
   "iconMeetingCircle": true,
   "iconStart": "assets/clubgi/partager.jpg",
   "iconStartCircle": true,
-  "accent": "#A855F7",
-  "accentDark": "#7C3AED",
-  "accentLight": "#F3E8FF",
-  "bodyBg": "#F0E6FF",
-  "cardBg": "#FEFBFF",
-  "cardBorder": "#E0CBFF",
+  "accent": "#EC4899",
+  "accentDark": "#DB2777",
+  "accentLight": "#1C0A2E",
+  "bodyBg": "#0A0612",
+  "cardBg": "#110B1E",
+  "cardBorder": "#2D1B4E",
   "cardBorderWidth": 2,
-  "inputBg": "#FEFBFF",
-  "inputBorder": "#D8B4FE",
+  "inputBg": "#1A1128",
+  "inputBorder": "#3B2066",
   "inputBorderWidth": 1,
-  "textPrimary": "#1E1B2E",
-  "textSecondary": "#6B5B95",
-  "textMuted": "#9F8EC0",
-  "progressBg": "#E9D5FF",
+  "textPrimary": "#E5E7EB",
+  "textSecondary": "#9CA3AF",
+  "textMuted": "#6B7280",
+  "progressBg": "#1F1235",
   "appTitle": "CLUB GI",
   "subtitle": "Tous les 15 jours • Entre le Mississippi, les toits de Tokyo et les terrains de foot ! 📺✨",
   "titreImage": "url(\"assets/clubgi/titre.jpg\")",
   "titreImagePos": "50% 50%",
   "titreImageZoom": 100,
-  "titreGradient": "linear-gradient(135deg, rgba(88,28,135,0.85) 0%, rgba(126,34,206,0.75) 40%, rgba(192,132,252,0.4) 100%)",
+  "titreGradient": "linear-gradient(135deg, rgba(10,6,18,0.9) 0%, rgba(26,17,40,0.85) 40%, rgba(76,29,149,0.5) 100%)",
   "titreBlur": 0,
-  "titreImageOpacity": 0.5,
+  "titreImageOpacity": 0.6,
   "reglesTitle": "",
   "reglesLogo": "assets/clubgi/regles-logo.jpg",
   "reglesLogoCircle": false,
   "reglesName": "Les Règles du Club",
-  "reglesColor": "#7C3AED",
-  "reglesDotColor": "#EC4899",
+  "reglesColor": "#C084FC",
+  "reglesDotColor": "#F472B6",
   "reglesImage": "url(\"assets/clubgi/regles-image.jpg\")",
   "reglesImagePos": "50% 50%",
   "reglesImageZoom": 100,
   "reglesBlur": 0,
-  "reglesImageOpacity": 0.4,
+  "reglesImageOpacity": 0.5,
   "reglesBorderColor": "transparent",
   "reglesBorderWidth": 0,
-  "reglesOverlayMobile": "linear-gradient(to bottom, #F0E6FF 0%, #F0E6FF 50%, rgba(240,230,255,0.7) 70%, rgba(240,230,255,0.3) 100%)",
-  "reglesOverlayDesktop": "linear-gradient(to right, #F0E6FF 0%, #F0E6FF 40%, rgba(240,230,255,0.7) 60%, rgba(240,230,255,0.2) 80%, transparent 100%)",
+  "reglesOverlayMobile": "linear-gradient(to bottom, #0A0612 0%, #0A0612 50%, rgba(10,6,18,0.7) 70%, rgba(10,6,18,0.3) 100%)",
+  "reglesOverlayDesktop": "linear-gradient(to right, #0A0612 0%, #0A0612 40%, rgba(10,6,18,0.7) 60%, rgba(10,6,18,0.2) 80%, transparent 100%)",
   "reglesItems": [
-    "Comme Tom et Huck sur le radeau, on respecte chaque membre de l'équipage",
-    "Comme Olive et Tom sur le terrain, on vise le ballon, pas le joueur",
-    "Chaque membre du Club apporte son talent, comme les Cat's Eyes en mission",
-    "Ce qui se dit au Club reste au Club, comme les secrets des Cat's Eyes",
-    "Tel Olivier Atton, on identifie l'ouverture et on fonce au but !"
+    "Respect mutuel entre tous les membres du Club",
+    "Focus sur les process, pas les personnes",
+    "Chaque membre du Club apporte son talent",
+    "Ce qui se dit au Club reste au Club",
+    "On identifie, on propose, on fonce au but !"
   ],
   "tooltip": {
     "title": "⚡ Sagesse de Tom Sawyer ⚡",
@@ -109,23 +109,23 @@
   },
   "categories": [
     {
-      "bg": "#FDF4FF",
-      "border": "#A855F7",
-      "color": "#6B21A8",
+      "bg": "#1C0A2E",
+      "border": "#EC4899",
+      "color": "#F472B6",
       "id": "rock",
       "label": "⚡ Tir de l'Aigle"
     },
     {
-      "bg": "#FFF1F2",
-      "border": "#EC4899",
-      "color": "#9D174D",
+      "bg": "#1A0A0A",
+      "border": "#EF4444",
+      "color": "#FCA5A5",
       "id": "fausse",
       "label": "💥 Carton rouge"
     },
     {
-      "bg": "#EFF6FF",
-      "border": "#3B82F6",
-      "color": "#1D4ED8",
+      "bg": "#0A1128",
+      "border": "#06B6D4",
+      "color": "#67E8F9",
       "id": "ameliorer",
       "label": "🌈 Mi-temps"
     }
@@ -133,63 +133,63 @@
   "columns": {
     "rock": {
       "title": "⚡ Les Tirs de l'Aigle du sprint",
-      "color": "#6B21A8",
-      "border": "#A855F7",
+      "color": "#F472B6",
+      "border": "#EC4899",
       "borderWidth": 2,
       "image": "assets/clubgi/colonne-1-logo.jpg",
       "imageCircle": false
     },
     "fausse": {
       "title": "💥 Les Cartons rouges du sprint",
-      "color": "#9D174D",
-      "border": "#EC4899",
+      "color": "#FCA5A5",
+      "border": "#EF4444",
       "borderWidth": 2,
       "image": "assets/clubgi/colonne-2-logo.jpg",
       "imageCircle": false
     },
     "ameliorer": {
       "title": "🌈 La Mi-temps : ce qu'on ajuste",
-      "color": "#1D4ED8",
-      "border": "#3B82F6",
+      "color": "#67E8F9",
+      "border": "#06B6D4",
       "borderWidth": 2,
       "image": "assets/clubgi/colonne-3-logo.jpg",
       "imageCircle": false
     }
   },
-  "ressentiTitle": "Le Sondage du Club",
+  "ressentiTitle": "L'Enquête secrète",
   "ressentiLogo": "assets/clubgi/ressenti-logo.jpg",
   "ressentiLogoCircle": false,
   "ressentiChecks": [
     {
-      "bg": "#FDF4FF",
-      "border": "#A855F7",
-      "color": "#6B21A8",
+      "bg": "#1C0A2E",
+      "border": "#EC4899",
+      "color": "#F472B6",
       "id": "ambiance",
       "image": "assets/clubgi/ressenti-1-logo.jpg",
       "imageStyle": {
         "height": 30,
         "width": 30
       },
-      "label": "Ambiance du Club"
+      "label": "Ambiance de l'équipe"
     },
     {
-      "bg": "#FFF7ED",
-      "border": "#F59E0B",
-      "color": "#B45309",
+      "bg": "#1A0A28",
+      "border": "#A855F7",
+      "color": "#C084FC",
       "id": "satisfaction",
       "image": "assets/clubgi/ressenti-2-logo.jpg",
       "imageStyle": {
         "height": 30,
         "width": 30
       },
-      "label": "Esprit d'équipe"
+      "label": "Mon niveau de jeu"
     }
   ],
   "roti": {
     "id": "roti",
     "label": "ROTI",
-    "color": "#9D174D",
-    "bg": "#FCE7F3",
+    "color": "#F472B6",
+    "bg": "#1C0A2E",
     "border": "#EC4899",
     "borderWidth": 2,
     "image": "assets/clubgi/roti-logo.jpg",
@@ -202,7 +202,7 @@
   "ratingLabels": [
     null,
     {
-      "emoji": "💀",
+      "emoji": "🟥",
       "label": "Hors-jeu total",
       "image": "assets/clubgi/vote-1.jpg"
     },
@@ -212,24 +212,24 @@
       "image": "assets/clubgi/vote-2.jpg"
     },
     {
-      "emoji": "⚔️",
+      "emoji": "⚽",
       "label": "Apprenti ailier",
       "image": "assets/clubgi/vote-3.jpg"
     },
     {
-      "emoji": "⚡",
+      "emoji": "🦅",
       "label": "Milieu de terrain",
       "image": "assets/clubgi/vote-4.jpg"
     },
     {
-      "emoji": "🌟",
+      "emoji": "🏆",
       "label": "Ballon d'Or",
       "image": "assets/clubgi/vote-5.jpg"
     }
   ],
   "ratingCatLabels": {
-    "ambiance": "Ambiance du Club",
-    "satisfaction": "Esprit d'équipe",
+    "ambiance": "Ambiance de l'équipe",
+    "satisfaction": "Mon niveau de jeu",
     "roti": "ROTI"
   },
   "retoursTitle": "Le Courrier du Club",
@@ -276,7 +276,7 @@
   "resumeImageOpacity": 0.6,
   "resumeBorderColor": "transparent",
   "resumeBorderWidth": 0,
-  "resumeOverlay": "linear-gradient(135deg, rgba(88,28,135,0.9) 0%, rgba(126,34,206,0.8) 50%, rgba(88,28,135,0.9) 100%)",
+  "resumeOverlay": "linear-gradient(135deg, rgba(10,6,18,0.92) 0%, rgba(26,17,40,0.85) 50%, rgba(10,6,18,0.92) 100%)",
   "resumeContentVAlign": "center",
   "resumeContentHAlign": "center",
   "resumePinHint": "Épingle des retours avec 📌 pour le Best-Of",
@@ -339,7 +339,7 @@
     "high": 0
   },
   "finGifOverlay": {
-    "none": "linear-gradient(135deg, rgba(88,28,135,0.9) 0%, rgba(126,34,206,0.8) 50%, rgba(88,28,135,0.9) 100%)",
+    "none": "linear-gradient(135deg, rgba(10,6,18,0.9) 0%, rgba(26,17,40,0.8) 50%, rgba(10,6,18,0.9) 100%)",
     "low": "",
     "mid": "",
     "high": ""
@@ -352,7 +352,7 @@
   "finBorderColor": "transparent",
   "finBorderWidth": 0,
   "finContentVAlign": "center",
-  "finOverlay": "linear-gradient(135deg, rgba(88,28,135,0.9) 0%, rgba(126,34,206,0.8) 50%, rgba(88,28,135,0.9) 100%)",
+  "finOverlay": "linear-gradient(135deg, rgba(10,6,18,0.9) 0%, rgba(26,17,40,0.8) 50%, rgba(10,6,18,0.9) 100%)",
   "mdTitle": "📺 Club GI — Sprint",
   "mdSummary": "🌟 Best-Of du Club",
   "mdGlobal": "Sondage du Club",
@@ -369,7 +369,7 @@
     "resume",
     "fin"
   ],
-  "actionsBorder": "#A855F7",
+  "actionsBorder": "#EC4899",
   "finStyle": {
     "none": {
       "align": "center",
