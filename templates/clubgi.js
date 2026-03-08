@@ -113,26 +113,26 @@
       "border": "#EC4899",
       "color": "#F472B6",
       "id": "rock",
-      "label": "⚡ Tir de l'Aigle"
+      "label": "⚡ Aventure réussie"
     },
     {
       "bg": "#1A0A0A",
       "border": "#EF4444",
       "color": "#FCA5A5",
       "id": "fausse",
-      "label": "💥 Carton rouge"
+      "label": "💥 Embûche"
     },
     {
       "bg": "#0A1128",
       "border": "#06B6D4",
       "color": "#67E8F9",
       "id": "ameliorer",
-      "label": "🌈 Mi-temps"
+      "label": "🌈 Modif du radeau"
     }
   ],
   "columns": {
     "rock": {
-      "title": "⚡ Les Tirs de l'Aigle du sprint",
+      "title": "⚡ Les aventures réussies",
       "color": "#F472B6",
       "border": "#EC4899",
       "borderWidth": 2,
@@ -140,7 +140,7 @@
       "imageCircle": false
     },
     "fausse": {
-      "title": "💥 Les Cartons rouges du sprint",
+      "title": "💥 Les embûches du chemin",
       "color": "#FCA5A5",
       "border": "#EF4444",
       "borderWidth": 2,
@@ -148,7 +148,7 @@
       "imageCircle": false
     },
     "ameliorer": {
-      "title": "🌈 La Mi-temps : ce qu'on ajuste",
+      "title": "🌈 Les modifs du radeau",
       "color": "#67E8F9",
       "border": "#06B6D4",
       "borderWidth": 2,
@@ -232,7 +232,7 @@
     "satisfaction": "Mon niveau de jeu",
     "roti": "ROTI"
   },
-  "retoursTitle": "Le Courrier du Club",
+  "retoursTitle": "Le Carnet de Tom",
   "retoursLogo": "assets/clubgi/retours-logo.jpg",
   "retoursLogoCircle": false,
   "actionsTitle": "Prochaine mission du Club",
