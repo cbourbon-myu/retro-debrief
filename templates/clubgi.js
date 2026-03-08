@@ -70,8 +70,8 @@
   "reglesOverlayMobile": "linear-gradient(to bottom, #0A0612 0%, #0A0612 50%, rgba(10,6,18,0.7) 70%, rgba(10,6,18,0.3) 100%)",
   "reglesOverlayDesktop": "linear-gradient(to right, #0A0612 0%, #0A0612 40%, rgba(10,6,18,0.7) 60%, rgba(10,6,18,0.2) 80%, transparent 100%)",
   "reglesItems": [
-    "Respect mutuel entre tous les membres du Club",
-    "Focus sur les process, pas les personnes",
+    "Sur le radeau, on respecte chaque membre de l'équipage",
+    "Sur le terrain, on vise le ballon, pas le joueur",
     "Chaque membre du Club apporte son talent",
     "Ce qui se dit au Club reste au Club",
     "On identifie, on propose, on fonce au but !"
