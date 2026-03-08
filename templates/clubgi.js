@@ -202,28 +202,28 @@
   "ratingLabels": [
     null,
     {
-      "emoji": "🟥",
-      "label": "Hors-jeu total",
+      "emoji": "💀",
+      "label": "Naufrage",
       "image": "assets/clubgi/vote-1.jpg"
     },
     {
       "emoji": "😤",
-      "label": "Tacle dangereux",
+      "label": "Journée de corvée",
       "image": "assets/clubgi/vote-2.jpg"
     },
     {
-      "emoji": "⚽",
-      "label": "Apprenti ailier",
+      "emoji": "🎣",
+      "label": "Pêche tranquille",
       "image": "assets/clubgi/vote-3.jpg"
     },
     {
-      "emoji": "🦅",
-      "label": "Milieu de terrain",
+      "emoji": "🗺️",
+      "label": "Trésor en vue",
       "image": "assets/clubgi/vote-4.jpg"
     },
     {
-      "emoji": "🏆",
-      "label": "Ballon d'Or",
+      "emoji": "🏝️",
+      "label": "L'île au trésor",
       "image": "assets/clubgi/vote-5.jpg"
     }
   ],
