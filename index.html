@@ -253,6 +253,8 @@
             if (val.feedbacks) Object.values(val.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
             if (val.ratings) Object.values(val.ratings).forEach(r => { if (r.author) participants.add(r.author); });
             setExistingRetro({ fbCount, actCount, ratCount, participants: [...participants].sort() });
+            // Auto-enregistre dans l'index si pas encore présent
+            db.ref("config/retroHistory/" + date).set(true);
           } else {
             setExistingRetro(false);
           }
@@ -265,23 +267,26 @@
         setShowArchive(true);
         setArchiveLoading(true);
         try {
-          const snap = await db.ref("/").once("value");
-          const val = snap.val() || {};
-          const keys = Object.keys(val).filter(k => k.startsWith("retro-"));
+          const histSnap = await db.ref("config/retroHistory").once("value");
+          const history = histSnap.val() || {};
+          const dateKeys = Object.keys(history);
           const list = [];
-          for (const k of keys) {
-            const dateStr = k.replace("retro-", "");
-            const retroData = val[k];
-            const fbCount = retroData.feedbacks ? Object.keys(retroData.feedbacks).length : 0;
-            const actCount = retroData.actions ? Object.keys(retroData.actions).length : 0;
-            const ratCount = retroData.ratings ? Object.keys(retroData.ratings).length : 0;
-            const participants = new Set();
-            if (retroData.feedbacks) Object.values(retroData.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
-            if (retroData.ratings) Object.values(retroData.ratings).forEach(r => { if (r.author) participants.add(r.author); });
-            if (fbCount || actCount || ratCount) {
-              const label = new Date(dateStr + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-              list.push({ dateKey: dateStr, label, fbCount, actCount, ratCount, participants: [...participants].sort() });
-            }
+          for (const dateStr of dateKeys) {
+            try {
+              const retroSnap = await db.ref("retro-" + dateStr).once("value");
+              const retroData = retroSnap.val();
+              if (!retroData) continue;
+              const fbCount = retroData.feedbacks ? Object.keys(retroData.feedbacks).length : 0;
+              const actCount = retroData.actions ? Object.keys(retroData.actions).length : 0;
+              const ratCount = retroData.ratings ? Object.keys(retroData.ratings).length : 0;
+              const participants = new Set();
+              if (retroData.feedbacks) Object.values(retroData.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
+              if (retroData.ratings) Object.values(retroData.ratings).forEach(r => { if (r.author) participants.add(r.author); });
+              if (fbCount || actCount || ratCount) {
+                const label = new Date(dateStr + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+                list.push({ dateKey: dateStr, label, fbCount, actCount, ratCount, participants: [...participants].sort() });
+              }
+            } catch(e) { console.warn("Retro load error for " + dateStr, e); }
           }
           list.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
           setArchiveList(list);
@@ -452,7 +457,7 @@
 
       const sprintDateLabel = sprintDateKey ? new Date(sprintDateKey + "T12:00:00").toLocaleDateString("fr-FR") : "—";
       const needsDateSetup = isAdmin && cfgLoaded && sprintDateKey !== todayKey;
-      const saveSprintDate = (date, tplId) => { if (db) { db.ref("config/sprintDate").set(date); db.ref("config/templateId").set(tplId || getTemplateList()[0]?.id); } };
+      const saveSprintDate = (date, tplId) => { if (db) { db.ref("config/sprintDate").set(date); db.ref("config/templateId").set(tplId || getTemplateList()[0]?.id); db.ref("config/retroHistory/" + date).set(true); } };
 
       const [readOnlyRetroKey, setReadOnlyRetroKey] = useState(null);
       const effectiveRetroKey = readOnlyRetroKey || sprintDateKey || todayKey;
@@ -599,22 +604,26 @@
         const key = sprintDateKey;
         if (!db || !key) return;
         const wait = ms => new Promise(r => setTimeout(r, ms));
-        setDeletingRetro({ step: 1, total: 4, label: "Réinitialisation de la config…" });
+        setDeletingRetro({ step: 1, total: 5, label: "Réinitialisation de la config…" });
         await wait(300);
         try { await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("sprintDate:", e.message); }
-        setDeletingRetro({ step: 2, total: 4, label: "Suppression du thème…" });
+        setDeletingRetro({ step: 2, total: 5, label: "Suppression du thème…" });
         await wait(300);
         try { await db.ref("config/templateId").set(null); } catch(e) { console.warn("templateId:", e.message); }
-        setDeletingRetro({ step: 3, total: 4, label: "Suppression des données…" });
+        setDeletingRetro({ step: 3, total: 5, label: "Suppression des données…" });
         await wait(300);
         try { await db.ref("retro-" + key).set(null); } catch(e) { console.warn("retro:", e.message); }
-        setDeletingRetro({ step: 4, total: 4, label: "C'est propre ! 🤘" });
+        setDeletingRetro({ step: 4, total: 5, label: "Nettoyage de l'index…" });
+        await wait(300);
+        try { await db.ref("config/retroHistory/" + key).remove(); } catch(e) { console.warn("retroHistory:", e.message); }
+        setDeletingRetro({ step: 5, total: 5, label: "C'est propre ! 🤘" });
         await wait(1000);
         window.location.reload();
       };
 
       const closeSession = async () => {
         if (!confirm("Clore cette session de rétro et se déconnecter ?\nLes données sont conservées.")) return;
+        try { if (db && sprintDateKey) await db.ref("config/retroHistory/" + sprintDateKey).set(true); } catch(e) { console.warn("retroHistory:", e.message); }
         try { if (db) await db.ref("config/sprintDate").set(null); } catch(e) { console.warn("closeSession:", e.message); }
         await signOut();
         window.location.reload();
@@ -625,22 +634,25 @@
         if (!db) return;
         setArchiveLoading(true);
         try {
-          const snap = await db.ref("/").once("value");
-          const val = snap.val() || {};
-          const keys = Object.keys(val).filter(k => k.startsWith("retro-") && (!sprintDateKey || k !== `retro-${sprintDateKey}`));
+          const histSnap = await db.ref("config/retroHistory").once("value");
+          const history = histSnap.val() || {};
+          const dateKeys = Object.keys(history).filter(d => !sprintDateKey || d !== sprintDateKey);
           const list = [];
-          for (const k of keys) {
-            const dateStr = k.replace("retro-", "");
-            const retroData = val[k];
-            const fbCount = retroData.feedbacks ? Object.keys(retroData.feedbacks).length : 0;
-            const actCount = retroData.actions ? Object.keys(retroData.actions).length : 0;
-            const ratCount = retroData.ratings ? Object.keys(retroData.ratings).length : 0;
-            const participants = new Set();
-            if (retroData.feedbacks) Object.values(retroData.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
-            if (retroData.ratings) Object.values(retroData.ratings).forEach(r => { if (r.author) participants.add(r.author); });
-            if (fbCount || actCount || ratCount) {
-              list.push({ dateKey: dateStr, fbCount, actCount, ratCount, participants: [...participants].sort(), label: new Date(dateStr + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) });
-            }
+          for (const dateStr of dateKeys) {
+            try {
+              const retroSnap = await db.ref("retro-" + dateStr).once("value");
+              const retroData = retroSnap.val();
+              if (!retroData) continue;
+              const fbCount = retroData.feedbacks ? Object.keys(retroData.feedbacks).length : 0;
+              const actCount = retroData.actions ? Object.keys(retroData.actions).length : 0;
+              const ratCount = retroData.ratings ? Object.keys(retroData.ratings).length : 0;
+              const participants = new Set();
+              if (retroData.feedbacks) Object.values(retroData.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
+              if (retroData.ratings) Object.values(retroData.ratings).forEach(r => { if (r.author) participants.add(r.author); });
+              if (fbCount || actCount || ratCount) {
+                list.push({ dateKey: dateStr, fbCount, actCount, ratCount, participants: [...participants].sort(), label: new Date(dateStr + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) });
+              }
+            } catch(e) { console.warn("Retro load error for " + dateStr, e); }
           }
           list.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
           setRetroArchiveList(list);
