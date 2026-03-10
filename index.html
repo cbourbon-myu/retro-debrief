@@ -714,11 +714,29 @@
 
       const [curtainTriggered, setCurtainTriggered] = useState({});
       const [showResults, setShowResults] = useState({});
+
+      // Listen for forced reveals from Firebase (synced across all participants)
+      const [forcedReveals, setForcedReveals] = useState({});
+      useEffect(() => {
+        if (!isAuthed || !db || !effectiveRetroKey) return;
+        const ref = db.ref(`retro-${effectiveRetroKey}/reveal`);
+        const handler = ref.on("value", (snap) => {
+          setForcedReveals(snap.val() || {});
+        });
+        return () => ref.off("value", handler);
+      }, [isAuthed, effectiveRetroKey]);
+
+      // Trigger curtain when everyone voted OR when admin forces reveal
       useEffect(() => {
         ["ambiance", "satisfaction", "roti"].forEach(catId => {
-          if (everyoneVotedFor(catId) && !curtainTriggered[catId]) { setCurtainTriggered(prev => ({ ...prev, [catId]: true })); setTimeout(() => setShowResults(prev => ({ ...prev, [catId]: true })), 1600); }
+          const shouldReveal = everyoneVotedFor(catId) || forcedReveals[catId];
+          if (shouldReveal && !curtainTriggered[catId]) {
+            const delay = forcedReveals[catId]?.delay || 0;
+            setTimeout(() => setCurtainTriggered(prev => ({ ...prev, [catId]: true })), delay);
+            setTimeout(() => setShowResults(prev => ({ ...prev, [catId]: true })), delay + 1600);
+          }
         });
-      }, [ratingsRaw, connectedUids.length]);
+      }, [ratingsRaw, connectedUids.length, forcedReveals]);
 
       const activeCurtain = ["ambiance","satisfaction","roti"].find(id => curtainTriggered[id] && !showResults[id]) || null;
       const submitRating = (catId, score) => { const existing = getMyRating(catId); if (existing) rat.updateItem(existing.id, { score }); else rat.pushItem({ id: Date.now(), category: catId, score, author: userName, authorUid: user.uid }); };
@@ -751,14 +769,17 @@
       const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !readOnlyRetroKey);
       const timerBlocked = (phase) => timer.isEnded && timer.activePhase === phase;
       const forceRevealPhase = (phase) => {
+        if (!db || !effectiveRetroKey) return;
         const cats = phase === "votes" ? ["ambiance", "satisfaction"] : phase === "roti" ? ["roti"] : [];
+        const updates = {};
         cats.forEach((catId, i) => {
           if (!showResults[catId]) {
-            const delay = i * 2800; // stagger curtains: 0ms for first, 2800ms for second
-            setTimeout(() => setCurtainTriggered(prev => ({ ...prev, [catId]: true })), delay);
-            setTimeout(() => setShowResults(prev => ({ ...prev, [catId]: true })), delay + 1600);
+            updates[catId] = { forced: true, delay: i * 2800 };
           }
         });
+        if (Object.keys(updates).length) {
+          db.ref(`retro-${effectiveRetroKey}/reveal`).update(updates);
+        }
       };
 
       // --- GUARD SCREENS ---
@@ -827,7 +848,7 @@
         await Promise.all(actions.map(item => act.removeItem(item.id)));
         await Promise.all((Array.isArray(ratingsRaw) ? ratingsRaw : []).map(item => rat.removeItem(item.id)));
         setCurtainTriggered({}); setShowResults({});
-        if (db) db.ref(`retro-${sprintDateKey}/confluenceUrl`).remove(); setConfluenceUrl(null);
+        if (db) { db.ref(`retro-${sprintDateKey}/confluenceUrl`).remove(); db.ref(`retro-${sprintDateKey}/reveal`).remove(); db.ref(`retro-${sprintDateKey}/timer`).remove(); } setConfluenceUrl(null);
       };
 
       const deleteRetro = async () => {
