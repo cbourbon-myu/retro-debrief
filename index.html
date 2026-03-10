@@ -669,7 +669,7 @@
       useEffect(() => { if (T) document.body.style.background = T.bodyBg; }, [T?.bodyBg]);
 
       const sprintDateLabel = sprintDateKey ? new Date(sprintDateKey + "T12:00:00").toLocaleDateString("fr-FR") : "—";
-      const needsDateSetup = isAdmin && cfgLoaded && sprintDateKey !== todayKey;
+      const needsDateSetup = isAdmin && cfgLoaded && !sprintDateKey;
       const saveSprintDate = (date, tplId) => { if (db) { db.ref("config/sprintDate").set(date); db.ref("config/templateId").set(tplId || getTemplateList()[0]?.id); db.ref("config/retroHistory/" + date).set(true); } };
 
       const [readOnlyRetroKey, setReadOnlyRetroKey] = useState(null);
