@@ -627,7 +627,7 @@
         try {
           const snap = await db.ref("/").once("value");
           const val = snap.val() || {};
-          const keys = Object.keys(val).filter(k => k.startsWith("retro-") && k !== `retro-${sprintDateKey}`);
+          const keys = Object.keys(val).filter(k => k.startsWith("retro-") && (!sprintDateKey || k !== `retro-${sprintDateKey}`));
           const list = [];
           for (const k of keys) {
             const dateStr = k.replace("retro-", "");
@@ -638,7 +638,9 @@
             const participants = new Set();
             if (retroData.feedbacks) Object.values(retroData.feedbacks).forEach(f => { if (f.author) participants.add(f.author); });
             if (retroData.ratings) Object.values(retroData.ratings).forEach(r => { if (r.author) participants.add(r.author); });
-            list.push({ dateKey: dateStr, fbCount, actCount, ratCount, participants: [...participants].sort(), label: new Date(dateStr + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) });
+            if (fbCount || actCount || ratCount) {
+              list.push({ dateKey: dateStr, fbCount, actCount, ratCount, participants: [...participants].sort(), label: new Date(dateStr + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) });
+            }
           }
           list.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
           setRetroArchiveList(list);
@@ -757,10 +759,10 @@
                   <div style={{ padding: "6px 14px 8px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}><div style={{ fontSize: 12, color: "#fff", fontWeight: 600 }}>{user.displayName}</div><div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.45)", marginTop: 2, wordBreak: "break-all" }}>{user.email}</div></div>
                   {isAdmin && <>
                     <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontWeight: 700, padding: "8px 14px 4px", textTransform: "uppercase", letterSpacing: 1 }}>Admin</div>
-                    <button onClick={() => { setShowThemePicker(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🎭 Changer le thème</button>
+                    {!isReadOnly && <button onClick={() => { setShowThemePicker(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🎭 Changer le thème</button>}
                     <button onClick={() => { loadRetroArchive(); setShowRetroArchive(true); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#A78BFA", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>📂 Consulter une rétro passée</button>
-                    <button onClick={() => { closeSession(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#10B981", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>✅ Clore la session</button>
-                    <button onClick={() => { deleteRetro(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🗑️ Supprimer la rétro</button>
+                    {!isReadOnly && <button onClick={() => { closeSession(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#10B981", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>✅ Clore la session</button>}
+                    {!isReadOnly && <button onClick={() => { deleteRetro(); setShowUserMenu(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}>🗑️ Supprimer la rétro</button>}
                     <div style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", margin: "4px 0" }} />
                   </>}
                   <button onClick={signOut} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 14px", background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontSize: 12, fontWeight: 500, fontFamily: "inherit", textAlign: "left" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "none"}><img src="assets/logout.png" style={{ width: 16, height: 16, objectFit: "contain" }} /> Se déconnecter</button>
@@ -1097,7 +1099,7 @@
                   </button>
                 ))}
               </div>}
-              {isReadOnly && <button onClick={() => { exitReadOnly(); setShowRetroArchive(false); }} style={{ width: "100%", padding: "10px 0", borderRadius: 10, border: "1.5px solid #7C3AED", background: "none", color: "#7C3AED", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 8 }}>↩ Revenir à la rétro en cours</button>}
+              {isReadOnly && <button onClick={() => { exitReadOnly(); setShowRetroArchive(false); }} style={{ width: "100%", padding: "10px 0", borderRadius: 10, border: "1.5px solid #7C3AED", background: "none", color: "#7C3AED", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 8 }}>{sprintDateKey ? "↩ Revenir à la rétro en cours" : "↩ Retour à l'accueil"}</button>}
               <button onClick={() => setShowRetroArchive(false)} style={{ width: "100%", padding: "12px 0", borderRadius: 10, border: "1.5px solid " + (T.cardBorder || "#E8C9A8"), background: "none", color: T.textSecondary, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Fermer</button>
             </div>
           </div>}
