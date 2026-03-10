@@ -365,8 +365,8 @@
                 {!archiveLoading && archiveList.length > 0 && <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 300, overflowY: "auto", overflowX: "hidden" }}>
                   {archiveList.map(r => (
                     <button key={r.dateKey} onClick={() => onConsult(r.dateKey)} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, cursor: "pointer", border: "1.5px solid " + (sel?.cardBorder || "#E8C9A8"), background: sel?.cardBg || "#FFFAF5", textAlign: "left", transition: "all 0.2s" }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = "#7C3AED"; e.currentTarget.style.transform = "scale(1.01)"; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = sel?.cardBorder || "#E8C9A8"; e.currentTarget.style.transform = "scale(1)"; }}>
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = "#7C3AED"; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = sel?.cardBorder || "#E8C9A8"; }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div style={{ fontSize: 14, fontWeight: 700, color: sel?.textPrimary || "#1F2937", marginBottom: 4, textTransform: "capitalize" }}>{r.label}</div>
                         <span style={{ fontSize: 9, background: "#7C3AED22", color: "#7C3AED", padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>LECTURE SEULE</span>
