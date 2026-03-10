@@ -743,6 +743,10 @@
       useEffect(() => { const h = (e) => { if (!e.target.closest("[data-dropdown]")) { setShowPresence(false); setShowUserMenu(false); setShowIntegration(false); } }; document.addEventListener("click", h); return () => document.removeEventListener("click", h); }, []);
       useEffect(() => { if (!isAuthed || !db || !sprintDateKey) return; const ref = db.ref(`retro-${sprintDateKey}/confluenceUrl`); ref.on("value", (snap) => { setConfluenceUrl(snap.val() || null); }); return () => ref.off("value"); }, [isAuthed, sprintDateKey]);
 
+      // --- TIMER (before guards to maintain hook order) ---
+      const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !readOnlyRetroKey);
+      const timerBlocked = (phase) => timer.isEnded && timer.activePhase === phase;
+
       // --- GUARD SCREENS ---
       if (!T) return <div style={{ minHeight: "100vh", background: getTemplateList()[0]?.bodyBg || "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ fontSize: 18, color: "#EF4444" }}>⚠️ Aucun template chargé. Vérifiez les fichiers templates/*.js</div></div>;
       if (deletingRetro) return <div style={{ minHeight: "100vh", background: T.bodyBg || "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ textAlign: "center", maxWidth: 320, width: "100%" }}><div style={{ fontSize: 48, marginBottom: 16, animation: "pulse 1s ease-in-out infinite" }}>🥁</div><div style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary || "#1F2937", marginBottom: 12 }}>{deletingRetro.label}</div><div style={{ background: T.progressBg || "#F0DCC8", borderRadius: 8, height: 10, overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 8, background: `linear-gradient(90deg, ${T.accent || "#F97316"}, ${T.accentDark || "#EA580C"})`, width: Math.round(deletingRetro.step / deletingRetro.total * 100) + "%", transition: "width 0.4s ease" }} /></div><div style={{ fontSize: 11, color: T.textMuted || "#9CA3AF", marginTop: 8 }}>Étape {deletingRetro.step}/{deletingRetro.total}</div></div></div>;
@@ -891,8 +895,6 @@
       };
 
       const isReadOnly = !!readOnlyRetroKey;
-      const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !isReadOnly);
-      const timerBlocked = (phase) => timer.isEnded && timer.activePhase === phase;
 
       const changeTemplate = async (newTplId) => {
         if (db) await db.ref("config/templateId").set(newTplId);
