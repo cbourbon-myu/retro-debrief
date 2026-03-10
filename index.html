@@ -321,6 +321,10 @@
         db.ref(`retro-${retroKey}/timer`).update({ status: "running", endTime: Date.now() + (timerState.pausedRemaining || 0), pausedRemaining: null });
       };
       const stopTimer = () => {
+        if (!db || !retroKey || !timerState) return;
+        db.ref(`retro-${retroKey}/timer`).update({ status: "ended" });
+      };
+      const clearTimer = () => {
         if (!db || !retroKey) return;
         db.ref(`retro-${retroKey}/timer`).set(null);
       };
@@ -330,7 +334,7 @@
       const isPaused = timerState?.status === "paused";
       const isEnded = timerState?.status === "ended";
 
-      return { remaining, activePhase, isRunning, isPaused, isEnded, flash, startTimer, pauseTimer, resumeTimer, stopTimer, timerState };
+      return { remaining, activePhase, isRunning, isPaused, isEnded, flash, startTimer, pauseTimer, resumeTimer, stopTimer, clearTimer, timerState };
     }
 
     // --- FORMAT TIMER ---
@@ -342,7 +346,7 @@
     }
 
     // --- TIMER ADMIN CONTROL (inline, for each phase) ---
-    function TimerAdminControl({ phase, timer, isMobile, T }) {
+    function TimerAdminControl({ phase, timer, isMobile, T, onClose }) {
       const [editSeconds, setEditSeconds] = useState(TIMER_PHASES[phase].defaultSeconds);
       const [showSetup, setShowSetup] = useState(false);
       const isActive = timer.activePhase === phase;
@@ -352,7 +356,7 @@
         return (
           <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", padding: "8px 0" }}>
             <span style={{ fontSize: 13, color: "#EF4444", fontWeight: 700 }}>⏰ Temps écoulé !</span>
-            <button onClick={timer.stopTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #EF4444", background: "none", color: "#EF4444", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✕ Fermer</button>
+            <button onClick={() => { if (onClose) onClose(phase); timer.clearTimer(); }} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #10B981", background: "#10B981", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✅ Révéler les résultats</button>
           </div>
         );
       }
@@ -746,6 +750,16 @@
       // --- TIMER (before guards to maintain hook order) ---
       const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !readOnlyRetroKey);
       const timerBlocked = (phase) => timer.isEnded && timer.activePhase === phase;
+      const forceRevealPhase = (phase) => {
+        const cats = phase === "votes" ? ["ambiance", "satisfaction"] : phase === "roti" ? ["roti"] : [];
+        cats.forEach((catId, i) => {
+          if (!showResults[catId]) {
+            const delay = i * 2800; // stagger curtains: 0ms for first, 2800ms for second
+            setTimeout(() => setCurtainTriggered(prev => ({ ...prev, [catId]: true })), delay);
+            setTimeout(() => setShowResults(prev => ({ ...prev, [catId]: true })), delay + 1600);
+          }
+        });
+      };
 
       // --- GUARD SCREENS ---
       if (!T) return <div style={{ minHeight: "100vh", background: getTemplateList()[0]?.bodyBg || "#F8EBDB", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ fontSize: 18, color: "#EF4444" }}>⚠️ Aucun template chargé. Vérifiez les fichiers templates/*.js</div></div>;
@@ -1068,7 +1082,7 @@
                   {logoOrEmoji(T.ressentiLogo, EMOJI_RESSENTI, isMobile ? 34 : 30, T.ressentiLogoCircle)}
                   {T.ressentiTitle}
                 </div>
-                {isAdmin && !isReadOnly && <div style={{ position: "relative", zIndex: 20 }}><TimerAdminControl phase="votes" timer={timer} isMobile={isMobile} T={T} /></div>}
+                {isAdmin && !isReadOnly && <div style={{ position: "relative", zIndex: 20 }}><TimerAdminControl phase="votes" timer={timer} isMobile={isMobile} T={T} onClose={forceRevealPhase} /></div>}
                 {!isAdmin && !isReadOnly && timer.activePhase === "votes" && (timer.isRunning || timer.isPaused) && <div style={{ textAlign: "center", padding: "6px 0", fontSize: 11, color: T.textMuted }}>⏱️ {formatTimer(timer.remaining)}</div>}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
                   {T.ressentiChecks.map(cat => { const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); const shouldShowResults = isReadOnly ? (voters.length > 0) : showResults[cat.id]; return (
@@ -1122,7 +1136,7 @@
               <div key={"saisie-" + templateId} className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: `${T.cardBorderWidth||1}px solid ${T.cardBorder}`, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24, position: "relative" }}>
                 {timerBlocked("retours") && <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.6)", borderRadius: 16, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(2px)" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", background: "#fff", padding: "8px 20px", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>⏰ Temps écoulé</span></div>}
                 <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>{logoOrEmoji(T.retoursLogo, EMOJI_RETOURS, isMobile ? 34 : 30, T.retoursLogoCircle)}{T.retoursTitle}</div>
-                {isAdmin && <div style={{ position: "relative", zIndex: 20 }}><TimerAdminControl phase="retours" timer={timer} isMobile={isMobile} T={T} /></div>}
+                {isAdmin && <div style={{ position: "relative", zIndex: 20 }}><TimerAdminControl phase="retours" timer={timer} isMobile={isMobile} T={T} onClose={forceRevealPhase} /></div>}
                 {!isAdmin && timer.activePhase === "retours" && (timer.isRunning || timer.isPaused) && <div style={{ textAlign: "center", padding: "6px 0", fontSize: 11, color: T.textMuted }}>⏱️ {formatTimer(timer.remaining)}</div>}
                 <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
                   {T.categories.map(cat => { const col = T.columns[cat.id]; const isActive = selectedCat === cat.id; const colC = isDark ? col?.border : col?.color; return (<button key={cat.id} onClick={() => setSelectedCat(cat.id)} style={{ padding: isMobile ? "5px 10px" : "5px 15px", borderRadius: 16, fontSize: isMobile ? 11 : 12.5, cursor: "pointer", fontWeight: isActive ? 700 : 500, transition: "all 0.2s", border: isActive ? "2px solid " + (cat.btnBorderActive || cat.btnActive || colC) : "1.5px solid " + (cat.btnBorderInactive || cat.btnInactive || col?.border), background: isActive ? (cat.btnActive || colC) : (cat.btnInactive || cat.bg || col?.border || "transparent"), color: isActive ? (cat.btnTextActive || "#fff") : (cat.btnTextInactive || colC || "#fff"), opacity: isActive ? 1 : 0.7 }}>{cat.label}</button>); })}
@@ -1140,7 +1154,7 @@
                   {logoOrEmoji(T.afterLogo, EMOJI_AFTER, isMobile ? 34 : 30, T.afterLogoCircle)}
                   {T.afterTitle}
                 </div>
-                {isAdmin && !isReadOnly && <div style={{ position: "relative", zIndex: 20 }}><TimerAdminControl phase="roti" timer={timer} isMobile={isMobile} T={T} /></div>}
+                {isAdmin && !isReadOnly && <div style={{ position: "relative", zIndex: 20 }}><TimerAdminControl phase="roti" timer={timer} isMobile={isMobile} T={T} onClose={forceRevealPhase} /></div>}
                 {!isAdmin && !isReadOnly && timer.activePhase === "roti" && (timer.isRunning || timer.isPaused) && <div style={{ textAlign: "center", padding: "6px 0", fontSize: 11, color: T.textMuted }}>⏱️ {formatTimer(timer.remaining)}</div>}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, alignItems: "stretch" }}>
                   {/* ROTI */}
