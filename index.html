@@ -225,6 +225,219 @@
       return admins;
     }
 
+    // --- TIMER DEFAULTS ---
+    const TIMER_PHASES = {
+      votes: { label: "Vibe Check", emoji: "🎤", defaultSeconds: 300 },
+      retours: { label: "Retours", emoji: "💬", defaultSeconds: 600 },
+      roti: { label: "ROTI", emoji: "📊", defaultSeconds: 180 },
+    };
+
+    // --- TIMER SOUND (Web Audio API) ---
+    function playTimerEndSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.15);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.8);
+          osc.start(ctx.currentTime + i * 0.15);
+          osc.stop(ctx.currentTime + i * 0.15 + 0.8);
+        });
+        // Final gong
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.type = "triangle";
+        osc2.frequency.setValueAtTime(261.63, ctx.currentTime + 0.6);
+        gain2.gain.setValueAtTime(0.4, ctx.currentTime + 0.6);
+        gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2.5);
+        osc2.start(ctx.currentTime + 0.6);
+        osc2.stop(ctx.currentTime + 2.5);
+      } catch(e) { console.warn("Audio error:", e); }
+    }
+
+    // --- TIMER HOOK (synced via Firebase) ---
+    function useTimer(retroKey, enabled) {
+      const [timerState, setTimerState] = useState(null); // { phase, endTime, pausedRemaining, status }
+      const [remaining, setRemaining] = useState(null);
+      const [flash, setFlash] = useState(false);
+      const endedRef = useRef(new Set());
+
+      useEffect(() => {
+        if (!enabled || !db || !retroKey) return;
+        const ref = db.ref(`retro-${retroKey}/timer`);
+        const handler = ref.on("value", (snap) => {
+          setTimerState(snap.val() || null);
+        });
+        return () => ref.off("value", handler);
+      }, [retroKey, enabled]);
+
+      // Countdown tick
+      useEffect(() => {
+        if (!timerState || timerState.status !== "running") {
+          if (timerState?.status === "paused") setRemaining(Math.ceil((timerState.pausedRemaining || 0) / 1000));
+          else if (timerState?.status === "ended") setRemaining(0);
+          else setRemaining(null);
+          return;
+        }
+        const tick = () => {
+          const left = Math.max(0, Math.ceil((timerState.endTime - Date.now()) / 1000));
+          setRemaining(left);
+          if (left <= 0 && !endedRef.current.has(timerState.phase + timerState.endTime)) {
+            endedRef.current.add(timerState.phase + timerState.endTime);
+            playTimerEndSound();
+            setFlash(true);
+            setTimeout(() => setFlash(false), 2000);
+            if (db && retroKey) db.ref(`retro-${retroKey}/timer/status`).set("ended");
+          }
+        };
+        tick();
+        const interval = setInterval(tick, 250);
+        return () => clearInterval(interval);
+      }, [timerState]);
+
+      const startTimer = (phase, seconds) => {
+        if (!db || !retroKey) return;
+        endedRef.current.delete(phase);
+        db.ref(`retro-${retroKey}/timer`).set({
+          phase, status: "running", endTime: Date.now() + seconds * 1000,
+          pausedRemaining: null, duration: seconds,
+        });
+      };
+      const pauseTimer = () => {
+        if (!db || !retroKey || !timerState || timerState.status !== "running") return;
+        const left = Math.max(0, timerState.endTime - Date.now());
+        db.ref(`retro-${retroKey}/timer`).update({ status: "paused", pausedRemaining: left });
+      };
+      const resumeTimer = () => {
+        if (!db || !retroKey || !timerState || timerState.status !== "paused") return;
+        db.ref(`retro-${retroKey}/timer`).update({ status: "running", endTime: Date.now() + (timerState.pausedRemaining || 0), pausedRemaining: null });
+      };
+      const stopTimer = () => {
+        if (!db || !retroKey) return;
+        db.ref(`retro-${retroKey}/timer`).set(null);
+      };
+
+      const activePhase = timerState?.phase || null;
+      const isRunning = timerState?.status === "running";
+      const isPaused = timerState?.status === "paused";
+      const isEnded = timerState?.status === "ended";
+
+      return { remaining, activePhase, isRunning, isPaused, isEnded, flash, startTimer, pauseTimer, resumeTimer, stopTimer, timerState };
+    }
+
+    // --- FORMAT TIMER ---
+    function formatTimer(seconds) {
+      if (seconds == null) return "--:--";
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m}:${s.toString().padStart(2, "0")}`;
+    }
+
+    // --- TIMER ADMIN CONTROL (inline, for each phase) ---
+    function TimerAdminControl({ phase, timer, isMobile, T }) {
+      const [editSeconds, setEditSeconds] = useState(TIMER_PHASES[phase].defaultSeconds);
+      const [showSetup, setShowSetup] = useState(false);
+      const isActive = timer.activePhase === phase;
+      const phaseInfo = TIMER_PHASES[phase];
+
+      if (timer.isEnded && isActive) {
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", padding: "8px 0" }}>
+            <span style={{ fontSize: 13, color: "#EF4444", fontWeight: 700 }}>⏰ Temps écoulé !</span>
+            <button onClick={timer.stopTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #EF4444", background: "none", color: "#EF4444", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✕ Fermer</button>
+          </div>
+        );
+      }
+
+      if (isActive && (timer.isRunning || timer.isPaused)) {
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", padding: "8px 0" }}>
+            <span style={{ fontSize: 22, fontWeight: 900, fontFamily: "monospace", color: timer.remaining <= 30 ? "#EF4444" : (T?.accent || "#F97316"), animation: timer.remaining <= 10 ? "pulse 0.5s infinite" : "none" }}>{formatTimer(timer.remaining)}</span>
+            {timer.isPaused && <button onClick={timer.resumeTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#10B981", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>▶ Reprendre</button>}
+            {timer.isRunning && <button onClick={timer.pauseTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#F59E0B", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏸ Pause</button>}
+            <button onClick={timer.stopTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #EF4444", background: "none", color: "#EF4444", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏹ Stop</button>
+          </div>
+        );
+      }
+
+      if (timer.activePhase && !isActive) return null; // Another phase has the timer
+
+      if (showSetup) {
+        const mins = Math.floor(editSeconds / 60);
+        const secs = editSeconds % 60;
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", padding: "8px 0", flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, color: T?.textSecondary || "#6B7280" }}>⏱️ Durée :</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <input type="number" min="0" max="60" value={mins} onChange={e => setEditSeconds(Math.max(0, parseInt(e.target.value) || 0) * 60 + secs)} style={{ width: 44, padding: "4px 6px", borderRadius: 6, border: "1px solid " + (T?.inputBorder || "#E8C9A8"), fontSize: 13, textAlign: "center", fontFamily: "inherit" }} />
+              <span style={{ fontSize: 11, color: T?.textMuted || "#9CA3AF" }}>min</span>
+              <input type="number" min="0" max="59" value={secs} onChange={e => setEditSeconds(mins * 60 + Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))} style={{ width: 44, padding: "4px 6px", borderRadius: 6, border: "1px solid " + (T?.inputBorder || "#E8C9A8"), fontSize: 13, textAlign: "center", fontFamily: "inherit" }} />
+              <span style={{ fontSize: 11, color: T?.textMuted || "#9CA3AF" }}>sec</span>
+            </div>
+            <button onClick={() => { timer.startTimer(phase, editSeconds); setShowSetup(false); }} style={{ padding: "5px 14px", borderRadius: 8, border: "none", background: T?.accent || "#F97316", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>▶ Go !</button>
+            <button onClick={() => setShowSetup(false)} style={{ padding: "5px 10px", borderRadius: 8, border: "1px solid " + (T?.cardBorder || "#E8C9A8"), background: "none", color: T?.textMuted || "#9CA3AF", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✕</button>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{ display: "flex", justifyContent: "center", padding: "6px 0" }}>
+          <button onClick={() => setShowSetup(true)} style={{ padding: "5px 16px", borderRadius: 8, border: "1.5px dashed " + (T?.accent || "#F97316"), background: "none", color: T?.accent || "#F97316", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s", display: "flex", alignItems: "center", gap: 6 }}
+            onMouseEnter={e => { e.currentTarget.style.background = (T?.accentLight || "#FFF7ED"); }}
+            onMouseLeave={e => { e.currentTarget.style.background = "none"; }}>
+            ⏱️ Lancer le chrono {phaseInfo.emoji} {phaseInfo.label}
+          </button>
+        </div>
+      );
+    }
+
+    // --- TIMER FLOATING BAR ---
+    function TimerFloatingBar({ timer, isMobile }) {
+      if (!timer.activePhase) return null;
+      const phaseInfo = TIMER_PHASES[timer.activePhase];
+      const isUrgent = timer.remaining != null && timer.remaining <= 30;
+      const isEnded = timer.isEnded;
+
+      return (
+        <div className="no-print" style={{
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 9990,
+          background: isEnded ? "linear-gradient(135deg, #DC2626, #B91C1C)" : isUrgent ? "linear-gradient(135deg, #F59E0B, #D97706)" : "linear-gradient(135deg, #1c0a0a, #3b0f0f)",
+          padding: isMobile ? "8px 12px" : "8px 24px",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: isMobile ? 8 : 16,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+          animation: isEnded ? "pulse 0.5s infinite" : (isUrgent ? "pulse 1s infinite" : "none"),
+        }}>
+          <span style={{ fontSize: isMobile ? 14 : 16 }}>{phaseInfo.emoji}</span>
+          <span style={{ fontSize: isMobile ? 11 : 13, color: "#fff", fontWeight: 600 }}>{phaseInfo.label}</span>
+          <span style={{ fontSize: isMobile ? 24 : 30, fontWeight: 900, fontFamily: "monospace", color: isEnded ? "#fff" : isUrgent ? "#fff" : "#F97316", letterSpacing: 2 }}>
+            {isEnded ? "00:00" : formatTimer(timer.remaining)}
+          </span>
+          {timer.isPaused && <span style={{ fontSize: 10, background: "rgba(255,255,255,0.2)", color: "#fff", padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>PAUSE</span>}
+          {isEnded && <span style={{ fontSize: isMobile ? 11 : 13, color: "#FDE047", fontWeight: 700 }}>⏰ Temps écoulé !</span>}
+        </div>
+      );
+    }
+
+    // --- TIMER FLASH OVERLAY ---
+    function TimerFlashOverlay({ flash }) {
+      if (!flash) return null;
+      return (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 9989, pointerEvents: "none",
+          background: "rgba(239,68,68,0.15)",
+          animation: "timerFlash 2s ease-out forwards",
+        }} />
+      );
+    }
+
     // --- SPRINT DATE + TEMPLATE SELECTION ---
     function SprintDateScreen({ onSave, onConsult }) {
       const [date, setDate] = React.useState(new Date().toISOString().split("T")[0]);
@@ -365,8 +578,8 @@
                 {!archiveLoading && archiveList.length > 0 && <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 300, overflowY: "auto", overflowX: "hidden" }}>
                   {archiveList.map(r => (
                     <button key={r.dateKey} onClick={() => onConsult(r.dateKey)} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, cursor: "pointer", border: "1.5px solid " + (sel?.cardBorder || "#E8C9A8"), background: sel?.cardBg || "#FFFAF5", textAlign: "left", transition: "all 0.2s" }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = "#7C3AED"; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = sel?.cardBorder || "#E8C9A8"; }}>
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = "#7C3AED"; e.currentTarget.style.transform = "scale(1.01)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = sel?.cardBorder || "#E8C9A8"; e.currentTarget.style.transform = "scale(1)"; }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div style={{ fontSize: 14, fontWeight: 700, color: sel?.textPrimary || "#1F2937", marginBottom: 4, textTransform: "capitalize" }}>{r.label}</div>
                         <span style={{ fontSize: 9, background: "#7C3AED22", color: "#7C3AED", padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>LECTURE SEULE</span>
@@ -678,6 +891,8 @@
       };
 
       const isReadOnly = !!readOnlyRetroKey;
+      const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !isReadOnly);
+      const timerBlocked = (phase) => timer.isEnded && timer.activePhase === phase;
 
       const changeTemplate = async (newTplId) => {
         if (db) await db.ref("config/templateId").set(newTplId);
@@ -710,7 +925,9 @@
       // ║                      RENDER                          ║
       // ╚══════════════════════════════════════════════════════╝
       return (
-        <div style={{ minHeight: "100vh", zoom: isMobile ? 1 : 1.15 }}>
+        <div style={{ minHeight: "100vh", zoom: isMobile ? 1 : 1.15, paddingTop: timer.activePhase ? (isMobile ? 40 : 44) : 0 }}>
+          <TimerFloatingBar timer={timer} isMobile={isMobile} />
+          <TimerFlashOverlay flash={timer.flash} />
 
           {/* ==================== HEADER ==================== */}
           <div style={{ position: "relative", zIndex: 10, padding: isMobile ? "16px 12px" : "32px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: isMobile ? 8 : 12, minHeight: isMobile ? 80 : 110 }}>
@@ -843,11 +1060,14 @@
 
               {/* ---- VIBE CHECK ---- */}
               if (sectionId === "ressenti") return (
-              <div key={"ressenti-" + templateId} style={{ marginBottom: 24 }}>
+              <div key={"ressenti-" + templateId} style={{ marginBottom: 24, position: "relative" }}>
+                {timerBlocked("votes") && <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.6)", borderRadius: 16, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(2px)" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", background: "#fff", padding: "8px 20px", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>⏰ Temps écoulé</span></div>}
                 <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: T.textPrimary, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
                   {logoOrEmoji(T.ressentiLogo, EMOJI_RESSENTI, isMobile ? 34 : 30, T.ressentiLogoCircle)}
                   {T.ressentiTitle}
                 </div>
+                {isAdmin && !isReadOnly && <TimerAdminControl phase="votes" timer={timer} isMobile={isMobile} T={T} />}
+                {!isAdmin && !isReadOnly && timer.activePhase === "votes" && (timer.isRunning || timer.isPaused) && <div style={{ textAlign: "center", padding: "6px 0", fontSize: 11, color: T.textMuted }}>⏱️ {formatTimer(timer.remaining)}</div>}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
                   {T.ressentiChecks.map(cat => { const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); const shouldShowResults = isReadOnly ? (voters.length > 0) : showResults[cat.id]; return (
                     <div key={cat.id} style={{ background: T.cardBg, borderRadius: 14, border: "2px solid " + cat.border, padding: isMobile ? "14px 10px" : "16px 14px", textAlign: "center" }}>
@@ -897,8 +1117,11 @@
 
               {/* ---- FEEDBACK INPUT ---- */}
               if (sectionId === "saisie") return isReadOnly ? null : (
-              <div key={"saisie-" + templateId} className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: `${T.cardBorderWidth||1}px solid ${T.cardBorder}`, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
+              <div key={"saisie-" + templateId} className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: `${T.cardBorderWidth||1}px solid ${T.cardBorder}`, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24, position: "relative" }}>
+                {timerBlocked("retours") && <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.6)", borderRadius: 16, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(2px)" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", background: "#fff", padding: "8px 20px", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>⏰ Temps écoulé</span></div>}
                 <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>{logoOrEmoji(T.retoursLogo, EMOJI_RETOURS, isMobile ? 34 : 30, T.retoursLogoCircle)}{T.retoursTitle}</div>
+                {isAdmin && <TimerAdminControl phase="retours" timer={timer} isMobile={isMobile} T={T} />}
+                {!isAdmin && timer.activePhase === "retours" && (timer.isRunning || timer.isPaused) && <div style={{ textAlign: "center", padding: "6px 0", fontSize: 11, color: T.textMuted }}>⏱️ {formatTimer(timer.remaining)}</div>}
                 <div style={{ display: "flex", gap: isMobile ? 4 : 8, marginBottom: 12, flexWrap: "wrap" }}>
                   {T.categories.map(cat => { const col = T.columns[cat.id]; const isActive = selectedCat === cat.id; const colC = isDark ? col?.border : col?.color; return (<button key={cat.id} onClick={() => setSelectedCat(cat.id)} style={{ padding: isMobile ? "5px 10px" : "5px 15px", borderRadius: 16, fontSize: isMobile ? 11 : 12.5, cursor: "pointer", fontWeight: isActive ? 700 : 500, transition: "all 0.2s", border: isActive ? "2px solid " + (cat.btnBorderActive || cat.btnActive || colC) : "1.5px solid " + (cat.btnBorderInactive || cat.btnInactive || col?.border), background: isActive ? (cat.btnActive || colC) : (cat.btnInactive || cat.bg || col?.border || "transparent"), color: isActive ? (cat.btnTextActive || "#fff") : (cat.btnTextInactive || colC || "#fff"), opacity: isActive ? 1 : 0.7 }}>{cat.label}</button>); })}
                 </div>
@@ -915,10 +1138,13 @@
                   {logoOrEmoji(T.afterLogo, EMOJI_AFTER, isMobile ? 34 : 30, T.afterLogoCircle)}
                   {T.afterTitle}
                 </div>
+                {isAdmin && !isReadOnly && <TimerAdminControl phase="roti" timer={timer} isMobile={isMobile} T={T} />}
+                {!isAdmin && !isReadOnly && timer.activePhase === "roti" && (timer.isRunning || timer.isPaused) && <div style={{ textAlign: "center", padding: "6px 0", fontSize: 11, color: T.textMuted }}>⏱️ {formatTimer(timer.remaining)}</div>}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, alignItems: "stretch" }}>
                   {/* ROTI */}
                   {(() => { const cat = T.roti; const myRating = getMyRating(cat.id); const myScore = myRating?.score; const avg = getAvg(cat.id); const voters = getRatingsForCategory(cat.id); const shouldShowResults = isReadOnly ? (voters.length > 0) : showResults[cat.id]; return (
-                    <div style={{ background: T.cardBg, borderRadius: 14, border: `${T.roti.borderWidth||2}px solid ${cat.border}`, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center" }}>
+                    <div style={{ background: T.cardBg, borderRadius: 14, border: `${T.roti.borderWidth||2}px solid ${cat.border}`, padding: isMobile ? "14px 12px" : "20px 20px", textAlign: "center", position: "relative" }}>
+                      {timerBlocked("roti") && <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.6)", borderRadius: 14, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(2px)" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", background: "#fff", padding: "8px 20px", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>⏰ Temps écoulé</span></div>}
                       <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: isMobile ? 800 : 700, color: cat.color, marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>{cat.image && <div onClick={() => setZoomedImage(cat.image)} style={{ width: 30, height: 30, borderRadius: T.roti.imageCircle !== false ? "50%" : 8, overflow: "hidden", flexShrink: 0, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}><img src={cat.image} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>}<span>{cat.label}</span></div>
                       {!isReadOnly && <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 6 : 10, marginBottom: 12, marginTop: 12 }}>
                         {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + cat.color : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score ? "voteGlow 2s ease-in-out infinite" : "none", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, overflow: "hidden" }} title={T.ratingLabels[score]?.label}>{voteImgOrEmoji(T.ratingLabels[score]?.image, T.ratingLabels[score]?.emoji, {width:"80%",height:"80%",objectFit:"cover",borderRadius:"50%"})}</button>))}
@@ -1055,6 +1281,7 @@
             @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
             @keyframes voteGlow { 0%, 100% { box-shadow: 0 0 12px 4px rgba(249,115,22,0.35), 0 2px 8px rgba(249,115,22,0.5); } 50% { box-shadow: 0 0 18px 6px rgba(249,115,22,0.5), 0 2px 12px rgba(249,115,22,0.65); } }
             @keyframes tooltipFadeIn { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+            @keyframes timerFlash { 0% { opacity: 0.3; } 30% { opacity: 0; } 60% { opacity: 0.2; } 100% { opacity: 0; } }
           `}</style>
           {showThemePicker && <div onClick={() => setShowThemePicker(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 9998, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(6px)", padding: 16 }}>
             <div onClick={e => e.stopPropagation()} style={{ background: T.loginCardBg || T.cardBg, borderRadius: 20, padding: isMobile ? "24px 16px" : "32px 28px", maxWidth: 520, width: "100%", cursor: "default", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", maxHeight: "90vh", overflowY: "auto" }}>
