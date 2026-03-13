@@ -227,7 +227,7 @@
 
     // --- TIMER DEFAULTS ---
     const TIMER_PHASES = {
-      votes: { label: "Vibe Check", emoji: "🎤", defaultSeconds: 300 },
+      votes: { label: "Votes", emoji: "🎤", defaultSeconds: 300 },
       retours: { label: "Retours", emoji: "💬", defaultSeconds: 600 },
       roti: { label: "ROTI", emoji: "📊", defaultSeconds: 180 },
     };
@@ -357,10 +357,15 @@
       if (alreadyRevealed) return null;
 
       if (timer.isEnded && isActive) {
+        const hasResults = phase === "votes" || phase === "roti";
         return (
           <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", padding: "8px 0" }}>
             <span style={{ fontSize: 13, color: "#EF4444", fontWeight: 700 }}>⏰ Temps écoulé !</span>
-            <button onClick={() => { if (onClose) onClose(phase); timer.clearTimer(); }} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #10B981", background: "#10B981", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✅ Révéler les résultats</button>
+            {hasResults ? (
+              <button onClick={() => { if (onClose) onClose(phase); timer.clearTimer(); }} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #10B981", background: "#10B981", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✅ Révéler les résultats</button>
+            ) : (
+              <button onClick={() => { timer.clearTimer(); }} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid " + (T?.accent || "#F97316"), background: "none", color: T?.accent || "#F97316", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>❌ Fermer</button>
+            )}
           </div>
         );
       }
