@@ -727,17 +727,19 @@
         return () => ref.off("value", handler);
       }, [isAuthed, effectiveRetroKey]);
 
-      // Trigger curtain when everyone voted OR when admin forces reveal
+      // Trigger curtain when everyone voted (only if timer was started) OR when admin forces reveal
+      const catToPhase = { ambiance: "votes", satisfaction: "votes", roti: "roti" };
       useEffect(() => {
         ["ambiance", "satisfaction", "roti"].forEach(catId => {
-          const shouldReveal = everyoneVotedFor(catId) || forcedReveals[catId];
+          const phaseStarted = timerStarted[catToPhase[catId]];
+          const shouldReveal = (phaseStarted && everyoneVotedFor(catId)) || forcedReveals[catId];
           if (shouldReveal && !curtainTriggered[catId]) {
             const delay = forcedReveals[catId]?.delay || 0;
             setTimeout(() => setCurtainTriggered(prev => ({ ...prev, [catId]: true })), delay);
             setTimeout(() => setShowResults(prev => ({ ...prev, [catId]: true })), delay + 1600);
           }
         });
-      }, [ratingsRaw, connectedUids.length, forcedReveals]);
+      }, [ratingsRaw, connectedUids.length, forcedReveals, timerStarted]);
 
       const activeCurtain = ["ambiance","satisfaction","roti"].find(id => curtainTriggered[id] && !showResults[id]) || null;
       const submitRating = (catId, score) => { const existing = getMyRating(catId); if (existing) rat.updateItem(existing.id, { score }); else rat.pushItem({ id: Date.now(), category: catId, score, author: userName, authorUid: user.uid }); };
