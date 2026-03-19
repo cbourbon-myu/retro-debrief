@@ -261,7 +261,10 @@
       },
     };
 
-    function playStartSound(preset) {
+    function playStartSound(preset, fileUrl) {
+      if (fileUrl) {
+        try { const a = new Audio(fileUrl); a.volume = 0.5; a.play().catch(() => {}); return; } catch(e) {}
+      }
       try {
         const s = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).start;
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -278,7 +281,10 @@
       } catch(e) { console.warn("Audio start error:", e); }
     }
 
-    function playTickSound(preset, urgency) {
+    function playTickSound(preset, urgency, fileUrl) {
+      if (fileUrl) {
+        try { const a = new Audio(fileUrl); a.volume = 0.3 + urgency * 0.5; a.playbackRate = 0.8 + urgency * 0.6; a.play().catch(() => {}); return; } catch(e) {}
+      }
       try {
         const t = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).tick;
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -292,7 +298,10 @@
       } catch(e) { console.warn("Audio tick error:", e); }
     }
 
-    function playEndSound(preset) {
+    function playEndSound(preset, fileUrl) {
+      if (fileUrl) {
+        try { const a = new Audio(fileUrl); a.volume = 0.7; a.play().catch(() => {}); return; } catch(e) {}
+      }
       try {
         const e = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).end;
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -318,13 +327,18 @@
     }
 
     // --- TIMER HOOK (synced via Firebase) ---
-    function useTimer(retroKey, enabled, soundPreset) {
+    function useTimer(retroKey, enabled, soundCfg) {
       const [timerState, setTimerState] = useState(null);
       const [remaining, setRemaining] = useState(null);
       const [flash, setFlash] = useState(false);
       const endedRef = useRef(new Set());
       const lastTickTimeRef = useRef(0);
       const startSoundPlayedRef = useRef(new Set());
+
+      const sPreset = soundCfg?.preset || "default";
+      const sStartFile = soundCfg?.startFile || "";
+      const sTickFile = soundCfg?.tickFile || "";
+      const sEndFile = soundCfg?.endFile || "";
 
       // Firebase sync: timer state (includes tickSound flag)
       useEffect(() => {
@@ -343,9 +357,9 @@
         const key = timerState.phase + ":" + timerState.endTime;
         if (!startSoundPlayedRef.current.has(key)) {
           startSoundPlayedRef.current.add(key);
-          playStartSound(soundPreset || "default");
+          playStartSound(sPreset, sStartFile);
         }
-      }, [timerState?.status, timerState?.endTime, soundPreset]);
+      }, [timerState?.status, timerState?.endTime, sPreset, sStartFile]);
 
       // Countdown tick + tick sounds + end sound
       useEffect(() => {
@@ -355,7 +369,6 @@
           else setRemaining(null);
           return;
         }
-        const preset = soundPreset || "default";
         const isTickOn = timerState.tickSound === true;
         const tick = () => {
           const left = Math.max(0, Math.ceil((timerState.endTime - Date.now()) / 1000));
@@ -367,7 +380,7 @@
             const now = Date.now();
             if (now - lastTickTimeRef.current >= tickInterval * 0.9) {
               const urgency = 1 - (left / 10);
-              playTickSound(preset, urgency);
+              playTickSound(sPreset, urgency, sTickFile);
               lastTickTimeRef.current = now;
             }
           }
@@ -376,7 +389,7 @@
           if (left <= 0 && !endedRef.current.has(timerState.phase + timerState.endTime)) {
             endedRef.current.add(timerState.phase + timerState.endTime);
             lastTickTimeRef.current = 0;
-            playEndSound(preset);
+            playEndSound(sPreset, sEndFile);
             setFlash(true);
             setTimeout(() => setFlash(false), 2000);
             if (db && retroKey) db.ref(`retro-${retroKey}/timer/status`).set("ended");
@@ -385,7 +398,7 @@
         tick();
         const interval = setInterval(tick, 250);
         return () => clearInterval(interval);
-      }, [timerState, soundPreset]);
+      }, [timerState, sPreset, sTickFile, sEndFile]);
 
       const startTimer = (phase, seconds) => {
         if (!db || !retroKey) return;
@@ -408,7 +421,7 @@
       };
       const stopTimer = () => {
         if (!db || !retroKey || !timerState) return;
-        playEndSound(soundPreset || "default");
+        playEndSound(sPreset, sEndFile);
         setFlash(true);
         setTimeout(() => setFlash(false), 2000);
         db.ref(`retro-${retroKey}/timer`).update({ status: "ended" });
@@ -889,7 +902,7 @@
       useEffect(() => { if (!isAuthed || !db || !sprintDateKey) return; const ref = db.ref(`retro-${sprintDateKey}/confluenceUrl`); ref.on("value", (snap) => { setConfluenceUrl(snap.val() || null); }); return () => ref.off("value"); }, [isAuthed, sprintDateKey]);
 
       // --- TIMER (before guards to maintain hook order) ---
-      const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !readOnlyRetroKey, T?.timerSounds?.preset);
+      const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !readOnlyRetroKey, T?.timerSounds);
       const timerBlocked = (phase) => timer.isEnded && timer.activePhase === phase;
 
       // --- TIMER PHASE TRACKING (synced via Firebase) ---
