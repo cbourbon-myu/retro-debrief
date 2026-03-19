@@ -394,8 +394,8 @@
   },
   "timerSounds": {
     "preset": "rock",
-    "startFile": "",
-    "tickFile": "",
-    "endFile": ""
+    "startFile": "assets/backstage/timer-start.mp3",
+    "tickFile": "assets/backstage/timer-tick.mp3",
+    "endFile": "assets/backstage/timer-end.mp3"
   }
 };})();
