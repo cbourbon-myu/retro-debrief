@@ -384,5 +384,8 @@
       "italic": false,
       "size": 18
     }
+  },
+  "timerSounds": {
+    "preset": "tribal"
   }
 };})();
