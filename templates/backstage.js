@@ -393,6 +393,9 @@
     }
   },
   "timerSounds": {
-    "preset": "rock"
+    "preset": "rock",
+    "startFile": "",
+    "tickFile": "",
+    "endFile": ""
   }
 };})();
