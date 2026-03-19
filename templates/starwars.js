@@ -386,5 +386,7 @@
       "size": 18
     }
   },
-
+  "timerSounds": {
+    "preset": "scifi"
+  }
 };})();
