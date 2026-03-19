@@ -387,6 +387,9 @@
     }
   },
   "timerSounds": {
-    "preset": "scifi"
+    "preset": "scifi",
+    "startFile": "",
+    "tickFile": "",
+    "endFile": ""
   }
 };})();
