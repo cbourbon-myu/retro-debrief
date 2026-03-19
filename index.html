@@ -232,54 +232,128 @@
       roti: { label: "ROTI", emoji: "📊", defaultSeconds: 180 },
     };
 
-    // --- TIMER SOUND (Web Audio API) ---
-    function playTimerEndSound() {
+    // --- TIMER SOUND PRESETS (Web Audio API) ---
+    const SOUND_PRESETS = {
+      default: {
+        start: { notes: [440, 554.37, 659.25], wave: "sine", dur: 0.15, gap: 0.1, vol: 0.25 },
+        tick:  { wave: "sine", baseFreq: 800, freqRange: 400, dur: 0.06, vol: 0.2 },
+        end:   { notes: [523.25, 659.25, 783.99, 1046.50], wave: "sine", gongFreq: 261.63, gongWave: "triangle" },
+      },
+      rock: {
+        start: { notes: [329.63, 440, 329.63], wave: "sawtooth", dur: 0.1, gap: 0.08, vol: 0.2 },
+        tick:  { wave: "sawtooth", baseFreq: 600, freqRange: 500, dur: 0.05, vol: 0.18 },
+        end:   { notes: [329.63, 415.30, 493.88, 659.25], wave: "sawtooth", gongFreq: 164.81, gongWave: "sawtooth" },
+      },
+      scifi: {
+        start: { notes: [300, 500, 800], wave: "square", dur: 0.08, gap: 0.06, vol: 0.15 },
+        tick:  { wave: "square", baseFreq: 600, freqRange: 600, dur: 0.04, vol: 0.12 },
+        end:   { notes: [440, 587.33, 739.99, 987.77], wave: "square", gongFreq: 220, gongWave: "sine" },
+      },
+      tribal: {
+        start: { notes: [80, 120, 80], wave: "triangle", dur: 0.2, gap: 0.12, vol: 0.35 },
+        tick:  { wave: "triangle", baseFreq: 200, freqRange: 300, dur: 0.1, vol: 0.25 },
+        end:   { notes: [130.81, 174.61, 220, 293.66], wave: "triangle", gongFreq: 65.41, gongWave: "triangle" },
+      },
+      arcade: {
+        start: { notes: [523.25, 659.25, 783.99], wave: "square", dur: 0.06, gap: 0.05, vol: 0.15 },
+        tick:  { wave: "square", baseFreq: 500, freqRange: 500, dur: 0.03, vol: 0.1 },
+        end:   { notes: [523.25, 659.25, 783.99, 1046.50], wave: "square", gongFreq: 261.63, gongWave: "square" },
+      },
+    };
+
+    function playStartSound(preset) {
       try {
+        const s = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).start;
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-        notes.forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.type = "sine";
+        s.notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = s.wave;
+          const t = ctx.currentTime + i * (s.dur + s.gap);
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(s.vol, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + s.dur);
+          osc.start(t); osc.stop(t + s.dur + 0.05);
+        });
+      } catch(e) { console.warn("Audio start error:", e); }
+    }
+
+    function playTickSound(preset, urgency) {
+      try {
+        const t = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).tick;
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = t.wave;
+        osc.frequency.setValueAtTime(t.baseFreq + urgency * t.freqRange, ctx.currentTime);
+        gain.gain.setValueAtTime(t.vol * (0.6 + urgency * 0.4), ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + t.dur);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + t.dur + 0.02);
+      } catch(e) { console.warn("Audio tick error:", e); }
+    }
+
+    function playEndSound(preset) {
+      try {
+        const e = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).end;
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        e.notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = e.wave;
           osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.15);
           gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
           gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.8);
           osc.start(ctx.currentTime + i * 0.15);
           osc.stop(ctx.currentTime + i * 0.15 + 0.8);
         });
-        // Final gong
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.type = "triangle";
-        osc2.frequency.setValueAtTime(261.63, ctx.currentTime + 0.6);
+        const osc2 = ctx.createOscillator(), gain2 = ctx.createGain();
+        osc2.connect(gain2); gain2.connect(ctx.destination);
+        osc2.type = e.gongWave;
+        osc2.frequency.setValueAtTime(e.gongFreq, ctx.currentTime + 0.6);
         gain2.gain.setValueAtTime(0.4, ctx.currentTime + 0.6);
         gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2.5);
         osc2.start(ctx.currentTime + 0.6);
         osc2.stop(ctx.currentTime + 2.5);
-      } catch(e) { console.warn("Audio error:", e); }
+      } catch(e) { console.warn("Audio end error:", e); }
     }
 
     // --- TIMER HOOK (synced via Firebase) ---
-    function useTimer(retroKey, enabled) {
-      const [timerState, setTimerState] = useState(null); // { phase, endTime, pausedRemaining, status }
+    function useTimer(retroKey, enabled, soundPreset) {
+      const [timerState, setTimerState] = useState(null);
       const [remaining, setRemaining] = useState(null);
       const [flash, setFlash] = useState(false);
+      const [tickEnabled, setTickEnabled] = useState(false);
       const endedRef = useRef(new Set());
+      const lastTickTimeRef = useRef(0);
+      const startSoundPlayedRef = useRef(new Set());
 
+      // Firebase sync: timer state
       useEffect(() => {
         if (!enabled || !db || !retroKey) return;
         const ref = db.ref(`retro-${retroKey}/timer`);
-        const handler = ref.on("value", (snap) => {
-          setTimerState(snap.val() || null);
-        });
+        const handler = ref.on("value", (snap) => { setTimerState(snap.val() || null); });
         return () => ref.off("value", handler);
       }, [retroKey, enabled]);
 
-      // Countdown tick
+      // Firebase sync: tick sound toggle
+      useEffect(() => {
+        if (!enabled || !db || !retroKey) return;
+        const ref = db.ref(`retro-${retroKey}/timerTickSound`);
+        const handler = ref.on("value", (snap) => { setTickEnabled(snap.val() === true); });
+        return () => ref.off("value", handler);
+      }, [retroKey, enabled]);
+
+      // Start sound: play once when a new timer starts running
+      useEffect(() => {
+        if (!timerState || timerState.status !== "running") return;
+        const key = timerState.phase + ":" + timerState.endTime;
+        if (!startSoundPlayedRef.current.has(key)) {
+          startSoundPlayedRef.current.add(key);
+          playStartSound(soundPreset || "default");
+        }
+      }, [timerState?.status, timerState?.endTime, soundPreset]);
+
+      // Countdown tick + tick sounds + end sound
       useEffect(() => {
         if (!timerState || timerState.status !== "running") {
           if (timerState?.status === "paused") setRemaining(Math.ceil((timerState.pausedRemaining || 0) / 1000));
@@ -287,12 +361,27 @@
           else setRemaining(null);
           return;
         }
+        const preset = soundPreset || "default";
         const tick = () => {
           const left = Math.max(0, Math.ceil((timerState.endTime - Date.now()) / 1000));
           setRemaining(left);
+
+          // Tick sounds: last 15 seconds, accelerating
+          if (tickEnabled && left <= 15 && left > 0) {
+            const tickInterval = left > 10 ? 1000 : left > 5 ? 500 : 250;
+            const now = Date.now();
+            if (now - lastTickTimeRef.current >= tickInterval * 0.9) {
+              const urgency = 1 - (left / 15); // 0 at 15s, ~1 at 1s
+              playTickSound(preset, urgency);
+              lastTickTimeRef.current = now;
+            }
+          }
+
+          // End sound
           if (left <= 0 && !endedRef.current.has(timerState.phase + timerState.endTime)) {
             endedRef.current.add(timerState.phase + timerState.endTime);
-            playTimerEndSound();
+            lastTickTimeRef.current = 0;
+            playEndSound(preset);
             setFlash(true);
             setTimeout(() => setFlash(false), 2000);
             if (db && retroKey) db.ref(`retro-${retroKey}/timer/status`).set("ended");
@@ -301,11 +390,12 @@
         tick();
         const interval = setInterval(tick, 250);
         return () => clearInterval(interval);
-      }, [timerState]);
+      }, [timerState, tickEnabled, soundPreset]);
 
       const startTimer = (phase, seconds) => {
         if (!db || !retroKey) return;
         endedRef.current.delete(phase);
+        startSoundPlayedRef.current.clear();
         db.ref(`retro-${retroKey}/timer`).set({
           phase, status: "running", endTime: Date.now() + seconds * 1000,
           pausedRemaining: null, duration: seconds,
@@ -329,13 +419,17 @@
         if (!db || !retroKey) return;
         db.ref(`retro-${retroKey}/timer`).set(null);
       };
+      const toggleTickSound = () => {
+        if (!db || !retroKey) return;
+        db.ref(`retro-${retroKey}/timerTickSound`).set(!tickEnabled);
+      };
 
       const activePhase = timerState?.phase || null;
       const isRunning = timerState?.status === "running";
       const isPaused = timerState?.status === "paused";
       const isEnded = timerState?.status === "ended";
 
-      return { remaining, activePhase, isRunning, isPaused, isEnded, flash, startTimer, pauseTimer, resumeTimer, stopTimer, clearTimer, timerState };
+      return { remaining, activePhase, isRunning, isPaused, isEnded, flash, tickEnabled, startTimer, pauseTimer, resumeTimer, stopTimer, clearTimer, toggleTickSound, timerState };
     }
 
     // --- FORMAT TIMER ---
@@ -372,11 +466,12 @@
 
       if (isActive && (timer.isRunning || timer.isPaused)) {
         return (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", padding: "8px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", padding: "8px 0", flexWrap: "wrap" }}>
             <span style={{ fontSize: 22, fontWeight: 900, fontFamily: "monospace", color: timer.remaining <= 30 ? "#EF4444" : (T?.accent || "#F97316"), animation: timer.remaining <= 10 ? "pulse 0.5s infinite" : "none" }}>{formatTimer(timer.remaining)}</span>
             {timer.isPaused && <button onClick={timer.resumeTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#10B981", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>▶ Reprendre</button>}
             {timer.isRunning && <button onClick={timer.pauseTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#F59E0B", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏸ Pause</button>}
             <button onClick={timer.stopTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #EF4444", background: "none", color: "#EF4444", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏹ Stop</button>
+            <button onClick={timer.toggleTickSound} title={timer.tickEnabled ? "Désactiver le décompte sonore" : "Activer le décompte sonore (15 dernières sec.)"} style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid " + (timer.tickEnabled ? "#10B981" : (T?.cardBorder || "#E8C9A8")), background: timer.tickEnabled ? "rgba(16,185,129,0.1)" : "none", color: timer.tickEnabled ? "#10B981" : (T?.textMuted || "#9CA3AF"), fontSize: 14, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, transition: "all 0.15s" }}>{timer.tickEnabled ? "🔔" : "🔕"}</button>
           </div>
         );
       }
@@ -396,6 +491,7 @@
               <span style={{ fontSize: 11, color: T?.textMuted || "#9CA3AF" }}>sec</span>
             </div>
             <button onClick={() => { timer.startTimer(phase, editSeconds); setShowSetup(false); }} style={{ padding: "5px 14px", borderRadius: 8, border: "none", background: T?.accent || "#F97316", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>▶ Go !</button>
+            <button onClick={timer.toggleTickSound} title={timer.tickEnabled ? "Décompte sonore activé" : "Décompte sonore désactivé"} style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid " + (timer.tickEnabled ? "#10B981" : (T?.cardBorder || "#E8C9A8")), background: timer.tickEnabled ? "rgba(16,185,129,0.1)" : "none", color: timer.tickEnabled ? "#10B981" : (T?.textMuted || "#9CA3AF"), fontSize: 14, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, transition: "all 0.15s" }}>{timer.tickEnabled ? "🔔" : "🔕"}</button>
             <button onClick={() => setShowSetup(false)} style={{ padding: "5px 10px", borderRadius: 8, border: "1px solid " + (T?.cardBorder || "#E8C9A8"), background: "none", color: T?.textMuted || "#9CA3AF", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✕</button>
           </div>
         );
@@ -418,6 +514,7 @@
       if (!timer.activePhase) return null;
       const phaseInfo = TIMER_PHASES[timer.activePhase];
       const isUrgent = timer.remaining != null && timer.remaining <= 30;
+      const isTicking = timer.tickEnabled && timer.remaining != null && timer.remaining <= 15 && timer.remaining > 0 && timer.isRunning;
       const isEnded = timer.isEnded;
 
       return (
@@ -434,6 +531,7 @@
           <span style={{ fontSize: isMobile ? 24 : 30, fontWeight: 900, fontFamily: "monospace", color: isEnded ? "#fff" : isUrgent ? "#fff" : "#F97316", letterSpacing: 2 }}>
             {isEnded ? "00:00" : formatTimer(timer.remaining)}
           </span>
+          {isTicking && <span style={{ fontSize: isMobile ? 12 : 14, animation: "pulse 0.5s infinite" }}>🔔</span>}
           {timer.isPaused && <span style={{ fontSize: 10, background: "rgba(255,255,255,0.2)", color: "#fff", padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>PAUSE</span>}
           {isEnded && <span style={{ fontSize: isMobile ? 11 : 13, color: "#FDE047", fontWeight: 700 }}>⏰ Temps écoulé !</span>}
         </div>
@@ -778,7 +876,7 @@
       useEffect(() => { if (!isAuthed || !db || !sprintDateKey) return; const ref = db.ref(`retro-${sprintDateKey}/confluenceUrl`); ref.on("value", (snap) => { setConfluenceUrl(snap.val() || null); }); return () => ref.off("value"); }, [isAuthed, sprintDateKey]);
 
       // --- TIMER (before guards to maintain hook order) ---
-      const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !readOnlyRetroKey);
+      const timer = useTimer(effectiveRetroKey, isAuthed && cfgLoaded && !readOnlyRetroKey, T?.timerSounds?.preset);
       const timerBlocked = (phase) => timer.isEnded && timer.activePhase === phase;
 
       // --- TIMER PHASE TRACKING (synced via Firebase) ---
