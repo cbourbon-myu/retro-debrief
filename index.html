@@ -507,12 +507,24 @@
     }
 
     // --- TIMER FLOATING BAR ---
-    function TimerFloatingBar({ timer, isMobile }) {
+    function TimerFloatingBar({ timer, isMobile, T }) {
       if (!timer.activePhase) return null;
       const phaseInfo = TIMER_PHASES[timer.activePhase];
       const isUrgent = timer.remaining != null && timer.remaining <= 30;
       const isTicking = timer.tickEnabled && timer.remaining != null && timer.remaining <= 10 && timer.remaining > 0 && timer.isRunning;
       const isEnded = timer.isEnded;
+
+      // Map phase to theme image + emoji fallback
+      const phaseImgMap = T ? {
+        votes: { src: T.ressentiLogo, emoji: T.emojiRessenti || "🎤", circle: T.ressentiLogoCircle },
+        retours: { src: T.retoursLogo, emoji: T.emojiRetours || "💬", circle: T.retoursLogoCircle },
+        roti: { src: T.roti?.image, emoji: "📊", circle: T.roti?.imageCircle },
+      } : {};
+      const phaseImg = phaseImgMap[timer.activePhase];
+      const [imgOk, setImgOk] = useState(true);
+      useEffect(() => { setImgOk(true); }, [phaseImg?.src]);
+
+      const iconSize = isMobile ? 22 : 26;
 
       return (
         <div className="no-print" style={{
@@ -523,7 +535,11 @@
           boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
           animation: isEnded ? "pulse 0.5s infinite" : (isUrgent ? "pulse 1s infinite" : "none"),
         }}>
-          <span style={{ fontSize: isMobile ? 14 : 16 }}>{phaseInfo.emoji}</span>
+          {phaseImg?.src && imgOk ? (
+            <img src={phaseImg.src} onError={() => setImgOk(false)} style={{ width: iconSize, height: iconSize, borderRadius: phaseImg.circle ? "50%" : 4, objectFit: "cover" }} />
+          ) : (
+            <span style={{ fontSize: isMobile ? 14 : 16 }}>{phaseImg?.emoji || phaseInfo.emoji}</span>
+          )}
           <span style={{ fontSize: isMobile ? 11 : 13, color: "#fff", fontWeight: 600 }}>{phaseInfo.label}</span>
           <span style={{ fontSize: isMobile ? 24 : 30, fontWeight: 900, fontFamily: "monospace", color: isEnded ? "#fff" : isUrgent ? "#fff" : "#F97316", letterSpacing: 2 }}>
             {isEnded ? "00:00" : formatTimer(timer.remaining)}
@@ -1096,7 +1112,7 @@
       // ╚══════════════════════════════════════════════════════╝
       return (
         <div style={{ minHeight: "100vh", zoom: isMobile ? 1 : 1.15, paddingTop: timer.activePhase ? (isMobile ? 40 : 44) : 0 }}>
-          <TimerFloatingBar timer={timer} isMobile={isMobile} />
+          <TimerFloatingBar timer={timer} isMobile={isMobile} T={T} />
           <TimerFlashOverlay flash={timer.flash} />
 
           {/* ==================== HEADER ==================== */}
