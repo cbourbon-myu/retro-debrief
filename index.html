@@ -361,12 +361,12 @@
           const left = Math.max(0, Math.ceil((timerState.endTime - Date.now()) / 1000));
           setRemaining(left);
 
-          // Tick sounds: last 15 seconds, accelerating
-          if (isTickOn && left <= 15 && left > 0) {
-            const tickInterval = left > 10 ? 1000 : left > 5 ? 500 : 250;
+          // Tick sounds: last 10 seconds, accelerating
+          if (isTickOn && left <= 10 && left > 0) {
+            const tickInterval = left > 5 ? 1000 : left > 3 ? 500 : 250;
             const now = Date.now();
             if (now - lastTickTimeRef.current >= tickInterval * 0.9) {
-              const urgency = 1 - (left / 15);
+              const urgency = 1 - (left / 10);
               playTickSound(preset, urgency);
               lastTickTimeRef.current = now;
             }
@@ -408,6 +408,9 @@
       };
       const stopTimer = () => {
         if (!db || !retroKey || !timerState) return;
+        playEndSound(soundPreset || "default");
+        setFlash(true);
+        setTimeout(() => setFlash(false), 2000);
         db.ref(`retro-${retroKey}/timer`).update({ status: "ended" });
       };
       const clearTimer = () => {
@@ -466,7 +469,7 @@
             {timer.isPaused && <button onClick={timer.resumeTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#10B981", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>▶ Reprendre</button>}
             {timer.isRunning && <button onClick={timer.pauseTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#F59E0B", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏸ Pause</button>}
             <button onClick={timer.stopTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #EF4444", background: "none", color: "#EF4444", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏹ Stop</button>
-            <button onClick={timer.toggleTickSound} title={timer.tickEnabled ? "Désactiver le décompte sonore" : "Activer le décompte sonore (15 dernières sec.)"} style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid " + (timer.tickEnabled ? "#10B981" : (T?.cardBorder || "#E8C9A8")), background: timer.tickEnabled ? "rgba(16,185,129,0.1)" : "none", color: timer.tickEnabled ? "#10B981" : (T?.textMuted || "#9CA3AF"), fontSize: 14, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, transition: "all 0.15s" }}>{timer.tickEnabled ? "🔔" : "🔕"}</button>
+            <button onClick={timer.toggleTickSound} title={timer.tickEnabled ? "Désactiver le décompte sonore" : "Activer le décompte sonore (10 dernières sec.)"} style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid " + (timer.tickEnabled ? "#10B981" : (T?.cardBorder || "#E8C9A8")), background: timer.tickEnabled ? "rgba(16,185,129,0.1)" : "none", color: timer.tickEnabled ? "#10B981" : (T?.textMuted || "#9CA3AF"), fontSize: 14, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, transition: "all 0.15s" }}>{timer.tickEnabled ? "🔔" : "🔕"}</button>
           </div>
         );
       }
@@ -508,7 +511,7 @@
       if (!timer.activePhase) return null;
       const phaseInfo = TIMER_PHASES[timer.activePhase];
       const isUrgent = timer.remaining != null && timer.remaining <= 30;
-      const isTicking = timer.tickEnabled && timer.remaining != null && timer.remaining <= 15 && timer.remaining > 0 && timer.isRunning;
+      const isTicking = timer.tickEnabled && timer.remaining != null && timer.remaining <= 10 && timer.remaining > 0 && timer.isRunning;
       const isEnded = timer.isEnded;
 
       return (
