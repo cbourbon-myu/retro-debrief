@@ -395,7 +395,7 @@
   "timerSounds": {
     "preset": "rock",
     "startFile": "assets/backstage/timer-start.mp3",
-    "tickFile": "assets/backstage/timer-tick.mp3",
+    "tickFile": "",
     "endFile": "assets/backstage/timer-end.mp3"
   }
 };})();
