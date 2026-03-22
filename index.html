@@ -1315,12 +1315,13 @@
               </div>);
 
               {/* ---- FEEDBACK INPUT ---- */}
-              if (sectionId === "saisie") { const retoursDisabled = phaseWaiting("retours") || timerBlocked("retours"); return isReadOnly ? null : (retoursLocked ? null : (
+              if (sectionId === "saisie") { const retoursDisabled = phaseWaiting("retours") || timerBlocked("retours") || retoursEnded; return isReadOnly ? null : (retoursLocked ? null : (
               <div key={"saisie-" + templateId} className="no-print" style={{ background: T.cardBg, borderRadius: 16, border: `${T.cardBorderWidth||1}px solid ${T.cardBorder}`, padding: isMobile ? "14px 12px" : "20px 24px", marginBottom: 24 }}>
                 <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 700, color: T.textPrimary, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
                   {logoOrEmoji(T.retoursLogo, EMOJI_RETOURS, isMobile ? 34 : 30, T.retoursLogoCircle)}{T.retoursTitle}
                 </div>
-                {retoursDisabled && !isAdmin && <div style={{ textAlign: "center", marginBottom: 12, fontSize: 13, color: T.textMuted, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>🔒 {timerBlocked("retours") ? "Temps écoulé" : "En attente du chrono"}</div>}
+                {retoursDisabled && !isAdmin && <div style={{ textAlign: "center", marginBottom: 12, fontSize: 13, color: T.textMuted, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>🔒 {timerBlocked("retours") ? "Temps écoulé" : retoursEnded ? "Temps écoulé" : "En attente du chrono"}</div>}
+                {retoursEnded && isAdmin && !timerBlocked("retours") && !phaseActive("retours") && <div style={{ textAlign: "center", marginBottom: 8, fontSize: 12, color: T.textMuted, fontStyle: "italic" }}>🔒 Retours verrouillés — relancez le chrono pour réouvrir</div>}
                 {isAdmin && <TimerAdminControl phase="retours" timer={timer} isMobile={isMobile} T={T} onClose={forceRevealPhase} waitingMessage={phaseWaiting("retours") ? "En attente du chrono" : (timerBlocked("retours") ? "Temps écoulé" : null)} alreadyRevealed={false} />}
                 {!isAdmin && timer.activePhase === "retours" && (timer.isRunning || timer.isPaused) && <div style={{ textAlign: "center", padding: "6px 0", fontSize: 11, color: T.textMuted }}>⏱️ {formatTimer(timer.remaining)}</div>}
                 <div style={{ pointerEvents: retoursDisabled ? "none" : "auto" }}>
