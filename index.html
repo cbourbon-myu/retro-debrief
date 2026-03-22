@@ -261,9 +261,22 @@
       },
     };
 
+    // --- Audio file cache: only skip preset when file confirmed working ---
+    const _audioCache = {}; // url -> "ok" | "fail" | "pending"
+    function _tryPlayFile(url, vol, rate) {
+      if (!url || _audioCache[url] === "fail") return false;
+      if (_audioCache[url] === "ok") {
+        try { const a = new Audio(url); a.volume = vol; if (rate && rate !== 1) a.playbackRate = rate; a.play().catch(() => { _audioCache[url] = "fail"; }); return true; } catch(e) { return false; }
+      }
+      // First attempt: mark pending, try to play, DON'T skip preset
+      _audioCache[url] = "pending";
+      try { const a = new Audio(url); a.volume = vol; if (rate && rate !== 1) a.playbackRate = rate; a.play().then(() => { _audioCache[url] = "ok"; }).catch(() => { _audioCache[url] = "fail"; }); } catch(e) { _audioCache[url] = "fail"; }
+      return false; // let preset also play on first attempt
+    }
+
     function playStartSound(preset, fileUrl) {
-      if (fileUrl) {
-        try { const a = new Audio(fileUrl); a.volume = 0.5; a.play().catch(() => {}); return; } catch(e) {}
+      if (fileUrl && _audioCache[fileUrl] !== "fail") {
+        if (_tryPlayFile(fileUrl, 0.5)) return;
       }
       try {
         const s = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).start;
@@ -282,8 +295,8 @@
     }
 
     function playTickSound(preset, urgency, fileUrl) {
-      if (fileUrl) {
-        try { const a = new Audio(fileUrl); a.volume = 0.3 + urgency * 0.5; a.playbackRate = 0.8 + urgency * 0.6; a.play().catch(() => {}); return; } catch(e) {}
+      if (fileUrl && _audioCache[fileUrl] !== "fail") {
+        if (_tryPlayFile(fileUrl, 0.3 + urgency * 0.5, 0.8 + urgency * 0.6)) return;
       }
       try {
         const t = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).tick;
@@ -299,8 +312,8 @@
     }
 
     function playEndSound(preset, fileUrl) {
-      if (fileUrl) {
-        try { const a = new Audio(fileUrl); a.volume = 0.7; a.play().catch(() => {}); return; } catch(e) {}
+      if (fileUrl && _audioCache[fileUrl] !== "fail") {
+        if (_tryPlayFile(fileUrl, 0.7)) return;
       }
       try {
         const e = (SOUND_PRESETS[preset] || SOUND_PRESETS.default).end;
