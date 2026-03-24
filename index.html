@@ -870,6 +870,12 @@
       const [curtainTriggered, setCurtainTriggered] = useState({});
       const [showResults, setShowResults] = useState({});
 
+      // Reset vote reveal states when switching to a different retro
+      useEffect(() => {
+        setCurtainTriggered({});
+        setShowResults({});
+      }, [effectiveRetroKey]);
+
       // Listen for forced reveals from Firebase (synced across all participants)
       const [forcedReveals, setForcedReveals] = useState({});
       useEffect(() => {
