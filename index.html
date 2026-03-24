@@ -364,15 +364,16 @@
       // Read tickEnabled from timerState
       const tickEnabled = timerState?.tickSound === true;
 
-      // Start sound: play once when a new timer starts running
+      // Start sound: play once when a new timer starts running (if sound enabled)
       useEffect(() => {
         if (!timerState || timerState.status !== "running") return;
+        if (timerState.tickSound !== true) return;
         const key = timerState.phase + ":" + timerState.endTime;
         if (!startSoundPlayedRef.current.has(key)) {
           startSoundPlayedRef.current.add(key);
           playStartSound(sPreset, sStartFile);
         }
-      }, [timerState?.status, timerState?.endTime, sPreset, sStartFile]);
+      }, [timerState?.status, timerState?.endTime, timerState?.tickSound, sPreset, sStartFile]);
 
       // Countdown tick + tick sounds + end sound
       useEffect(() => {
@@ -402,7 +403,7 @@
           if (left <= 0 && !endedRef.current.has(timerState.phase + timerState.endTime)) {
             endedRef.current.add(timerState.phase + timerState.endTime);
             lastTickTimeRef.current = 0;
-            playEndSound(sPreset, sEndFile);
+            if (isTickOn) playEndSound(sPreset, sEndFile);
             setFlash(true);
             setTimeout(() => setFlash(false), 2000);
             if (db && retroKey) db.ref(`retro-${retroKey}/timer/status`).set("ended");
@@ -413,13 +414,13 @@
         return () => clearInterval(interval);
       }, [timerState, sPreset, sTickFile, sEndFile]);
 
-      const startTimer = (phase, seconds) => {
+      const startTimer = (phase, seconds, tickSound) => {
         if (!db || !retroKey) return;
         endedRef.current.delete(phase);
         startSoundPlayedRef.current.clear();
         db.ref(`retro-${retroKey}/timer`).set({
           phase, status: "running", endTime: Date.now() + seconds * 1000,
-          pausedRemaining: null, duration: seconds, tickSound: true,
+          pausedRemaining: null, duration: seconds, tickSound: tickSound !== false,
         });
         db.ref(`retro-${retroKey}/timerStarted/${phase}`).set(true);
       };
@@ -434,7 +435,7 @@
       };
       const stopTimer = () => {
         if (!db || !retroKey || !timerState) return;
-        playEndSound(sPreset, sEndFile);
+        if (tickEnabled) playEndSound(sPreset, sEndFile);
         setFlash(true);
         setTimeout(() => setFlash(false), 2000);
         db.ref(`retro-${retroKey}/timer`).update({ status: "ended" });
@@ -468,6 +469,12 @@
     function TimerAdminControl({ phase, timer, isMobile, T, onClose, waitingMessage, alreadyRevealed }) {
       const [editSeconds, setEditSeconds] = useState(TIMER_PHASES[phase].defaultSeconds);
       const [showSetup, setShowSetup] = useState(false);
+      // Per-phase sound preference (persisted in localStorage)
+      const soundKey = `timerSound_${phase}`;
+      const [phaseSound, setPhaseSound] = useState(() => {
+        try { const v = localStorage.getItem(soundKey); return v === null ? true : v === "true"; } catch(e) { return true; }
+      });
+      const togglePhaseSound = () => { const next = !phaseSound; setPhaseSound(next); try { localStorage.setItem(soundKey, String(next)); } catch(e) {} };
       const isActive = timer.activePhase === phase;
       const phaseInfo = TIMER_PHASES[phase];
 
@@ -495,7 +502,7 @@
             {timer.isPaused && <button onClick={timer.resumeTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#10B981", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>▶ Reprendre</button>}
             {timer.isRunning && <button onClick={timer.pauseTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "none", background: "#F59E0B", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏸ Pause</button>}
             <button onClick={timer.stopTimer} style={{ padding: "4px 12px", borderRadius: 8, border: "1.5px solid #EF4444", background: "none", color: "#EF4444", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>⏹ Stop</button>
-            <button onClick={timer.toggleTickSound} title={timer.tickEnabled ? "Désactiver le décompte sonore" : "Activer le décompte sonore (10 dernières sec.)"} style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid " + (timer.tickEnabled ? "#10B981" : (T?.cardBorder || "#E8C9A8")), background: timer.tickEnabled ? "rgba(16,185,129,0.1)" : "none", color: timer.tickEnabled ? "#10B981" : (T?.textMuted || "#9CA3AF"), fontSize: 14, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, transition: "all 0.15s" }}>{timer.tickEnabled ? "🔔" : "🔕"}</button>
+            <button onClick={() => { timer.toggleTickSound(); const next = !timer.tickEnabled; setPhaseSound(next); try { localStorage.setItem(soundKey, String(next)); } catch(e) {} }} title={timer.tickEnabled ? "Désactiver les sons du timer" : "Activer les sons du timer"} style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid " + (timer.tickEnabled ? "#10B981" : (T?.cardBorder || "#E8C9A8")), background: timer.tickEnabled ? "rgba(16,185,129,0.1)" : "none", color: timer.tickEnabled ? "#10B981" : (T?.textMuted || "#9CA3AF"), fontSize: 14, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, transition: "all 0.15s" }}>{timer.tickEnabled ? "🔊" : "🔇"}</button>
           </div>
         );
       }
@@ -514,7 +521,8 @@
               <input type="number" min="0" max="59" value={secs} onChange={e => setEditSeconds(mins * 60 + Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))} style={{ width: 44, padding: "4px 6px", borderRadius: 6, border: "1px solid " + (T?.inputBorder || "#E8C9A8"), fontSize: 13, textAlign: "center", fontFamily: "inherit" }} />
               <span style={{ fontSize: 11, color: T?.textMuted || "#9CA3AF" }}>sec</span>
             </div>
-            <button onClick={() => { timer.startTimer(phase, editSeconds); setShowSetup(false); }} style={{ padding: "5px 14px", borderRadius: 8, border: "none", background: T?.accent || "#F97316", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>▶ Go !</button>
+            <button onClick={togglePhaseSound} title={phaseSound ? "Désactiver les sons du timer" : "Activer les sons du timer"} style={{ padding: "4px 8px", borderRadius: 8, border: "1px solid " + (phaseSound ? "#10B981" : (T?.cardBorder || "#E8C9A8")), background: phaseSound ? "rgba(16,185,129,0.1)" : "none", color: phaseSound ? "#10B981" : (T?.textMuted || "#9CA3AF"), fontSize: 14, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, transition: "all 0.15s" }}>{phaseSound ? "🔊" : "🔇"}</button>
+            <button onClick={() => { timer.startTimer(phase, editSeconds, phaseSound); setShowSetup(false); }} style={{ padding: "5px 14px", borderRadius: 8, border: "none", background: T?.accent || "#F97316", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>▶ Go !</button>
             <button onClick={() => setShowSetup(false)} style={{ padding: "5px 10px", borderRadius: 8, border: "1px solid " + (T?.cardBorder || "#E8C9A8"), background: "none", color: T?.textMuted || "#9CA3AF", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✕</button>
           </div>
         );
@@ -943,6 +951,12 @@
         const voterUids = new Set((Array.isArray(ratingsRaw) ? ratingsRaw : []).filter(r => r.category === catId).map(r => r.authorUid));
         return connectedUsers.filter(u => !voterUids.has(u.uid)).map(u => u.name);
       };
+      // Helper: expected voter count = union of connected UIDs + UIDs who already voted (handles disconnect/reconnect)
+      const getExpectedVoterCount = (catId) => {
+        const voterUids = new Set((Array.isArray(ratingsRaw) ? ratingsRaw : []).filter(r => r.category === catId).map(r => r.authorUid));
+        const union = new Set([...connectedUids, ...voterUids]);
+        return union.size;
+      };
       const forceRevealPhase = (phase) => {
         if (!db || !effectiveRetroKey) return;
         const cats = phase === "votes" ? ["ambiance", "satisfaction"] : phase === "roti" ? ["roti"] : [];
@@ -1288,7 +1302,7 @@
                         {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + (isDark ? cat.border : cat.color) : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: isDisabled ? "default" : "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score && !isDisabled ? "voteGlow 2s ease-in-out infinite" : "none", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, overflow: "hidden" }} title={T.ratingLabels[score]?.label}>{voteImgOrEmoji(T.ratingLabels[score]?.image, T.ratingLabels[score]?.emoji, {width:"80%",height:"80%",objectFit:"cover",borderRadius:"50%"})}</button>))}
                       </div>}
                       {!isReadOnly && !isVoteLocked && !isDisabled && myScore && <div style={{ fontSize: 11.5, color: isDark ? cat.border : cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {voteImgOrEmoji(T.ratingLabels[myScore]?.image, T.ratingLabels[myScore]?.emoji, {width:16,height:16,objectFit:"cover",borderRadius:"50%",verticalAlign:"middle",display:"inline-block"})} {T.ratingLabels[myScore]?.label}</div>}
-                      {!isReadOnly && !showResults[cat.id] && !isDisabled && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}{isAdmin && missingVoters.length > 0 && <span style={{ fontSize: 10, color: "#EF4444", marginLeft: 6 }}>— manque: {missingVoters.join(", ")}</span>}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
+                      {!isReadOnly && !showResults[cat.id] && !isDisabled && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (getExpectedVoterCount(cat.id) > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{getExpectedVoterCount(cat.id)} vote{getExpectedVoterCount(cat.id) > 1 ? "s" : ""}{isAdmin && missingVoters.length > 0 && <span style={{ fontSize: 10, color: "#EF4444", marginLeft: 6 }}>— manque: {missingVoters.join(", ")}</span>}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
                       {shouldShowResults && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: isReadOnly ? "none" : "resultReveal 0.6s ease forwards", marginTop: 6 }}>
                         <div style={{ fontSize: 48, marginBottom: 4 }}>{voteImgOrEmoji(T.ratingLabels[Math.round(avg)]?.image, T.ratingLabels[Math.round(avg)]?.emoji, {width:48,height:48,objectFit:"cover",borderRadius:"50%"})}</div>
                         <div style={{ fontSize: 38, fontWeight: 900, color: isDark ? cat.border : cat.color, lineHeight: 1 }}>{avg}</div>
@@ -1367,7 +1381,7 @@
                         {[1,2,3,4,5].map(score => (<button key={score} onClick={() => submitRating(cat.id, score)} className="vote-icon" style={{ width: voteSize, height: voteSize, borderRadius: "50%", border: myScore === score ? "2.5px solid " + cat.color : "1.5px solid " + T.inputBorder, background: myScore === score ? cat.bg : T.cardBg, fontSize: voteFontSize, cursor: isRotiDisabled ? "default" : "pointer", transition: "all 0.2s", transform: myScore === score ? "scale(1.15)" : "scale(1)", boxShadow: myScore === score ? "0 0 12px 4px " + cat.border + "66" : "none", animation: myScore === score && !isRotiDisabled ? "voteGlow 2s ease-in-out infinite" : "none", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, overflow: "hidden" }} title={T.ratingLabels[score]?.label}>{voteImgOrEmoji(T.ratingLabels[score]?.image, T.ratingLabels[score]?.emoji, {width:"80%",height:"80%",objectFit:"cover",borderRadius:"50%"})}</button>))}
                       </div>}
                       {!isReadOnly && !isVoteLocked && !isRotiDisabled && myScore && <div style={{ fontSize: 11.5, color: cat.color, fontWeight: 600, marginBottom: 8 }}>Tu as voté : {voteImgOrEmoji(T.ratingLabels[myScore]?.image, T.ratingLabels[myScore]?.emoji, {width:16,height:16,objectFit:"cover",borderRadius:"50%",verticalAlign:"middle",display:"inline-block"})} {T.ratingLabels[myScore]?.label}</div>}
-                      {!isReadOnly && !showResults[cat.id] && !isRotiDisabled && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (connectedUids.length > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{connectedUids.length} vote{connectedUids.length > 1 ? "s" : ""}{isAdmin && missingVoters.length > 0 && <span style={{ fontSize: 10, color: "#EF4444", marginLeft: 6 }}>— manque: {missingVoters.join(", ")}</span>}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
+                      {!isReadOnly && !showResults[cat.id] && !isRotiDisabled && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4, borderTop: "1px solid " + cat.border + "33", paddingTop: 8 }}>{myScore ? (getExpectedVoterCount(cat.id) > 0 ? <>🔒 {getRatingsForCategory(cat.id).length}/{getExpectedVoterCount(cat.id)} vote{getExpectedVoterCount(cat.id) > 1 ? "s" : ""}{isAdmin && missingVoters.length > 0 && <span style={{ fontSize: 10, color: "#EF4444", marginLeft: 6 }}>— manque: {missingVoters.join(", ")}</span>}</> : null) : <>Choisis ton emoji pour voter 👆</>}</div>}
                       {isReadOnly && voters.length === 0 && <div style={{ fontSize: 12, color: T.textMuted, padding: "12px 0" }}>Aucun vote enregistré</div>}
                       {shouldShowResults && <div style={{ borderTop: "1px solid " + cat.border + "44", paddingTop: 16, animation: isReadOnly ? "none" : "resultReveal 0.6s ease forwards", marginTop: 6 }}>
                         <div style={{ fontSize: 48, marginBottom: 4 }}>{voteImgOrEmoji(T.ratingLabels[Math.round(avg)]?.image, T.ratingLabels[Math.round(avg)]?.emoji, {width:48,height:48,objectFit:"cover",borderRadius:"50%"})}</div>
